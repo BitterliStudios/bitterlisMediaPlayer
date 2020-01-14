@@ -93,7 +93,7 @@ public class Media {
 		return isAudio;
 	}
 
-	public void getVideo(Dimension dim) {
+	public void getVideo(Dimension dim) throws IOException {
 		loop = false;
 		stopped = false;
 		@SuppressWarnings("unused")
@@ -594,15 +594,6 @@ public class Media {
 		frame.setJMenuBar(main);
 
 		Canvas c = new Canvas();
-		Image img;
-		try {
-			img = ImageIO.read(new URL("https://bitterli.us/namelogo.png").openStream());
-			img = img.getScaledInstance(700, 145, 0);
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		c.setBackground(Color.black);
 		JPanel p = new JPanel();
 		c.setBounds(100, 500, 1050, 500);
 		p.setLayout(new BorderLayout());
@@ -610,8 +601,9 @@ public class Media {
 		p.setBounds(100, 50, 1050, 600);
 		frame.add(p, BorderLayout.NORTH);
 		mediaPlayer = mediaPlayerFactory.newEmbeddedMediaPlayer();
-		mediaPlayer.setVideoSurface(mediaPlayerFactory.newVideoSurface(c));
-		
+		if (!isAudio()) {
+			mediaPlayer.setVideoSurface(mediaPlayerFactory.newVideoSurface(c));
+		}
 		
 		JPanel p0 = new JPanel();
 		
@@ -774,6 +766,13 @@ public class Media {
 		mediaPlayer.playMedia(file.getPath());
 		mediaPlayer.setEqualizer(eq);
 		mediaPlayer.getEqualizer().setPreamp(0);
+		if (isAudio()) {
+			Image img = ImageIO.read(new File("namelogo.png"));
+			img = img.getScaledInstance(700, 145, 0);
+			c.getGraphics().drawImage(img, 0,0, null);
+		} else {
+			c.setBackground(Color.black);
+		}
 		
 
 		ActionListener stopAction = new ActionListener() {

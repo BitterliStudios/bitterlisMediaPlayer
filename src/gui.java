@@ -73,7 +73,7 @@ public class gui {
 		JFrame welcome = new JFrame("Loading... - Audio Player");
 		welcome.setResizable(false);
 		JPanel welcomeComponents = new JPanel();
-		Image logo = ImageIO.read(new URL("https://bitterli.us/namelogo.png").openStream());
+		Image logo = ImageIO.read(new File("namelogo.png"));
 		logo = logo.getScaledInstance(700, 145, 0);
 		welcomeComponents.add(new JLabel(new ImageIcon(logo)));
 		String text = "<html><center><p><br><br>Bitterli's Media Player<br>in Java using vlcj.<br><br>Loading...</p></center></html>";
@@ -94,7 +94,12 @@ public class gui {
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		SwingUtilities.invokeLater(() -> {
 			Media vlcPlayer = new Media(file);
-			vlcPlayer.getVideo(dim);
+			try {
+				vlcPlayer.getVideo(dim);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		});
 		
 		welcome.dispose();
