@@ -2,13 +2,17 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GraphicsDevice.WindowTranslucency;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.ImageObserver;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,6 +31,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JWindow;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -34,7 +39,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.Equalizer;
+import uk.co.caprica.vlcj.player.Logo;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
@@ -601,9 +608,7 @@ public class Media {
 		p.setBounds(100, 50, 1050, 600);
 		frame.add(p, BorderLayout.NORTH);
 		mediaPlayer = mediaPlayerFactory.newEmbeddedMediaPlayer();
-		if (!isAudio()) {
-			mediaPlayer.setVideoSurface(mediaPlayerFactory.newVideoSurface(c));
-		}
+		mediaPlayer.setVideoSurface(mediaPlayerFactory.newVideoSurface(c));
 		
 		JPanel p0 = new JPanel();
 		
@@ -693,7 +698,7 @@ public class Media {
 		JButton playbutton = new JButton("Play");
 		Image playimg = null;
 		try {
-			playimg = ImageIO.read(new URL("https://bitterli.us/java/audio/Play.gif").openStream());
+			playimg = ImageIO.read(new File("Play.gif"));
 		} catch (MalformedURLException e1) {
 			errorWindow window = new errorWindow(e1, "005");
 			window.show();
@@ -710,7 +715,7 @@ public class Media {
 		JButton pausebutton = new JButton("Pause");
 		Image pauseimg = null;
 		try {
-			pauseimg = ImageIO.read(new URL("https://bitterli.us/java/audio/Pause.png").openStream());
+			pauseimg = ImageIO.read(new File("Pause.png"));
 		} catch (MalformedURLException e1) {
 			errorWindow window = new errorWindow(e1, "005");
 			window.show();
@@ -727,7 +732,7 @@ public class Media {
 		JButton stopbutton = new JButton("Stop");
 		Image stopimg = null;
 		try {
-			stopimg = ImageIO.read(new URL("https://bitterli.us/java/audio/Stop.gif").openStream());
+			stopimg = ImageIO.read(new File("Stop.gif"));
 		} catch (MalformedURLException e1) {
 			errorWindow window = new errorWindow(e1, "005");
 			window.show();
@@ -744,7 +749,7 @@ public class Media {
 		JButton loopbutton = new JButton("Loop");
 		Image loopimg = null;
 		try {
-			loopimg = ImageIO.read(new URL("https://bitterli.us/java/audio/Loop.png").openStream());
+			loopimg = ImageIO.read(new File("Loop.png"));
 		} catch (MalformedURLException e1) {
 			errorWindow window = new errorWindow(e1, "005");
 			window.show();
@@ -766,15 +771,12 @@ public class Media {
 		mediaPlayer.playMedia(file.getPath());
 		mediaPlayer.setEqualizer(eq);
 		mediaPlayer.getEqualizer().setPreamp(0);
-		if (isAudio()) {
-			Image img = ImageIO.read(new File("namelogo.png"));
-			img = img.getScaledInstance(700, 145, 0);
-			c.getGraphics().drawImage(img, 0,0, null);
-		} else {
-			c.setBackground(Color.black);
-		}
+		c.setBackground(Color.black);
 		
-
+		//mediaPlayer.setLogoFile("namelogo.png");
+		//mediaPlayer.setLogoLocation(10, 10);
+		//mediaPlayer.enableLogo(true);
+		
 		ActionListener stopAction = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mediaPlayer.pause();
