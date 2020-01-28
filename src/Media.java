@@ -54,19 +54,7 @@ public class Media {
 	private Equalizer eq;
 	private MediaPlayerFactory mediaPlayerFactory;
 	
-
-	private ActionListener taskPerformed = new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			final long time = mediaPlayer.getTime();
-			if (time == -1) {
-				mediaPlayer.setTime(0);
-				mediaPlayer.play();
-			}
-
-		}
-	};
 	@SuppressWarnings("unused")
-	private Timer t = new Timer(100, taskPerformed);
 
 	public Media(File f) {
 		file = f;
@@ -816,13 +804,21 @@ public class Media {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (!loop) {
-					loopbutton.setBackground(Color.GRAY);
-					loop = true;
-					t.start();
+					if (!stopped) {
+						loopbutton.setBackground(Color.GRAY);
+						loop = true;
+						mediaPlayer.setRepeat(true);
+					} else {
+						mediaPlayer.play();
+						stopped = false;
+						loopbutton.setBackground(Color.GRAY);
+						loop = true;
+						mediaPlayer.setRepeat(true);
+					}
 				} else {
 					loopbutton.setBackground(Color.LIGHT_GRAY);
 					loop = false;
-					t.stop();
+					mediaPlayer.setRepeat(false);
 				}
 			}
 		});
