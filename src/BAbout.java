@@ -8,9 +8,13 @@ public class BAbout {
 	
 	public void getAbout() {
 		String name = "Bitterli's Media Player in Java";
-		String version = "Version B_0.7.0 - Efficiency Update";
+		String version = "Version B_0.8.0 - Audio Update";
 		String author = "Bitterli";
 		String changes = "Changelog:"
+				+ "\n(Jan 30 2020) Added meta information for audio files."
+				+ "\n(Jan 28 2020) Fixed media looping."
+				+ "\n(Jan 16 2020) Removed References to online logo information."
+				+ "\n(Jan 13 2020) Created a git repository and github cloud."
 				+ "\n(Jan 07 2020) Removed all default library-based players, entirely VLCJ"
 				+ "\n(Jan 06 2020) Added base equalization to videos."
 				+ "\n(Dec 20 2019) Adding special features to VideoPlayer."
