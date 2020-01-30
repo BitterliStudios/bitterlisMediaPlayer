@@ -46,7 +46,7 @@ public class gui {
 		j.setFileFilter(new FileNameExtensionFilter("Media Files",
 				//audio formats
 				"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob", "ape", "au", "awb",
-				"caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka", "mlp", "mod", "mp1", "mp2", "mp3",
+				"caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", /*"mid",*/ "mka", "mlp", "mod", "mp1", "mp2", "mp3",
 				"mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus", "qcp", "ra", "rmi", "s3m", "sid", "spx", "tak", "thd",
 				"tta", "voc", "vqf", "w64", "wav", "wma", "wv", "xa", "xm",
 				//video formats

@@ -2,6 +2,9 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice.WindowTranslucency;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
@@ -11,6 +14,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -31,6 +37,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.JWindow;
 import javax.swing.Timer;
 import javax.swing.UIManager;
@@ -42,6 +49,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.Logo;
+import uk.co.caprica.vlcj.player.MediaMetaData;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
@@ -53,6 +61,7 @@ public class Media {
 	private boolean stopped;
 	private Equalizer eq;
 	private MediaPlayerFactory mediaPlayerFactory;
+	private Canvas c;
 	
 	@SuppressWarnings("unused")
 
@@ -262,6 +271,32 @@ public class Media {
 		main.add(videoSettings);
 		
 		JMenu audioSettings = new JMenu("Audio");
+		
+		JMenuItem audioInfo = new JMenuItem("Track Info");
+		audioInfo.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MediaMetaData meta = mediaPlayer.getMediaMeta().asMediaMetaData();
+				
+				JFrame i = new JFrame("Track Info");
+				i.getContentPane().setLayout(new FlowLayout());
+				JLabel albumNameL = new JLabel("Album Title: ");
+				JTextField albumName = new JTextField(meta.getAlbum(), 10);
+				
+				JLabel albumArt = new JLabel(new ImageIcon(mediaPlayer.getMediaMeta().getArtwork()));
+				i.getContentPane().add(albumArt);
+				
+				i.getContentPane().add(albumNameL);
+				i.getContentPane().add(albumName);
+				i.setSize(200, 200);
+				i.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				i.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+				i.setVisible(true);
+			}
+			
+		});
+		
 		JMenuItem mute = new JMenuItem("Mute");
 		mute.addActionListener(new ActionListener() {
 
@@ -579,6 +614,7 @@ public class Media {
 		
 		audioSettings.add(mute);
 		audioSettings.add(equalizer);
+		audioSettings.add(audioInfo);
 
 		main.add(audioSettings);
 
@@ -588,7 +624,7 @@ public class Media {
 		
 		frame.setJMenuBar(main);
 
-		Canvas c = new Canvas();
+		c = new Canvas();
 		JPanel p = new JPanel();
 		c.setBounds(100, 500, 1050, 500);
 		p.setLayout(new BorderLayout());
@@ -760,6 +796,17 @@ public class Media {
 		mediaPlayer.setEqualizer(eq);
 		mediaPlayer.getEqualizer().setPreamp(0);
 		c.setBackground(Color.black);
+		
+		if (isAudio()) {
+			ActionListener taskPerformer = new ActionListener() {
+	            public void actionPerformed(ActionEvent evt) {
+	                c.getGraphics().drawImage(mediaPlayer.getMediaMeta().getArtwork(), 0, 0, null);
+	            }
+	        };
+	        Timer timer = new Timer(100 ,taskPerformer);
+	        timer.setRepeats(false);
+	        timer.start();
+		}
 		
 		//mediaPlayer.setLogoFile("namelogo.png");
 		//mediaPlayer.setLogoLocation(10, 10);
