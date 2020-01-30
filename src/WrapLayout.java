@@ -1,4 +1,9 @@
 
+/**
+ * Wraplayout.java
+ * I took this from online because the layout managers in Java are absolute trash.
+ * https://tips4java.wordpress.com/2008/11/06/wrap-layout/
+ */
 
 import java.awt.*;
 import javax.swing.JScrollPane;
