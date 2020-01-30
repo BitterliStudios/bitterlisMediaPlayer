@@ -12,7 +12,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
@@ -58,7 +57,9 @@ public class gui {
 		j.showOpenDialog(null);
 		file = j.getSelectedFile();
 	}
-
+	
+	//Will use later
+	@SuppressWarnings("unused")
 	private String fileType() {
 		String fileName = file.getName();
 		String fileType = "";
@@ -68,6 +69,7 @@ public class gui {
 		return fileType;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void start() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 
 		JFrame welcome = new JFrame("Loading... - Audio Player");
