@@ -17,6 +17,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -271,22 +274,52 @@ public class Media {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MediaMetaData meta = mediaPlayer.getMediaMeta().asMediaMetaData();
+				if (isAudio()) {
+					MediaMetaData meta = mediaPlayer.getMediaMeta().asMediaMetaData();
 
-				JFrame i = new JFrame("Track Info");
-				i.getContentPane().setLayout(new FlowLayout());
-				JLabel albumNameL = new JLabel("Album Title: ");
-				JTextField albumName = new JTextField(meta.getAlbum(), 10);
+					JFrame i = new JFrame("Track Info");
+					JPanel bigPanel = new JPanel();
 
-				JLabel albumArt = new JLabel(new ImageIcon(mediaPlayer.getMediaMeta().getArtwork()));
-				i.getContentPane().add(albumArt);
+					JPanel albumArtPanel = new JPanel();
+					BufferedImage artB = mediaPlayer.getMediaMeta().getArtwork();
+					Image art = artB;
+					art = art.getScaledInstance(87, 87, 0);
+					JLabel albumArt = new JLabel(new ImageIcon(art));
+					albumArtPanel.add(albumArt);
 
-				i.getContentPane().add(albumNameL);
-				i.getContentPane().add(albumName);
-				i.setSize(200, 200);
-				i.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				i.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
-				i.setVisible(true);
+					JPanel albumInfo = new JPanel();
+					
+					JLabel albumNameL = new JLabel("Album Title: ");
+					JTextField albumName = new JTextField(meta.getAlbum(), 10);
+					albumName.setEditable(false); //Will enable when I add meta information updating.
+					albumInfo.add(albumNameL);
+					albumInfo.add(albumName);
+					
+					JLabel albumArtistL = new JLabel("Album Title: ");
+					JTextField albumArtist = new JTextField(meta.getAlbumArtist(), 10);
+					albumArtist.setEditable(false); //Will enable when I add meta information updating.
+					albumInfo.add(albumArtistL);
+					albumInfo.add(albumArtist);
+					
+					JLabel trackNumL = new JLabel("Album Title: ");
+					JTextField trackNum = new JTextField(meta.getDiscNumber(), 10);
+					trackNum.setEditable(false); //Will enable when I add meta information updating.
+					albumInfo.add(trackNumL);
+					albumInfo.add(trackNum);
+
+					bigPanel.add(albumArtPanel);
+					bigPanel.add(albumInfo);
+
+					i.add(bigPanel);
+
+					i.setSize(300, 400);
+					i.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					i.setLocation(dim.width / 2 - i.getSize().width / 2, dim.height / 2 - i.getSize().height / 2);
+					i.setResizable(false);
+					i.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(null, "This is not an audio format.");
+				}
 			}
 
 		});
@@ -767,15 +800,57 @@ public class Media {
 		mediaPlayer.getEqualizer().setPreamp(0);
 		c.setBackground(Color.black);
 
+		// Main logo (shown when stopped, no album art on audio).
+		// The album art is displayed over the logo.
+		// The timers are to delay the placement of each object.
+		// The main logo to ensure it's drawn over the video object.
+		// The album art to ensure the album art has loaded in (null pointer errors)
+
+		ActionListener drawLogo = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					BufferedImage before = ImageIO.read(new File("logoTapes.png"));
+					int w = before.getWidth();
+					int h = before.getHeight();
+					BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+					AffineTransform at = new AffineTransform();
+					at.scale(0.25, 0.25);
+					AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+					after = scaleOp.filter(before, after);
+					int imgWidth = (after.getWidth()) / 8;
+					int imgHeight = (after.getHeight()) / 8;
+
+					c.getGraphics().drawImage(after, 444 - imgWidth, 250 - imgHeight, null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+
+		Timer logoTimer = new Timer(100, drawLogo);
+		logoTimer.setRepeats(false);
+		logoTimer.start();
+
 		if (isAudio()) {
-			ActionListener taskPerformer = new ActionListener() {
+			ActionListener drawArt = new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					c.getGraphics().drawImage(mediaPlayer.getMediaMeta().getArtwork(), 0, 0, null);
+					BufferedImage before = mediaPlayer.getMediaMeta().getArtwork();
+					int w = before.getWidth();
+					int h = before.getHeight();
+					BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+					AffineTransform at = new AffineTransform();
+					at.scale(0.5, 0.5);
+					AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+					after = scaleOp.filter(before, after);
+					int imgWidth = (after.getWidth()) / 4;
+					int imgHeight = (after.getHeight()) / 4;
+
+					c.getGraphics().drawImage(after, 444 - imgWidth, 250 - imgHeight, null);
 				}
 			};
-			Timer timer = new Timer(100, taskPerformer);
-			timer.setRepeats(false);
-			timer.start();
+			Timer artTimer = new Timer(1000, drawArt);
+			artTimer.setRepeats(false);
+			artTimer.start();
 		}
 
 		ActionListener stopAction = new ActionListener() {

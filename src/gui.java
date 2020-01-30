@@ -89,7 +89,7 @@ public class gui {
 
 		getFile();
 		if (file == null) {
-			file = new File("test1.mp3");
+			file = new File("test2.mp3");
 		}
 		
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
