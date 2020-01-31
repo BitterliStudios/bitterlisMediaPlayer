@@ -183,42 +183,95 @@ public class Media {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				mediaPlayer.setAdjustVideo(true);
-				JFrame vf = new JFrame("Video Effects");
-				JPanel vp = new JPanel(new GridLayout(0, 11));
 				
-				JPanel hue = new JPanel(new BorderLayout());
-				hue.setBorder(new EmptyBorder(10, 10, 10, 10));
-				JLabel hueLabel = new JLabel("Hue");
-				int minHue = Math.round(LibVlcConst.MIN_HUE * 100.0f);
-				int maxHue = Math.round(LibVlcConst.MAX_HUE * 100.0f);
-		        JSlider hueSlider = new JSlider(JSlider.VERTICAL, minHue, maxHue, mediaPlayer.getHue());
-		        hueSlider.setMinimum(Math.round(LibVlcConst.MIN_HUE * 100.0f));
-		        hueSlider.setMaximum(Math.round(LibVlcConst.MAX_HUE * 100.0f));
-		        hueLabel.setLabelFor(hueSlider);
-		        hueSlider.addChangeListener(new ChangeListener() {
-					@Override
+				mediaPlayer.setAdjustVideo(true);
+
+				JPanel veP = new JPanel(new GridLayout(0, 5));
+
+				JPanel bP = new JPanel(new BorderLayout());
+				bP.setBorder(new EmptyBorder(10, 10, 10, 10));
+				JLabel bL = new JLabel("Brightness");
+				JLabel bT = new JLabel("Currently: " + (int) (mediaPlayer.getBrightness() * 100));
+				int bInt = (int) ((double) mediaPlayer.getBrightness() * 100);
+				JSlider bS = new JSlider(JSlider.VERTICAL, 0, 200, bInt);
+				bS.setMajorTickSpacing(10);
+				bS.setPaintTicks(true);
+				bS.setPaintLabels(true);
+				ChangeListener bC = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							System.out.println("There has been an update: " + theSlider.getValue());
-							mediaPlayer.setHue(theSlider.getValue());
+							float bF = (float) theSlider.getValue() / 100;
+							mediaPlayer.setBrightness(bF);
+							bT.setText("Currently: " + (int) (mediaPlayer.getBrightness() * 100));
 						}
 					}
-		        });
-		        hue.add(hueLabel);
-				hue.add(hueSlider);
-				vp.add(hue);
+				};
+				bS.addChangeListener(bC);
+				bP.add(bL, BorderLayout.PAGE_START);
+				bP.add(bS, BorderLayout.CENTER);
+				bP.add(bT, BorderLayout.PAGE_END);
+				veP.add(bP);
 				
-				vp.setBorder(new EmptyBorder(10, 10, 10, 10));
-				vf.add(vp);
-				vf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				vf.setSize(new Dimension(700, 300));
-				vf.setResizable(false);
-				vf.setVisible(true);
+				JPanel cP = new JPanel(new BorderLayout());
+				cP.setBorder(new EmptyBorder(10, 10, 10, 10));
+				JLabel cL = new JLabel("Contrast");
+				JLabel cT = new JLabel("Currently: " + (int) (mediaPlayer.getBrightness() * 100));
+				int cInt = (int) ((double) mediaPlayer.getContrast() * 100);
+				JSlider cS = new JSlider(JSlider.VERTICAL, 0, 200, cInt);
+				cS.setMajorTickSpacing(10);
+				cS.setPaintTicks(true);
+				cS.setPaintLabels(true);
+				ChangeListener cC = new ChangeListener() {
+					public void stateChanged(ChangeEvent changeEvent) {
+						JSlider theSlider = (JSlider) changeEvent.getSource();
+						if (!theSlider.getValueIsAdjusting()) {
+							float cF = (float) theSlider.getValue() / 100;
+							mediaPlayer.setContrast(cF);
+							cT.setText("Currently: " + (int) (mediaPlayer.getContrast() * 100));
+						}
+					}
+				};
+				cS.addChangeListener(cC);
+				cP.add(cL, BorderLayout.PAGE_START);
+				cP.add(cS, BorderLayout.CENTER);
+				cP.add(cT, BorderLayout.PAGE_END);
+				veP.add(cP);
 				
+				JPanel hP = new JPanel(new BorderLayout());
+				hP.setBorder(new EmptyBorder(10, 10, 10, 10));
+				JLabel hL = new JLabel("Hue");
+				JLabel hT = new JLabel("Currently: " + (int) (mediaPlayer.getHue()) + "°");
+				int hInt = (int) (mediaPlayer.getHue());
+				JSlider hS = new JSlider(JSlider.VERTICAL, 0, 360, hInt);
+				hS.setMajorTickSpacing(45);
+				hS.setPaintTicks(true);
+				hS.setPaintLabels(true);
+				ChangeListener hC = new ChangeListener() {
+					public void stateChanged(ChangeEvent changeEvent) {
+						JSlider theSlider = (JSlider) changeEvent.getSource();
+						if (!theSlider.getValueIsAdjusting()) {
+							int hF = theSlider.getValue();
+							mediaPlayer.setHue(hF);
+							hT.setText("Currently: " + (int) (mediaPlayer.getHue()));
+						}
+					}
+				};
+				hS.addChangeListener(hC);
+				hP.add(hL, BorderLayout.PAGE_START);
+				hP.add(hS, BorderLayout.CENTER);
+				hP.add(hT, BorderLayout.PAGE_END);
+				veP.add(hP);
+
+				JFrame veF = new JFrame("Video Effects");
+				veP.setBorder(new EmptyBorder(10, 10, 10, 10));
+				veF.add(veP);
+				veF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				veF.setSize(new Dimension(600, 400));
+				//veF.setResizable(false);
+				veF.setVisible(true);
 			}
-			
+
 		});
 		videoSettings.add(videoEffects);
 		main.add(videoSettings);
