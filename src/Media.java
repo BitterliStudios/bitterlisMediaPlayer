@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -27,7 +26,6 @@ import java.net.MalformedURLException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -45,6 +43,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import uk.co.caprica.vlcj.binding.LibVlcConst;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -179,92 +178,49 @@ public class Media {
 		});
 
 		JMenu videoSettings = new JMenu("Video");
-
-		JMenuItem brightness = new JMenuItem("Brightness");
-		brightness.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				mediaPlayer.setAdjustVideo(true);
-				JFrame input = new JFrame("Input");
-				String num = JOptionPane.showInputDialog(input, "Enter the brighness (0 - 200)", "", 1);
-				double brightness = (Integer.parseInt(num) / 100);
-				mediaPlayer.setBrightness((float) brightness);
-				mediaPlayer.setAdjustVideo(false);
-			}
-		});
-
-		JMenuItem contrast = new JMenuItem("Contrast");
-		contrast.addActionListener(new ActionListener() {
+		JMenuItem videoEffects = new JMenuItem("Effects");
+		videoEffects.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				mediaPlayer.setAdjustVideo(true);
-				JFrame input = new JFrame("Input");
-				String num = JOptionPane.showInputDialog(input, "Enter the contrast (0 - 200)", "", 1);
-				double contrast = (Integer.parseInt(num) / 100);
-				mediaPlayer.setBrightness((float) contrast);
-				mediaPlayer.setAdjustVideo(false);
+				JFrame vf = new JFrame("Video Effects");
+				JPanel vp = new JPanel(new GridLayout(0, 11));
+				
+				JPanel hue = new JPanel(new BorderLayout());
+				hue.setBorder(new EmptyBorder(10, 10, 10, 10));
+				JLabel hueLabel = new JLabel("Hue");
+				int minHue = Math.round(LibVlcConst.MIN_HUE * 100.0f);
+				int maxHue = Math.round(LibVlcConst.MAX_HUE * 100.0f);
+		        JSlider hueSlider = new JSlider(JSlider.VERTICAL, minHue, maxHue, mediaPlayer.getHue());
+		        hueSlider.setMinimum(Math.round(LibVlcConst.MIN_HUE * 100.0f));
+		        hueSlider.setMaximum(Math.round(LibVlcConst.MAX_HUE * 100.0f));
+		        hueLabel.setLabelFor(hueSlider);
+		        hueSlider.addChangeListener(new ChangeListener() {
+					@Override
+					public void stateChanged(ChangeEvent changeEvent) {
+						JSlider theSlider = (JSlider) changeEvent.getSource();
+						if (!theSlider.getValueIsAdjusting()) {
+							System.out.println("There has been an update: " + theSlider.getValue());
+							mediaPlayer.setHue(theSlider.getValue());
+						}
+					}
+		        });
+		        hue.add(hueLabel);
+				hue.add(hueSlider);
+				vp.add(hue);
+				
+				vp.setBorder(new EmptyBorder(10, 10, 10, 10));
+				vf.add(vp);
+				vf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				vf.setSize(new Dimension(700, 300));
+				vf.setResizable(false);
+				vf.setVisible(true);
+				
 			}
+			
 		});
-
-		JMenuItem hue = new JMenuItem("Hue");
-		hue.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				mediaPlayer.setAdjustVideo(true);
-				JFrame input = new JFrame("Input");
-				String num = JOptionPane.showInputDialog(input, "Enter the brighness (0 - 300)", "", 1);
-				double hue = (Integer.parseInt(num));
-				mediaPlayer.setBrightness((float) hue);
-				mediaPlayer.setAdjustVideo(false);
-			}
-		});
-
-		JMenuItem saturation = new JMenuItem("Brightness");
-		saturation.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				mediaPlayer.setAdjustVideo(true);
-				JFrame input = new JFrame("Input");
-				String num = JOptionPane.showInputDialog(input, "Enter the brighness (0 - 300)", "", 1);
-				double saturation = (Integer.parseInt(num) / 100);
-				mediaPlayer.setBrightness((float) saturation);
-				mediaPlayer.setAdjustVideo(false);
-			}
-		});
-
-		JMenuItem gamma = new JMenuItem("Brightness");
-		gamma.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				mediaPlayer.setAdjustVideo(true);
-				JFrame input = new JFrame("Input");
-				String num = JOptionPane.showInputDialog(input, "Enter the brighness (0 - 100)", "", 1);
-				double gamma = (Integer.parseInt(num) / 10);
-				mediaPlayer.setBrightness((float) gamma);
-			}
-		});
-
-		JMenuItem speed = new JMenuItem("Playback Speed");
-		speed.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mediaPlayer.setAdjustVideo(true);
-				Object[] possibilities = { 0.5, 0.75, 1.0, 1.25, 1.50, 2.0 };
-				double speed = (double) JOptionPane.showInputDialog(null, "Select Speed", "ShowInputDialog",
-						JOptionPane.PLAIN_MESSAGE, UIManager.getIcon("OptionPane.errorIcon"), possibilities, "Numbers");
-				mediaPlayer.setRate((float) speed);
-			}
-
-		});
-
-		videoSettings.add(brightness);
-		videoSettings.add(speed);
+		videoSettings.add(videoEffects);
 		main.add(videoSettings);
 
 		JMenu audioSettings = new JMenu("Audio");
@@ -287,25 +243,71 @@ public class Media {
 					JLabel albumArt = new JLabel(new ImageIcon(art));
 					albumArtPanel.add(albumArt);
 
-					JPanel albumInfo = new JPanel();
-					
+					JPanel albumInfo = new JPanel(new GridLayout(10, 1));
+
+					JLabel titleL = new JLabel("Title: ");
+					String titleT = "N/A";
+					if (!String.valueOf(meta.getTitle()).equals("null")) {
+						titleT = meta.getTitle();
+					}
+					JTextField title = new JTextField(titleT, 10);
+					title.setEditable(false); // Will enable when I add meta information updating.
+					albumInfo.add(titleL);
+					albumInfo.add(title);
+
 					JLabel albumNameL = new JLabel("Album Title: ");
-					JTextField albumName = new JTextField(meta.getAlbum(), 10);
-					albumName.setEditable(false); //Will enable when I add meta information updating.
+					String albumNameT = "N/A";
+					if (!String.valueOf(meta.getAlbum()).equals("null")) {
+						albumNameT = meta.getAlbum();
+					}
+					JTextField albumName = new JTextField(albumNameT, 10);
+					albumName.setEditable(false); // Will enable when I add meta information updating.
 					albumInfo.add(albumNameL);
 					albumInfo.add(albumName);
-					
-					JLabel albumArtistL = new JLabel("Album Title: ");
-					JTextField albumArtist = new JTextField(meta.getAlbumArtist(), 10);
-					albumArtist.setEditable(false); //Will enable when I add meta information updating.
+
+					JLabel albumArtistL = new JLabel("Album Artist: ");
+					String albumArtistT = "N/A";
+					if (!String.valueOf(meta.getAlbumArtist()).equals("null")) {
+						albumArtistT = meta.getAlbumArtist();
+					}
+					JTextField albumArtist = new JTextField(albumArtistT, 10);
+					albumArtist.setEditable(false); // Will enable when I add meta information updating.
 					albumInfo.add(albumArtistL);
 					albumInfo.add(albumArtist);
-					
-					JLabel trackNumL = new JLabel("Album Title: ");
-					JTextField trackNum = new JTextField(meta.getDiscNumber(), 10);
-					trackNum.setEditable(false); //Will enable when I add meta information updating.
+
+					JLabel trackNumL = new JLabel("Track Number / Total Number of Tracks: ");
+					String trackNumT = "N/A";
+					if (String.valueOf(meta.getTrackNumber()).equals("null")
+							&& !String.valueOf(meta.getTrackTotal()).equals("null")) {
+						trackNumT = "N/A / " + meta.getTrackTotal();
+					} else if (String.valueOf(meta.getTrackTotal()).equals("null")
+							&& !(String.valueOf(meta.getTrackNumber()).equals("null"))) {
+						trackNumT = meta.getTrackNumber() + " / N/A";
+					} else if (!(String.valueOf(meta.getTrackNumber()).equals("null")
+							&& String.valueOf(meta.getTrackTotal()).equals("null"))) {
+						trackNumT = "" + meta.getTrackNumber() + "/" + meta.getTrackTotal();
+					}
+					JTextField trackNum = new JTextField(trackNumT, 10);
+					trackNum.setEditable(false); // Will enable when I add meta information updating.
 					albumInfo.add(trackNumL);
 					albumInfo.add(trackNum);
+
+					JLabel diskL = new JLabel("Disk Number / Total Number of Disks");
+					String diskT = "N/A";
+					if (String.valueOf(meta.getDiscNumber()).equals("null")
+							&& !String.valueOf(meta.getDiscTotal()).equals("null")) {
+						diskT = "N/A / " + meta.getDiscTotal();
+					} else if (String.valueOf(meta.getDiscTotal()).equals("null")
+							&& !String.valueOf(meta.getDiscNumber()).equals("null")) {
+						diskT = meta.getDiscNumber() + "/ N/A";
+					} else if (!(String.valueOf(meta.getDiscTotal()).equals("null")
+							&& String.valueOf(meta.getDiscTotal()).equals("null"))) {
+						diskT = "" + meta.getDiscNumber() + "/" + meta.getDiscTotal();
+					}
+					JTextField disk = new JTextField(diskT, 10);
+					disk.setEditable(false); // Will enable when I add meta information updating.
+					albumInfo.add(diskL);
+					albumInfo.add(disk);
 
 					bigPanel.add(albumArtPanel);
 					bigPanel.add(albumInfo);
@@ -313,7 +315,7 @@ public class Media {
 					i.add(bigPanel);
 
 					i.setSize(300, 400);
-					i.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					i.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 					i.setLocation(dim.width / 2 - i.getSize().width / 2, dim.height / 2 - i.getSize().height / 2);
 					i.setResizable(false);
 					i.setVisible(true);
@@ -357,9 +359,7 @@ public class Media {
 					}
 				}
 
-				JFrame parent = new JFrame();
-				JOptionPane optionPane = new JOptionPane();
-				JPanel panel = new JPanel(new GridLayout(0, 11));
+				JPanel eqpanel = new JPanel(new GridLayout(0, 11));
 
 				JPanel preampPanel = new JPanel(new BorderLayout());
 				preampPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -383,7 +383,7 @@ public class Media {
 				preampPanel.add(preampLabel, BorderLayout.PAGE_START);
 				preampPanel.add(preamp, BorderLayout.CENTER);
 				preampPanel.add(preampText, BorderLayout.PAGE_END);
-				panel.add(preampPanel);
+				eqpanel.add(preampPanel);
 
 				JPanel eq1Panel = new JPanel(new BorderLayout());
 				eq1Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -407,7 +407,7 @@ public class Media {
 				eq1Panel.add(eq1Label, BorderLayout.PAGE_START);
 				eq1Panel.add(eq1, BorderLayout.CENTER);
 				eq1Panel.add(eq1Text, BorderLayout.PAGE_END);
-				panel.add(eq1Panel);
+				eqpanel.add(eq1Panel);
 
 				JPanel eq2Panel = new JPanel(new BorderLayout());
 				eq2Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -431,7 +431,7 @@ public class Media {
 				eq2Panel.add(eq2Label, BorderLayout.PAGE_START);
 				eq2Panel.add(eq2, BorderLayout.CENTER);
 				eq2Panel.add(eq2Text, BorderLayout.PAGE_END);
-				panel.add(eq2Panel);
+				eqpanel.add(eq2Panel);
 
 				JPanel eq3Panel = new JPanel(new BorderLayout());
 				eq3Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -455,7 +455,7 @@ public class Media {
 				eq3Panel.add(eq3Label, BorderLayout.PAGE_START);
 				eq3Panel.add(eq3, BorderLayout.CENTER);
 				eq3Panel.add(eq3Text, BorderLayout.PAGE_END);
-				panel.add(eq3Panel);
+				eqpanel.add(eq3Panel);
 
 				JPanel eq4Panel = new JPanel(new BorderLayout());
 				eq4Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -479,7 +479,7 @@ public class Media {
 				eq4Panel.add(eq4Label, BorderLayout.PAGE_START);
 				eq4Panel.add(eq4, BorderLayout.CENTER);
 				eq4Panel.add(eq4Text, BorderLayout.PAGE_END);
-				panel.add(eq4Panel);
+				eqpanel.add(eq4Panel);
 
 				JPanel eq5Panel = new JPanel(new BorderLayout());
 				eq5Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -503,7 +503,7 @@ public class Media {
 				eq5Panel.add(eq5Label, BorderLayout.PAGE_START);
 				eq5Panel.add(eq5, BorderLayout.CENTER);
 				eq5Panel.add(eq5Text, BorderLayout.PAGE_END);
-				panel.add(eq5Panel);
+				eqpanel.add(eq5Panel);
 
 				JPanel eq6Panel = new JPanel(new BorderLayout());
 				eq6Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -527,7 +527,7 @@ public class Media {
 				eq6Panel.add(eq6Label, BorderLayout.PAGE_START);
 				eq6Panel.add(eq6, BorderLayout.CENTER);
 				eq6Panel.add(eq6Text, BorderLayout.PAGE_END);
-				panel.add(eq6Panel);
+				eqpanel.add(eq6Panel);
 
 				JPanel eq7Panel = new JPanel(new BorderLayout());
 				eq7Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -551,7 +551,7 @@ public class Media {
 				eq7Panel.add(eq7Label, BorderLayout.PAGE_START);
 				eq7Panel.add(eq7, BorderLayout.CENTER);
 				eq7Panel.add(eq7Text, BorderLayout.PAGE_END);
-				panel.add(eq7Panel);
+				eqpanel.add(eq7Panel);
 
 				JPanel eq8Panel = new JPanel(new BorderLayout());
 				eq8Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -575,7 +575,7 @@ public class Media {
 				eq8Panel.add(eq8Label, BorderLayout.PAGE_START);
 				eq8Panel.add(eq8, BorderLayout.CENTER);
 				eq8Panel.add(eq8Text, BorderLayout.PAGE_END);
-				panel.add(eq8Panel);
+				eqpanel.add(eq8Panel);
 
 				JPanel eq9Panel = new JPanel(new BorderLayout());
 				eq9Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -599,7 +599,7 @@ public class Media {
 				eq9Panel.add(eq9Label, BorderLayout.PAGE_START);
 				eq9Panel.add(eq9, BorderLayout.CENTER);
 				eq9Panel.add(eq9Text, BorderLayout.PAGE_END);
-				panel.add(eq9Panel);
+				eqpanel.add(eq9Panel);
 
 				JPanel eq10Panel = new JPanel(new BorderLayout());
 				eq10Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -623,14 +623,15 @@ public class Media {
 				eq10Panel.add(eq10Label, BorderLayout.PAGE_START);
 				eq10Panel.add(eq10, BorderLayout.CENTER);
 				eq10Panel.add(eq10Text, BorderLayout.PAGE_END);
-				panel.add(eq10Panel);
+				eqpanel.add(eq10Panel);
 
-				optionPane.setMessage(panel);
-
-				optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-				optionPane.setOptionType(JOptionPane.OK_CANCEL_OPTION);
-				JDialog dialog = optionPane.createDialog(parent, "Equalizer");
-				dialog.setVisible(true);
+				JFrame frameEQ = new JFrame("Equalizer");
+				eqpanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+				frameEQ.add(eqpanel);
+				frameEQ.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				frameEQ.setSize(new Dimension(800, 400));
+				frameEQ.setResizable(false);
+				frameEQ.setVisible(true);
 
 			}
 

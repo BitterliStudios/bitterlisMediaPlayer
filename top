@@ -1,0 +1,233 @@
+[33mcommit b9eceeb2c26867c0e0ccc1026fdb6f1c4947a7c9[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: BuildTools <unconfigured@null.spigotmc.org>
+Date:   Thu Jan 30 12:15:41 2020 -0500
+
+    More updates to audio meta, not done
+
+[1mdiff --git a/bin/Media$1.class b/bin/Media$1.class[m
+[1mindex 6c7bdfe..1341909 100644[m
+Binary files a/bin/Media$1.class and b/bin/Media$1.class differ
+[1mdiff --git a/bin/Media$10.class b/bin/Media$10.class[m
+[1mindex ccca23e..8cc8f79 100644[m
+Binary files a/bin/Media$10.class and b/bin/Media$10.class differ
+[1mdiff --git a/bin/Media$11.class b/bin/Media$11.class[m
+[1mindex 57755ef..ecaf11c 100644[m
+Binary files a/bin/Media$11.class and b/bin/Media$11.class differ
+[1mdiff --git a/bin/Media$12.class b/bin/Media$12.class[m
+[1mindex 970c24d..0908e88 100644[m
+Binary files a/bin/Media$12.class and b/bin/Media$12.class differ
+[1mdiff --git a/bin/Media$13.class b/bin/Media$13.class[m
+[1mindex cb21271..8a931d1 100644[m
+Binary files a/bin/Media$13.class and b/bin/Media$13.class differ
+[1mdiff --git a/bin/Media$14.class b/bin/Media$14.class[m
+[1mindex 224819d..6968992 100644[m
+Binary files a/bin/Media$14.class and b/bin/Media$14.class differ
+[1mdiff --git a/bin/Media$15.class b/bin/Media$15.class[m
+[1mindex aefa3fd..7a25b68 100644[m
+Binary files a/bin/Media$15.class and b/bin/Media$15.class differ
+[1mdiff --git a/bin/Media$16.class b/bin/Media$16.class[m
+[1mindex 7195755..ca767d5 100644[m
+Binary files a/bin/Media$16.class and b/bin/Media$16.class differ
+[1mdiff --git a/bin/Media$17.class b/bin/Media$17.class[m
+[1mindex 915f401..8479dd0 100644[m
+Binary files a/bin/Media$17.class and b/bin/Media$17.class differ
+[1mdiff --git a/bin/Media$18.class b/bin/Media$18.class[m
+[1mindex d649ae8..94b63f6 100644[m
+Binary files a/bin/Media$18.class and b/bin/Media$18.class differ
+[1mdiff --git a/bin/Media$2.class b/bin/Media$2.class[m
+[1mindex d6d5db5..4d2d5f6 100644[m
+Binary files a/bin/Media$2.class and b/bin/Media$2.class differ
+[1mdiff --git a/bin/Media$3.class b/bin/Media$3.class[m
+[1mindex bd4e54f..9fd741b 100644[m
+Binary files a/bin/Media$3.class and b/bin/Media$3.class differ
+[1mdiff --git a/bin/Media$4.class b/bin/Media$4.class[m
+[1mindex ef05697..57464f6 100644[m
+Binary files a/bin/Media$4.class and b/bin/Media$4.class differ
+[1mdiff --git a/bin/Media$5.class b/bin/Media$5.class[m
+[1mindex d72a38c..2c98b3b 100644[m
+Binary files a/bin/Media$5.class and b/bin/Media$5.class differ
+[1mdiff --git a/bin/Media$6.class b/bin/Media$6.class[m
+[1mindex ad280a0..40eeb52 100644[m
+Binary files a/bin/Media$6.class and b/bin/Media$6.class differ
+[1mdiff --git a/bin/Media$7.class b/bin/Media$7.class[m
+[1mindex 4c2936b..a0af18e 100644[m
+Binary files a/bin/Media$7.class and b/bin/Media$7.class differ
+[1mdiff --git a/bin/Media$8.class b/bin/Media$8.class[m
+[1mindex a6b8d66..9615405 100644[m
+Binary files a/bin/Media$8.class and b/bin/Media$8.class differ
+[1mdiff --git a/bin/Media$9.class b/bin/Media$9.class[m
+[1mindex 9443909..2255df7 100644[m
+Binary files a/bin/Media$9.class and b/bin/Media$9.class differ
+[1mdiff --git a/bin/Media.class b/bin/Media.class[m
+[1mindex 01a2dd3..6033d5b 100644[m
+Binary files a/bin/Media.class and b/bin/Media.class differ
+[1mdiff --git a/bin/gui.class b/bin/gui.class[m
+[1mindex ce40c8a..a39b2cb 100644[m
+Binary files a/bin/gui.class and b/bin/gui.class differ
+[1mdiff --git a/logoTapes.png b/logoTapes.png[m
+[1mnew file mode 100644[m
+[1mindex 0000000..993fc6b[m
+Binary files /dev/null and b/logoTapes.png differ
+[1mdiff --git a/src/Media.java b/src/Media.java[m
+[1mindex 296d2f4..a8dc763 100644[m
+[1m--- a/src/Media.java[m
+[1m+++ b/src/Media.java[m
+[36m@@ -17,6 +17,9 @@[m [mimport java.awt.event.ActionEvent;[m
+ import java.awt.event.ActionListener;[m
+ import java.awt.event.MouseEvent;[m
+ import java.awt.event.MouseListener;[m
+[32m+[m[32mimport java.awt.geom.AffineTransform;[m
+[32m+[m[32mimport java.awt.image.AffineTransformOp;[m
+[32m+[m[32mimport java.awt.image.BufferedImage;[m
+ import java.io.File;[m
+ import java.io.IOException;[m
+ import java.net.MalformedURLException;[m
+[36m@@ -271,22 +274,52 @@[m [mpublic class Media {[m
+ [m
+ 			@Override[m
+ 			public void actionPerformed(ActionEvent e) {[m
+[31m-				MediaMetaData meta = mediaPlayer.getMediaMeta().asMediaMetaData();[m
+[31m-[m
+[31m-				JFrame i = new JFrame("Track Info");[m
+[31m-				i.getContentPane().setLayout(new FlowLayout());[m
+[31m-				JLabel albumNameL = new JLabel("Album Title: ");[m
+[31m-				JTextField albumName = new JTextField(meta.getAlbum(), 10);[m
+[31m-[m
+[31m-				JLabel albumArt = new JLabel(new ImageIcon(mediaPlayer.getMediaMeta().getArtwork()));[m
+[31m-				i.getContentPane().add(albumArt);[m
+[31m-[m
+[31m-				i.getContentPane().add(albumNameL);[m
+[31m-				i.getContentPane().add(albumName);[m
+[31m-				i.setSize(200, 200);[m
+[31m-				i.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);[m
+[31m-				i.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);[m
+[31m-				i.setVisible(true);[m
+[32m+[m				[32mif (isAudio()) {[m
+[32m+[m					[32mMediaMetaData meta = mediaPlayer.getMediaMeta().asMediaMetaData();[m
+[32m+[m
+[32m+[m					[32mJFrame i = new JFrame("Track Info");[m
+[32m+[m					[32mJPanel bigPanel = new JPanel();[m
+[32m+[m
+[32m+[m					[32mJPanel albumArtPanel = new JPanel();[m
+[32m+[m					[32mBufferedImage artB = mediaPlayer.getMediaMeta().getArtwork();[m
+[32m+[m					[32mImage art = artB;[m
+[32m+[m					[32mart = art.getScaledInstance(87, 87, 0);[m
+[32m+[m					[32mJLabel albumArt = new JLabel(new ImageIcon(art));[m
+[32m+[m					[32malbumArtPanel.add(albumArt);[m
+[32m+[m
+[32m+[m					[32mJPanel albumInfo = new JPanel();[m
+[32m+[m[41m					[m
+[32m+[m					[32mJLabel albumNameL = new JLabel("Album Title: ");[m
+[32m+[m					[32mJTextField albumName = new JTextField(meta.getAlbum(), 10);[m
+[32m+[m					[32malbumName.setEditable(false); //Will enable when I add meta information updating.[m
+[32m+[m					[32malbumInfo.add(albumNameL);[m
+[32m+[m					[32malbumInfo.add(albumName);[m
+[32m+[m[41m					[m
+[32m+[m					[32mJLabel albumArtistL = new JLabel("Album Title: ");[m
+[32m+[m					[32mJTextField albumArtist = new JTextField(meta.getAlbumArtist(), 10);[m
+[32m+[m					[32malbumArtist.setEditable(false); //Will enable when I add meta information updating.[m
+[32m+[m					[32malbumInfo.add(albumArtistL);[m
+[32m+[m					[32malbumInfo.add(albumArtist);[m
+[32m+[m[41m					[m
+[32m+[m					[32mJLabel trackNumL = new JLabel("Album Title: ");[m
+[32m+[m					[32mJTextField trackNum = new JTextField(meta.getDiscNumber(), 10);[m
+[32m+[m					[32mtrackNum.setEditable(false); //Will enable when I add meta information updating.[m
+[32m+[m					[32malbumInfo.add(trackNumL);[m
+[32m+[m					[32malbumInfo.add(trackNum);[m
+[32m+[m
+[32m+[m					[32mbigPanel.add(albumArtPanel);[m
+[32m+[m					[32mbigPanel.add(albumInfo);[m
+[32m+[m
+[32m+[m					[32mi.add(bigPanel);[m
+[32m+[m
+[32m+[m					[32mi.setSize(300, 400);[m
+[32m+[m					[32mi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);[m
+[32m+[m					[32mi.setLocation(dim.width / 2 - i.getSize().width / 2, dim.height / 2 - i.getSize().height / 2);[m
+[32m+[m					[32mi.setResizable(false);[m
+[32m+[m					[32mi.setVisible(true);[m
+[32m+[m				[32m} else {[m
+[32m+[m					[32mJOptionPane.showMessageDialog(null, "This is not an audio format.");[m
+[32m+[m				[32m}[m
+ 			}[m
+ [m
+ 		});[m
+[36m@@ -767,15 +800,57 @@[m [mpublic class Media {[m
+ 		mediaPlayer.getEqualizer().setPreamp(0);[m
+ 		c.setBackground(Color.black);[m
+ [m
+[32m+[m		[32m// Main logo (shown when stopped, no album art on audio).[m
+[32m+[m		[32m// The album art is displayed over the logo.[m
+[32m+[m		[32m// The timers are to delay the placement of each object.[m
+[32m+[m		[32m// The main logo to ensure it's drawn over the video object.[m
+[32m+[m		[32m// The album art to ensure the album art has loaded in (null pointer errors)[m
+[32m+[m
+[32m+[m		[32mActionListener drawLogo = new ActionListener() {[m
+[32m+[m			[32mpublic void actionPerformed(ActionEvent evt) {[m
+[32m+[m				[32mtry {[m
+[32m+[m					[32mBufferedImage before = ImageIO.read(new File("logoTapes.png"));[m
+[32m+[m					[32mint w = before.getWidth();[m
+[32m+[m					[32mint h = before.getHeight();[m
+[32m+[m					[32mBufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);[m
+[32m+[m					[32mAffineTransform at = new AffineTransform();[m
+[32m+[m					[32mat.scale(0.25, 0.25);[m
+[32m+[m					[32mAffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);[m
+[32m+[m					[32mafter = scaleOp.filter(before, after);[m
+[32m+[m					[32mint imgWidth = (after.getWidth()) / 8;[m
+[32m+[m					[32mint imgHeight = (after.getHeight()) / 8;[m
+[32m+[m
+[32m+[m					[32mc.getGraphics().drawImage(after, 444 - imgWidth, 250 - imgHeight, null);[m
+[32m+[m				[32m} catch (IOException e) {[m
+[32m+[m					[32me.printStackTrace();[m
+[32m+[m				[32m}[m
+[32m+[m			[32m}[m
+[32m+[m		[32m};[m
+[32m+[m
+[32m+[m		[32mTimer logoTimer = new Timer(100, drawLogo);[m
+[32m+[m		[32mlogoTimer.setRepeats(false);[m
+[32m+[m		[32mlogoTimer.start();[m
+[32m+[m
+ 		if (isAudio()) {[m
+[31m-			ActionListener taskPerformer = new ActionListener() {[m
+[32m+[m			[32mActionListener drawArt = new ActionListener() {[m
+ 				public void actionPerformed(ActionEvent evt) {[m
+[31m-					c.getGraphics().drawImage(mediaPlayer.getMediaMeta().getArtwork(), 0, 0, null);[m
+[32m+[m					[32mBufferedImage before = mediaPlayer.getMediaMeta().getArtwork();[m
+[32m+[m					[32mint w = before.getWidth();[m
+[32m+[m					[32mint h = before.getHeight();[m
+[32m+[m					[32mBufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);[m
+[32m+[m					[32mAffineTransform at = new AffineTransform();[m
+[32m+[m					[32mat.scale(0.5, 0.5);[m
+[32m+[m					[32mAffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);[m
+[32m+[m					[32mafter = scaleOp.filter(before, after);[m
+[32m+[m					[32mint imgWidth = (after.getWidth()) / 4;[m
+[32m+[m					[32mint imgHeight = (after.getHeight()) / 4;[m
+[32m+[m
+[32m+[m					[32mc.getGraphics().drawImage(after, 444 - imgWidth, 250 - imgHeight, null);[m
+ 				}[m
+ 			};[m
+[31m-			Timer timer = new Timer(100, taskPerformer);[m
+[31m-			timer.setRepeats(false);[m
+[31m-			timer.start();[m
+[32m+[m			[32mTimer artTimer = new Timer(1000, drawArt);[m
+[32m+[m			[32martTimer.setRepeats(false);[m
+[32m+[m			[32martTimer.start();[m
+ 		}[m
+ [m
+ 		ActionListener stopAction = new ActionListener() {[m
+[1mdiff --git a/src/gui.java b/src/gui.java[m
+[1mindex 0609711..8bdc053 100644[m
+[1m--- a/src/gui.java[m
+[1m+++ b/src/gui.java[m
+[36m@@ -89,7 +89,7 @@[m [mpublic class gui {[m
+ [m
+ 		getFile();[m
+ 		if (file == null) {[m
+[31m-			file = new File("test1.mp3");[m
+[32m+[m			[32mfile = new File("test2.mp3");[m
+ 		}[m
+ 		[m
+ 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");[m
+[1mdiff --git a/test2.mp3 b/test2.mp3[m
+[1mnew file mode 100644[m
+[1mindex 0000000..541fe80[m
+Binary files /dev/null and b/test2.mp3 differ
