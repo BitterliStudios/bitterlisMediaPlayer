@@ -214,7 +214,7 @@ public class Media {
 				bP.add(bS, BorderLayout.CENTER);
 				bP.add(bT, BorderLayout.PAGE_END);
 				veP.add(bP);
-				
+
 				JPanel cP = new JPanel(new BorderLayout());
 				cP.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel cL = new JLabel("Contrast");
@@ -240,7 +240,7 @@ public class Media {
 				cP.add(cS, BorderLayout.CENTER);
 				cP.add(cT, BorderLayout.PAGE_END);
 				veP.add(cP);
-				
+
 				JPanel hP = new JPanel(new BorderLayout());
 				hP.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel hL = new JLabel("Hue");
@@ -266,7 +266,7 @@ public class Media {
 				hP.add(hS, BorderLayout.CENTER);
 				hP.add(hT, BorderLayout.PAGE_END);
 				veP.add(hP);
-				
+
 				JPanel sP = new JPanel(new BorderLayout());
 				sP.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel sL = new JLabel("Saturation");
@@ -292,7 +292,7 @@ public class Media {
 				sP.add(sS, BorderLayout.CENTER);
 				sP.add(sT, BorderLayout.PAGE_END);
 				veP.add(sP);
-				
+
 				JPanel gP = new JPanel(new BorderLayout());
 				gP.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel gL = new JLabel("Gamma");
@@ -318,7 +318,7 @@ public class Media {
 				gP.add(gS, BorderLayout.CENTER);
 				gP.add(gT, BorderLayout.PAGE_END);
 				veP.add(gP);
-				
+
 				JPanel veT = new JPanel();
 				JCheckBox toggle = new JCheckBox("Enable");
 				toggle.setSelected(videoEffectToggle);
@@ -334,20 +334,20 @@ public class Media {
 					}
 				});
 				veT.add(toggle);
-				veT.setSize(600,20);
-				
+				veT.setSize(600, 20);
+
 				GridBagConstraints gbc = new GridBagConstraints();
-		        gbc.gridwidth = GridBagConstraints.REMAINDER;
-		        gbc.weightx = 1;
-		        gbc.fill = GridBagConstraints.HORIZONTAL;
-		        
+				gbc.gridwidth = GridBagConstraints.REMAINDER;
+				gbc.weightx = 1;
+				gbc.fill = GridBagConstraints.HORIZONTAL;
+
 				JFrame veF = new JFrame("Video Effects");
 				veF.setLayout(new GridBagLayout());
 				veP.setBorder(new EmptyBorder(10, 10, 10, 10));
 				veF.add(veT, gbc);
 				gbc.weighty = 2;
 				veF.add(veP, gbc);
-				
+
 				veF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				veF.setSize(new Dimension(600, 350));
 				veF.setResizable(false);
@@ -874,7 +874,7 @@ public class Media {
 
 		p1.setBounds(100, 900, 105, 200);
 		frame.add(p1, BorderLayout.SOUTH);
-		JButton playbutton = new JButton("Play");
+		JButton playbutton = new JButton();
 		Image playimg = null;
 		try {
 			playimg = ImageIO.read(new File("Play.gif"));
@@ -885,9 +885,10 @@ public class Media {
 		}
 		playbutton.setIcon(new ImageIcon(playimg));
 		playbutton.setBounds(50, 50, 150, 100);
+		playbutton.setBackground(Color.LIGHT_GRAY);
 		p1.add(playbutton);
 
-		JButton pausebutton = new JButton("Pause");
+		JButton pausebutton = new JButton();
 		Image pauseimg = null;
 		try {
 			pauseimg = ImageIO.read(new File("Pause.png"));
@@ -898,9 +899,10 @@ public class Media {
 		}
 		pausebutton.setIcon(new ImageIcon(pauseimg));
 		pausebutton.setBounds(80, 50, 150, 100);
+		pausebutton.setBackground(Color.LIGHT_GRAY);
 		p1.add(pausebutton);
 
-		JButton stopbutton = new JButton("Stop");
+		JButton stopbutton = new JButton();
 		Image stopimg = null;
 		try {
 			stopimg = ImageIO.read(new File("Stop.gif"));
@@ -911,9 +913,10 @@ public class Media {
 		}
 		stopbutton.setIcon(new ImageIcon(stopimg));
 		stopbutton.setBounds(80, 50, 150, 100);
+		stopbutton.setBackground(Color.LIGHT_GRAY);
 		p1.add(stopbutton);
 
-		JButton loopbutton = new JButton("Loop");
+		JButton loopbutton = new JButton();
 		Image loopimg = null;
 		try {
 			loopimg = ImageIO.read(new File("Loop.png"));
@@ -925,7 +928,23 @@ public class Media {
 		loopimg = loopimg.getScaledInstance(15, 15, 0);
 		loopbutton.setIcon(new ImageIcon(loopimg));
 		loopbutton.setBounds(80, 50, 150, 100);
+		loopbutton.setBackground(Color.LIGHT_GRAY);
 		p1.add(loopbutton);
+
+		JButton mutebutton = new JButton();
+		Image muteimg = null;
+		try {
+			muteimg = ImageIO.read(new File("Mute.png"));
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		muteimg = muteimg.getScaledInstance(15, 15, 0);
+		mutebutton.setIcon(new ImageIcon(muteimg));
+		mutebutton.setBounds(80, 50, 150, 100);
+		mutebutton.setBackground(Color.LIGHT_GRAY);
+		p1.add(mutebutton);
 
 		frame.setSize(904, 645);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1043,6 +1062,21 @@ public class Media {
 					mediaPlayer.setRepeat(false);
 				}
 			}
+		});
+		mutebutton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!mediaPlayer.isMute()) {
+					mediaPlayer.mute(true);
+					mutebutton.setBackground(Color.GRAY);
+				} else {
+					mediaPlayer.mute(false);
+					mutebutton.setBackground(Color.LIGHT_GRAY);
+				}
+
+			}
+
 		});
 	}
 
