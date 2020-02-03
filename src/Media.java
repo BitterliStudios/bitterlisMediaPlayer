@@ -925,7 +925,7 @@ public class Media {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		loopimg = loopimg.getScaledInstance(15, 15, 0);
+		loopimg = loopimg.getScaledInstance(18, 18, 0);
 		loopbutton.setIcon(new ImageIcon(loopimg));
 		loopbutton.setBounds(80, 50, 150, 100);
 		loopbutton.setBackground(Color.LIGHT_GRAY);
@@ -940,11 +940,46 @@ public class Media {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		muteimg = muteimg.getScaledInstance(15, 15, 0);
+		muteimg = muteimg.getScaledInstance(18, 18, 0);
 		mutebutton.setIcon(new ImageIcon(muteimg));
 		mutebutton.setBounds(80, 50, 150, 100);
 		mutebutton.setBackground(Color.LIGHT_GRAY);
 		p1.add(mutebutton);
+		
+		String vLabel = "N/A";
+		if (mediaPlayer.getVolume() < 100) {
+			if (mediaPlayer.getVolume() < 10) {
+				vLabel = "" + mediaPlayer.getVolume() + "%   ";
+			} else {
+				vLabel = "" + mediaPlayer.getVolume() + "%  ";
+			}
+		} else {
+			vLabel = "" + mediaPlayer.getVolume() + "%";
+		}
+		
+		JLabel volumePercent = new JLabel(vLabel);
+		JSlider volume = new JSlider(0, 200, mediaPlayer.getVolume());
+		volume.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent changeEvent) {
+				JSlider theSlider = (JSlider) changeEvent.getSource();
+				mediaPlayer.setVolume(theSlider.getValue());
+				String vLabel = "N/A";
+				if (theSlider.getValue() < 100) {
+					if (mediaPlayer.getVolume() < 10) {
+						vLabel = "" + mediaPlayer.getVolume() + "%   ";
+					} else {
+						vLabel = "" + mediaPlayer.getVolume() + "%  ";
+					};
+				} else {
+					vLabel = "" + mediaPlayer.getVolume() + "%";
+				}
+				volumePercent.setText(vLabel);
+			}
+		});
+		volume.setPreferredSize(new Dimension(70, 18));
+		p1.add(volume);
+		p1.add(volumePercent);
 
 		frame.setSize(904, 645);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1064,7 +1099,6 @@ public class Media {
 			}
 		});
 		mutebutton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (!mediaPlayer.isMute()) {
@@ -1074,9 +1108,7 @@ public class Media {
 					mediaPlayer.mute(false);
 					mutebutton.setBackground(Color.LIGHT_GRAY);
 				}
-
 			}
-
 		});
 	}
 
