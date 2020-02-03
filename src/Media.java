@@ -10,10 +10,14 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
@@ -26,6 +30,7 @@ import java.net.MalformedURLException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -37,13 +42,11 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.Timer;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import uk.co.caprica.vlcj.binding.LibVlcConst;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -58,8 +61,8 @@ public class Media {
 	private Equalizer eq;
 	private MediaPlayerFactory mediaPlayerFactory;
 	private Canvas c;
-
-	@SuppressWarnings("unused")
+	private Object[] videoEffectValues = new Object[6];
+	private boolean videoEffectToggle;
 
 	public Media(File f) {
 		file = f;
@@ -183,27 +186,26 @@ public class Media {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
-				mediaPlayer.setAdjustVideo(true);
 
 				JPanel veP = new JPanel(new GridLayout(0, 5));
 
 				JPanel bP = new JPanel(new BorderLayout());
 				bP.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel bL = new JLabel("Brightness");
-				JLabel bT = new JLabel("Currently: " + (int) (mediaPlayer.getBrightness() * 100));
-				int bInt = (int) ((double) mediaPlayer.getBrightness() * 100);
-				JSlider bS = new JSlider(JSlider.VERTICAL, 0, 200, bInt);
-				bS.setMajorTickSpacing(10);
+				JLabel bT = new JLabel("Currently: " + (int) (mediaPlayer.getBrightness() * 10));
+				int bInt = (int) ((double) mediaPlayer.getBrightness() * 10);
+				JSlider bS = new JSlider(JSlider.VERTICAL, 0, 20, bInt);
+				bS.setMajorTickSpacing(1);
 				bS.setPaintTicks(true);
 				bS.setPaintLabels(true);
 				ChangeListener bC = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							float bF = (float) theSlider.getValue() / 100;
+							float bF = (float) theSlider.getValue() / 10;
 							mediaPlayer.setBrightness(bF);
-							bT.setText("Currently: " + (int) (mediaPlayer.getBrightness() * 100));
+							bT.setText("Currently: " + (int) (mediaPlayer.getBrightness() * 10));
+							videoEffectValues[0] = bF;
 						}
 					}
 				};
@@ -216,19 +218,20 @@ public class Media {
 				JPanel cP = new JPanel(new BorderLayout());
 				cP.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel cL = new JLabel("Contrast");
-				JLabel cT = new JLabel("Currently: " + (int) (mediaPlayer.getBrightness() * 100));
-				int cInt = (int) ((double) mediaPlayer.getContrast() * 100);
-				JSlider cS = new JSlider(JSlider.VERTICAL, 0, 200, cInt);
-				cS.setMajorTickSpacing(10);
+				JLabel cT = new JLabel("Currently: " + (int) (mediaPlayer.getBrightness() * 10));
+				int cInt = (int) ((double) mediaPlayer.getContrast() * 10);
+				JSlider cS = new JSlider(JSlider.VERTICAL, 0, 20, cInt);
+				cS.setMajorTickSpacing(1);
 				cS.setPaintTicks(true);
 				cS.setPaintLabels(true);
 				ChangeListener cC = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							float cF = (float) theSlider.getValue() / 100;
+							float cF = (float) theSlider.getValue() / 10;
 							mediaPlayer.setContrast(cF);
-							cT.setText("Currently: " + (int) (mediaPlayer.getContrast() * 100));
+							cT.setText("Currently: " + (int) (mediaPlayer.getContrast() * 10));
+							videoEffectValues[1] = cF;
 						}
 					}
 				};
@@ -243,7 +246,7 @@ public class Media {
 				JLabel hL = new JLabel("Hue");
 				JLabel hT = new JLabel("Currently: " + (int) (mediaPlayer.getHue()) + "°");
 				int hInt = (int) (mediaPlayer.getHue());
-				JSlider hS = new JSlider(JSlider.VERTICAL, 0, 360, hInt);
+				JSlider hS = new JSlider(JSlider.VERTICAL, -180, 180, hInt);
 				hS.setMajorTickSpacing(45);
 				hS.setPaintTicks(true);
 				hS.setPaintLabels(true);
@@ -251,9 +254,10 @@ public class Media {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							int hF = theSlider.getValue();
+							int hF = theSlider.getValue() + 180;
 							mediaPlayer.setHue(hF);
-							hT.setText("Currently: " + (int) (mediaPlayer.getHue()));
+							hT.setText("Currently: " + (int) (mediaPlayer.getHue()) + "°");
+							videoEffectValues[2] = hF;
 						}
 					}
 				};
@@ -262,13 +266,91 @@ public class Media {
 				hP.add(hS, BorderLayout.CENTER);
 				hP.add(hT, BorderLayout.PAGE_END);
 				veP.add(hP);
-
+				
+				JPanel sP = new JPanel(new BorderLayout());
+				sP.setBorder(new EmptyBorder(10, 10, 10, 10));
+				JLabel sL = new JLabel("Saturation");
+				JLabel sT = new JLabel("Currently: " + (int) (mediaPlayer.getSaturation() * 10));
+				int sInt = (int) (mediaPlayer.getSaturation() * 10);
+				JSlider sS = new JSlider(JSlider.VERTICAL, 0, 30, sInt);
+				sS.setMajorTickSpacing(2);
+				sS.setPaintTicks(true);
+				sS.setPaintLabels(true);
+				ChangeListener sC = new ChangeListener() {
+					public void stateChanged(ChangeEvent changeEvent) {
+						JSlider theSlider = (JSlider) changeEvent.getSource();
+						if (!theSlider.getValueIsAdjusting()) {
+							float sF = (float) (theSlider.getValue() / 10.0);
+							mediaPlayer.setSaturation(sF);
+							sT.setText("Currently: " + (int) (mediaPlayer.getSaturation() * 10));
+							videoEffectValues[3] = sF;
+						}
+					}
+				};
+				sS.addChangeListener(sC);
+				sP.add(sL, BorderLayout.PAGE_START);
+				sP.add(sS, BorderLayout.CENTER);
+				sP.add(sT, BorderLayout.PAGE_END);
+				veP.add(sP);
+				
+				JPanel gP = new JPanel(new BorderLayout());
+				gP.setBorder(new EmptyBorder(10, 10, 10, 10));
+				JLabel gL = new JLabel("Gamma");
+				JLabel gT = new JLabel("Currently: " + (int) (mediaPlayer.getGamma() * 100));
+				int gInt = (int) (mediaPlayer.getGamma() * 100);
+				JSlider gS = new JSlider(JSlider.VERTICAL, 0, 100, gInt);
+				gS.setMajorTickSpacing(10);
+				gS.setPaintTicks(true);
+				gS.setPaintLabels(true);
+				ChangeListener gC = new ChangeListener() {
+					public void stateChanged(ChangeEvent changeEvent) {
+						JSlider theSlider = (JSlider) changeEvent.getSource();
+						if (!theSlider.getValueIsAdjusting()) {
+							float gF = (float) (theSlider.getValue() / 100.00);
+							mediaPlayer.setGamma(gF);
+							gT.setText("Currently: " + (int) (mediaPlayer.getGamma() * 100));
+							videoEffectValues[4] = gF;
+						}
+					}
+				};
+				gS.addChangeListener(gC);
+				gP.add(gL, BorderLayout.PAGE_START);
+				gP.add(gS, BorderLayout.CENTER);
+				gP.add(gT, BorderLayout.PAGE_END);
+				veP.add(gP);
+				
+				JPanel veT = new JPanel();
+				JCheckBox toggle = new JCheckBox("Enable");
+				toggle.setSelected(videoEffectToggle);
+				toggle.addItemListener(new ItemListener() {
+					public void itemStateChanged(ItemEvent e) {
+						if (e.getStateChange() == 1) {
+							mediaPlayer.setAdjustVideo(true);
+							videoEffectToggle = true;
+						} else {
+							mediaPlayer.setAdjustVideo(false);
+							videoEffectToggle = false;
+						}
+					}
+				});
+				veT.add(toggle);
+				veT.setSize(600,20);
+				
+				GridBagConstraints gbc = new GridBagConstraints();
+		        gbc.gridwidth = GridBagConstraints.REMAINDER;
+		        gbc.weightx = 1;
+		        gbc.fill = GridBagConstraints.HORIZONTAL;
+		        
 				JFrame veF = new JFrame("Video Effects");
+				veF.setLayout(new GridBagLayout());
 				veP.setBorder(new EmptyBorder(10, 10, 10, 10));
-				veF.add(veP);
+				veF.add(veT, gbc);
+				gbc.weighty = 2;
+				veF.add(veP, gbc);
+				
 				veF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				veF.setSize(new Dimension(600, 400));
-				//veF.setResizable(false);
+				veF.setSize(new Dimension(600, 350));
+				veF.setResizable(false);
 				veF.setVisible(true);
 			}
 
