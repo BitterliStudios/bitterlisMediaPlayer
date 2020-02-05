@@ -43,22 +43,22 @@ public class gui {
 	private void getFile() {
 		JFileChooser j = new JFileChooser();
 		j.setFileFilter(new FileNameExtensionFilter("Media Files",
-				//audio formats
-				"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob", "ape", "au", "awb",
-				"caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", /*"mid",*/ "mka", "mlp", "mod", "mp1", "mp2", "mp3",
-				"mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus", "qcp", "ra", "rmi", "s3m", "sid", "spx", "tak", "thd",
-				"tta", "voc", "vqf", "w64", "wav", "wma", "wv", "xa", "xm",
-				//video formats
-				"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo", "f4v", "flv", "gvi",
-				"gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2", "mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg1",
-				"mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv", "mxf", "mxg", "nsv", "nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec",
-				"rm", "rmvb", "rpl", "thp", "tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"
-				));
+				// audio formats
+				"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob", "ape",
+				"au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", /* "mid", */ "mka", "mlp",
+				"mod", "mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus", "qcp", "ra",
+				"rmi", "s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma", "wv", "xa", "xm",
+				// video formats
+				"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo", "f4v",
+				"flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2", "mp2v", "mp4",
+				"mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv", "mxf", "mxg", "nsv",
+				"nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp", "tod", "ts", "tts", "txd",
+				"vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
 		j.showOpenDialog(null);
 		file = j.getSelectedFile();
 	}
-	
-	//Will use later
+
+	// Will use later
 	@SuppressWarnings("unused")
 	private String fileType() {
 		String fileName = file.getName();
@@ -78,7 +78,8 @@ public class gui {
 		Image logo = ImageIO.read(new File("namelogo.png"));
 		logo = logo.getScaledInstance(700, 145, 0);
 		welcomeComponents.add(new JLabel(new ImageIcon(logo)));
-		String text = "<html><center><p><br><br>Bitterli's Media Player<br>Version " + new BAbout().version() + "<br><br>Loading...</p></center></html>";
+		String text = "<html><center><p><br><br>Bitterli's Media Player<br>Version " + new BAbout().version()
+				+ "<br><br>Loading...</p></center></html>";
 		welcomeComponents.add(new JLabel(String.format(text)));
 
 		welcome.add(welcomeComponents);
@@ -91,7 +92,7 @@ public class gui {
 		if (file == null) {
 			file = new File("test2.mp4");
 		}
-		
+
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		SwingUtilities.invokeLater(() -> {
@@ -103,7 +104,7 @@ public class gui {
 				e.printStackTrace();
 			}
 		});
-		
+
 		welcome.dispose();
 	}
 }

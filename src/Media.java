@@ -294,8 +294,8 @@ public class Media {
 				sP.add(sS, BorderLayout.CENTER);
 				sP.add(sT, BorderLayout.PAGE_END);
 				veP.add(sP);
-				
-				//gamma is not working properly
+
+				// gamma is not working properly
 
 				JPanel gP = new JPanel(new BorderLayout());
 				gP.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -321,7 +321,7 @@ public class Media {
 				gP.add(gL, BorderLayout.PAGE_START);
 				gP.add(gS, BorderLayout.CENTER);
 				gP.add(gT, BorderLayout.PAGE_END);
-				//veP.add(gP);
+				// veP.add(gP);
 
 				JPanel veT = new JPanel();
 				JCheckBox toggle = new JCheckBox("Enable");
@@ -485,7 +485,7 @@ public class Media {
 
 		JMenuItem equalizer = new JMenuItem("Equalizer");
 		equalizer.addActionListener(new ActionListener() {
-			
+
 			private JSlider preamp;
 			private JSlider eq1;
 			private JSlider eq2;
@@ -776,7 +776,7 @@ public class Media {
 				eq10Panel.add(eq10Text, BorderLayout.PAGE_END);
 				eqpanel.add(eq10Panel);
 				eqpanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-				
+
 				JPanel top = new JPanel();
 				JCheckBox toggle = new JCheckBox("Enable");
 				toggle.setSelected(videoEffectToggle);
@@ -791,26 +791,9 @@ public class Media {
 						}
 					}
 				});
-				String[] presets = new String[] {
-						"Flat",
-						"Classical",
-						"Club",
-						"Dance",
-						"Full bass",
-						"Full bass and treble",
-						"Full treble",
-						"Headphones",
-						"Large Hall",
-						"Live",
-						"Party",
-						"Pop",
-						"Reggae",
-						"Rock",
-						"Ska",
-						"Soft",
-						"Soft rock",
-						"Techno",
-				};
+				String[] presets = new String[] { "Flat", "Classical", "Club", "Dance", "Full bass",
+						"Full bass and treble", "Full treble", "Headphones", "Large Hall", "Live", "Party", "Pop",
+						"Reggae", "Rock", "Ska", "Soft", "Soft rock", "Techno", };
 
 				JComboBox<String> presetSel = new JComboBox<>(presets);
 				presetSel.addActionListener(new ActionListener() {
@@ -841,11 +824,11 @@ public class Media {
 						eq9.setValue((int) Math.round(values[9]));
 						eq10.setValue((int) Math.round(values[10]));
 					}
-					
+
 				});
 				top.add(presetSel);
-				
-				//top.add(toggle);
+
+				// top.add(toggle);
 				top.setSize(600, 20);
 
 				GridBagConstraints gbc = new GridBagConstraints();
@@ -853,7 +836,6 @@ public class Media {
 				gbc.weightx = 1;
 				gbc.fill = GridBagConstraints.HORIZONTAL;
 
-				
 				JFrame frameEQ = new JFrame("Equalizer");
 				frameEQ.setLayout(new GridBagLayout());
 				frameEQ.add(top, gbc);
@@ -1041,7 +1023,7 @@ public class Media {
 		mutebutton.setBounds(80, 50, 150, 100);
 		mutebutton.setBackground(Color.LIGHT_GRAY);
 		p1.add(mutebutton);
-		
+
 		String vLabel = "N/A";
 		if (mediaPlayer.getVolume() < 100) {
 			if (mediaPlayer.getVolume() < 10) {
@@ -1052,7 +1034,7 @@ public class Media {
 		} else {
 			vLabel = "" + mediaPlayer.getVolume() + "%";
 		}
-		
+
 		JLabel volumePercent = new JLabel(vLabel);
 		JSlider volume = new JSlider(0, 200, mediaPlayer.getVolume());
 		volume.addChangeListener(new ChangeListener() {
@@ -1066,7 +1048,8 @@ public class Media {
 						vLabel = "" + mediaPlayer.getVolume() + "%   ";
 					} else {
 						vLabel = "" + mediaPlayer.getVolume() + "%  ";
-					};
+					}
+					;
 				} else {
 					vLabel = "" + mediaPlayer.getVolume() + "%";
 				}
