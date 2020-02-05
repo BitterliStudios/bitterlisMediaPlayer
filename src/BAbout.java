@@ -8,7 +8,7 @@ public class BAbout {
 
 	public void getAbout() {
 		String name = "Bitterli's Media Player in Java";
-		String version = "Version B_0.8.0 - Audio Update";
+		String version = "Version " + version() + " - Audio Update";
 		String author = "Bitterli";
 		String changes = "Changelog:" + "\n(Jan 30 2020) Added meta information for audio files."
 				+ "\n(Jan 28 2020) Fixed media looping."
@@ -26,6 +26,10 @@ public class BAbout {
 		JOptionPane.showMessageDialog(null,
 				name + "\n" + version + "\n" + "Written by: " + author + "\n\n" + changes + "\n\n" + copyright, "About",
 				1);
+	}
+	
+	public String version() {
+		return "B_0.8.0";
 	}
 
 }

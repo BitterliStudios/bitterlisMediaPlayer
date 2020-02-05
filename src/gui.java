@@ -78,7 +78,7 @@ public class gui {
 		Image logo = ImageIO.read(new File("namelogo.png"));
 		logo = logo.getScaledInstance(700, 145, 0);
 		welcomeComponents.add(new JLabel(new ImageIcon(logo)));
-		String text = "<html><center><p><br><br>Bitterli's Media Player<br>in Java using vlcj.<br><br>Loading...</p></center></html>";
+		String text = "<html><center><p><br><br>Bitterli's Media Player<br>Version " + new BAbout().version() + "<br><br>Loading...</p></center></html>";
 		welcomeComponents.add(new JLabel(String.format(text)));
 
 		welcome.add(welcomeComponents);

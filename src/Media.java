@@ -31,6 +31,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -292,13 +293,15 @@ public class Media {
 				sP.add(sS, BorderLayout.CENTER);
 				sP.add(sT, BorderLayout.PAGE_END);
 				veP.add(sP);
+				
+				//gamma is not working properly
 
 				JPanel gP = new JPanel(new BorderLayout());
 				gP.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel gL = new JLabel("Gamma");
 				JLabel gT = new JLabel("Currently: " + (int) (mediaPlayer.getGamma() * 100));
 				int gInt = (int) (mediaPlayer.getGamma() * 100);
-				JSlider gS = new JSlider(JSlider.VERTICAL, 0, 100, gInt);
+				JSlider gS = new JSlider(JSlider.VERTICAL, 0, 1000, gInt);
 				gS.setMajorTickSpacing(10);
 				gS.setPaintTicks(true);
 				gS.setPaintLabels(true);
@@ -306,7 +309,7 @@ public class Media {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							float gF = (float) (theSlider.getValue() / 100.00);
+							float gF = (float) (theSlider.getValue() / 100.0);
 							mediaPlayer.setGamma(gF);
 							gT.setText("Currently: " + (int) (mediaPlayer.getGamma() * 100));
 							videoEffectValues[4] = gF;
@@ -317,7 +320,7 @@ public class Media {
 				gP.add(gL, BorderLayout.PAGE_START);
 				gP.add(gS, BorderLayout.CENTER);
 				gP.add(gT, BorderLayout.PAGE_END);
-				veP.add(gP);
+				//veP.add(gP);
 
 				JPanel veT = new JPanel();
 				JCheckBox toggle = new JCheckBox("Enable");
@@ -759,9 +762,38 @@ public class Media {
 				eq10Panel.add(eq10, BorderLayout.CENTER);
 				eq10Panel.add(eq10Text, BorderLayout.PAGE_END);
 				eqpanel.add(eq10Panel);
-
-				JFrame frameEQ = new JFrame("Equalizer");
 				eqpanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+				
+				JPanel top = new JPanel();
+				JCheckBox toggle = new JCheckBox("Enable");
+				toggle.setSelected(videoEffectToggle);
+				toggle.addItemListener(new ItemListener() {
+					public void itemStateChanged(ItemEvent e) {
+						if (e.getStateChange() == 1) {
+							mediaPlayer.setAdjustVideo(true);
+							videoEffectToggle = true;
+						} else {
+							mediaPlayer.setAdjustVideo(false);
+							videoEffectToggle = false;
+						}
+					}
+				});
+				String[] presets = new String[] {"Preset 1" , "Preset 2"};
+
+				JComboBox<String> bookList = new JComboBox<>(presets);
+				//top.add(toggle);
+				top.setSize(600, 20);
+
+				GridBagConstraints gbc = new GridBagConstraints();
+				gbc.gridwidth = GridBagConstraints.REMAINDER;
+				gbc.weightx = 1;
+				gbc.fill = GridBagConstraints.HORIZONTAL;
+
+				
+				JFrame frameEQ = new JFrame("Equalizer");
+				frameEQ.setLayout(new GridBagLayout());
+				frameEQ.add(top, gbc);
+				gbc.weighty = 2;
 				frameEQ.add(eqpanel);
 				frameEQ.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				frameEQ.setSize(new Dimension(800, 400));
