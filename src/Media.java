@@ -26,6 +26,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -484,6 +485,18 @@ public class Media {
 
 		JMenuItem equalizer = new JMenuItem("Equalizer");
 		equalizer.addActionListener(new ActionListener() {
+			
+			private JSlider preamp;
+			private JSlider eq1;
+			private JSlider eq2;
+			private JSlider eq3;
+			private JSlider eq4;
+			private JSlider eq5;
+			private JSlider eq6;
+			private JSlider eq7;
+			private JSlider eq8;
+			private JSlider eq9;
+			private JSlider eq10;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -503,7 +516,7 @@ public class Media {
 				preampPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel preampLabel = new JLabel("Preamp");
 				JLabel preampText = new JLabel("" + values[0] + "dB");
-				JSlider preamp = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[0]));
+				preamp = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[0]));
 				preamp.setMajorTickSpacing(2);
 				preamp.setPaintTicks(true);
 				preamp.setPaintLabels(true);
@@ -527,7 +540,7 @@ public class Media {
 				eq1Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq1Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(0) + "");
 				JLabel eq1Text = new JLabel("" + values[1] + "dB");
-				JSlider eq1 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[1]));
+				eq1 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[1]));
 				eq1.setMajorTickSpacing(2);
 				eq1.setPaintTicks(true);
 				eq1.setPaintLabels(true);
@@ -551,7 +564,7 @@ public class Media {
 				eq2Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq2Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(1) + "");
 				JLabel eq2Text = new JLabel("" + values[1] + "dB");
-				JSlider eq2 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[2]));
+				eq2 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[2]));
 				eq2.setMajorTickSpacing(2);
 				eq2.setPaintTicks(true);
 				eq2.setPaintLabels(true);
@@ -575,7 +588,7 @@ public class Media {
 				eq3Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq3Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(2) + "");
 				JLabel eq3Text = new JLabel("" + values[3] + "dB");
-				JSlider eq3 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[3]));
+				eq3 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[3]));
 				eq3.setMajorTickSpacing(2);
 				eq3.setPaintTicks(true);
 				eq3.setPaintLabels(true);
@@ -599,7 +612,7 @@ public class Media {
 				eq4Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq4Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(3) + "");
 				JLabel eq4Text = new JLabel("" + values[4] + "dB");
-				JSlider eq4 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[4]));
+				eq4 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[4]));
 				eq4.setMajorTickSpacing(2);
 				eq4.setPaintTicks(true);
 				eq4.setPaintLabels(true);
@@ -623,7 +636,7 @@ public class Media {
 				eq5Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq5Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(4) + "");
 				JLabel eq5Text = new JLabel("" + values[5] + "dB");
-				JSlider eq5 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[5]));
+				eq5 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[5]));
 				eq5.setMajorTickSpacing(2);
 				eq5.setPaintTicks(true);
 				eq5.setPaintLabels(true);
@@ -647,7 +660,7 @@ public class Media {
 				eq6Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq6Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(5) + "");
 				JLabel eq6Text = new JLabel("" + values[6] + "dB");
-				JSlider eq6 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[6]));
+				eq6 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[6]));
 				eq6.setMajorTickSpacing(2);
 				eq6.setPaintTicks(true);
 				eq6.setPaintLabels(true);
@@ -671,7 +684,7 @@ public class Media {
 				eq7Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq7Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(6) + "");
 				JLabel eq7Text = new JLabel("" + values[7] + "dB");
-				JSlider eq7 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[7]));
+				eq7 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[7]));
 				eq7.setMajorTickSpacing(2);
 				eq7.setPaintTicks(true);
 				eq7.setPaintLabels(true);
@@ -695,7 +708,7 @@ public class Media {
 				eq8Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq8Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(7) + "");
 				JLabel eq8Text = new JLabel("" + values[8] + "dB");
-				JSlider eq8 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[8]));
+				eq8 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[8]));
 				eq8.setMajorTickSpacing(2);
 				eq8.setPaintTicks(true);
 				eq8.setPaintLabels(true);
@@ -719,7 +732,7 @@ public class Media {
 				eq9Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq9Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(8) + "");
 				JLabel eq9Text = new JLabel("" + values[9] + "dB");
-				JSlider eq9 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[9]));
+				eq9 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[9]));
 				eq9.setMajorTickSpacing(2);
 				eq9.setPaintTicks(true);
 				eq9.setPaintLabels(true);
@@ -743,7 +756,7 @@ public class Media {
 				eq10Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq10Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(9) + "");
 				JLabel eq10Text = new JLabel("" + values[10] + "dB");
-				JSlider eq10 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[10]));
+				eq10 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[10]));
 				eq10.setMajorTickSpacing(2);
 				eq10.setPaintTicks(true);
 				eq10.setPaintLabels(true);
@@ -778,9 +791,60 @@ public class Media {
 						}
 					}
 				});
-				String[] presets = new String[] {"Preset 1" , "Preset 2"};
+				String[] presets = new String[] {
+						"Flat",
+						"Classical",
+						"Club",
+						"Dance",
+						"Full bass",
+						"Full bass and treble",
+						"Full treble",
+						"Headphones",
+						"Large Hall",
+						"Live",
+						"Party",
+						"Pop",
+						"Reggae",
+						"Rock",
+						"Ska",
+						"Soft",
+						"Soft rock",
+						"Techno",
+				};
 
-				JComboBox<String> bookList = new JComboBox<>(presets);
+				JComboBox<String> presetSel = new JComboBox<>(presets);
+				presetSel.addActionListener(new ActionListener() {
+
+					@SuppressWarnings("unchecked")
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						Map<String, Equalizer> presets = mediaPlayerFactory.getAllPresetEqualizers();
+						Equalizer set = presets.get(((JComboBox<String>) arg0.getSource()).getSelectedItem());
+						mediaPlayer.setEqualizer(set);
+						values[0] = mediaPlayer.getEqualizer().getPreamp();
+						for (int i = 1; i < 11; i++) {
+							if (mediaPlayer.getEqualizer().getAmp(i - 1) != 0.0f) {
+								values[i] = mediaPlayer.getEqualizer().getAmp(i - 1);
+							} else {
+								values[i] = 0.0f;
+							}
+						}
+						preamp.setValue((int) Math.round(values[0]));
+						eq1.setValue((int) Math.round(values[1]));
+						eq2.setValue((int) Math.round(values[2]));
+						eq3.setValue((int) Math.round(values[3]));
+						eq4.setValue((int) Math.round(values[4]));
+						eq5.setValue((int) Math.round(values[5]));
+						eq6.setValue((int) Math.round(values[6]));
+						eq7.setValue((int) Math.round(values[7]));
+						eq8.setValue((int) Math.round(values[8]));
+						eq9.setValue((int) Math.round(values[9]));
+						eq10.setValue((int) Math.round(values[10]));
+					}
+					
+				});
+				top.add(presetSel);
+				
 				//top.add(toggle);
 				top.setSize(600, 20);
 
