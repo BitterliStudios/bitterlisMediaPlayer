@@ -7,7 +7,7 @@ public class test {
 
 	public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		gui media = new gui();
-		media.start();
+		media.demo();
 	}
 
 }
