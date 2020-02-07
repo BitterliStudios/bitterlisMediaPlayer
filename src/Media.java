@@ -66,6 +66,8 @@ public class Media {
 	private Object[] videoEffectValues = new Object[6];
 	private boolean videoEffectToggle;
 
+	private eqPresetManager presets;
+
 	public Media(File f) {
 		file = f;
 		equalizer();
@@ -791,18 +793,19 @@ public class Media {
 						}
 					}
 				});
-				String[] presets = new String[] { "Flat", "Classical", "Club", "Dance", "Full bass",
-						"Full bass and treble", "Full treble", "Headphones", "Large Hall", "Live", "Party", "Pop",
-						"Reggae", "Rock", "Ska", "Soft", "Soft rock", "Techno", };
 
-				JComboBox<String> presetSel = new JComboBox<>(presets);
+				presets = new eqPresetManager(mediaPlayerFactory.getAllPresetEqualizers());
+				String[] names = presets.getAllNames();
+				JComboBox<String> presetSel = new JComboBox<>(names);
+
 				presetSel.addActionListener(new ActionListener() {
 
 					@SuppressWarnings("unchecked")
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						Map<String, Equalizer> presets = mediaPlayerFactory.getAllPresetEqualizers();
-						Equalizer set = presets.get(((JComboBox<String>) arg0.getSource()).getSelectedItem());
+
+						Equalizer set = presets.getPresets()
+								.get(((JComboBox<String>) arg0.getSource()).getSelectedItem());
 						mediaPlayer.setEqualizer(set);
 						values[0] = mediaPlayer.getEqualizer().getPreamp();
 						for (int i = 1; i < 11; i++) {

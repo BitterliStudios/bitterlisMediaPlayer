@@ -12,7 +12,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
@@ -27,7 +26,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
-import com.sun.jna.platform.FileUtils;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
@@ -109,7 +107,8 @@ public class gui {
 
 		welcome.dispose();
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	public void demo() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 
 		JFrame welcome = new JFrame("Loading... - Audio Player");
@@ -118,8 +117,8 @@ public class gui {
 		Image logo = ImageIO.read(new File("namelogo.png"));
 		logo = logo.getScaledInstance(700, 145, 0);
 		welcomeComponents.add(new JLabel(new ImageIcon(logo)));
-		String text = "<html><center><p><br><br>Bitterli's Media Player<br>Version " + new BAbout().version()
-				+ "<br><br>Loading...</p></center></html>";
+		String text = "<html><center><p><br><br>Bitterli's Media Player<br>Demonstration Version "
+				+ new BAbout().version() + "<br><br>Loading...</p></center></html>";
 		welcomeComponents.add(new JLabel(String.format(text)));
 
 		welcome.add(welcomeComponents);
@@ -128,7 +127,7 @@ public class gui {
 		welcome.setLocation(dim.width / 2 - welcome.getSize().width / 2, dim.height / 2 - welcome.getSize().height / 2);
 		welcome.setVisible(true);
 
-		file = new File("test2.mp4");
+		file = new File("demo.mp4");
 
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
@@ -142,6 +141,5 @@ public class gui {
 			}
 		});
 	}
-	
-	
+
 }
