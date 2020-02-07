@@ -140,6 +140,7 @@ public class gui {
 				e.printStackTrace();
 			}
 		});
+		welcome.dispose();
 	}
 
 }

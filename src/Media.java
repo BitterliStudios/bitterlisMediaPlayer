@@ -829,6 +829,7 @@ public class Media {
 					}
 
 				});
+				top.add(savePreset);
 
 				top.setSize(600, 20);
 

@@ -60,7 +60,7 @@ public class eqPresetManager {
 	public void addPreset(String name, Float[] values) {
 		try {
 			@SuppressWarnings("resource")
-			FileWriter writer = new FileWriter("eqpresets.txt", true);
+			FileWriter writer = new FileWriter("eqPresets.txt", true);
 			writer.write("[" + name + "]\n");
 			for (int i = 0; i < values.length; i++) {
 				writer.write(String.valueOf(values[i]));
