@@ -1,3 +1,4 @@
+
 /**
  * Manages the loading and saving of all Equalizer Presets.
  */
@@ -25,7 +26,10 @@ public class eqPresetManager {
 	}
 
 	private void getUserPresets() throws IOException {
-		File file = new File("C:\\Users\\pankaj\\Desktop\\test.txt");
+		File file = new File("eqPresets.txt");
+		if (!file.exists()) {
+			file.createNewFile();
+		}
 		@SuppressWarnings("resource")
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		int advance = 0;
@@ -79,5 +83,9 @@ public class eqPresetManager {
 
 	public Map<String, Equalizer> getPresets() {
 		return allPresetEqualizers;
+	}
+
+	public Equalizer getEqualizer(Object object) {
+		return allPresetEqualizers.get(object);
 	}
 }

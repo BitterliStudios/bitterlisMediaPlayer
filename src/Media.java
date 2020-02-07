@@ -780,23 +780,11 @@ public class Media {
 				eqpanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
 				JPanel top = new JPanel();
-				JCheckBox toggle = new JCheckBox("Enable");
-				toggle.setSelected(videoEffectToggle);
-				toggle.addItemListener(new ItemListener() {
-					public void itemStateChanged(ItemEvent e) {
-						if (e.getStateChange() == 1) {
-							mediaPlayer.setAdjustVideo(true);
-							videoEffectToggle = true;
-						} else {
-							mediaPlayer.setAdjustVideo(false);
-							videoEffectToggle = false;
-						}
-					}
-				});
 
 				presets = new eqPresetManager(mediaPlayerFactory.getAllPresetEqualizers());
 				String[] names = presets.getAllNames();
 				JComboBox<String> presetSel = new JComboBox<>(names);
+				presetSel.setSelectedItem("Flat");
 
 				presetSel.addActionListener(new ActionListener() {
 
@@ -804,8 +792,7 @@ public class Media {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 
-						Equalizer set = presets.getPresets()
-								.get(((JComboBox<String>) arg0.getSource()).getSelectedItem());
+						Equalizer set = presets.getEqualizer(((JComboBox<String>) arg0.getSource()).getSelectedItem());
 						mediaPlayer.setEqualizer(set);
 						values[0] = mediaPlayer.getEqualizer().getPreamp();
 						for (int i = 1; i < 11; i++) {
@@ -831,7 +818,18 @@ public class Media {
 				});
 				top.add(presetSel);
 
-				// top.add(toggle);
+				JButton savePreset = new JButton("Save Preset");
+				savePreset.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						String name = JOptionPane.showInputDialog(null, "Enter Preset Name: ");
+						presets.addPreset(name, values);
+						presetSel.addItem(name);
+					}
+
+				});
+
 				top.setSize(600, 20);
 
 				GridBagConstraints gbc = new GridBagConstraints();
@@ -1068,8 +1066,7 @@ public class Media {
 		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
 		frame.setVisible(true);
 		mediaPlayer.playMedia(file.getPath());
-		mediaPlayer.setEqualizer(eq);
-		mediaPlayer.getEqualizer().setPreamp(0);
+		mediaPlayer.setEqualizer(mediaPlayerFactory.getAllPresetEqualizers().get("Flat"));
 		c.setBackground(Color.black);
 
 		// Main logo (shown when stopped, no album art on audio).
