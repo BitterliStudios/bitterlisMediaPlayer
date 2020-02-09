@@ -98,7 +98,7 @@ public class gui {
 		SwingUtilities.invokeLater(() -> {
 			Media vlcPlayer = new Media(file);
 			try {
-				vlcPlayer.getVideo(dim);
+				vlcPlayer.getVideo(dim, false);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -134,7 +134,7 @@ public class gui {
 		SwingUtilities.invokeLater(() -> {
 			Media vlcPlayer = new Media(file);
 			try {
-				vlcPlayer.getVideo(dim);
+				vlcPlayer.getVideo(dim, true);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -18,6 +18,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
@@ -26,7 +28,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -100,13 +101,16 @@ public class Media {
 		return isAudio;
 	}
 
-	public void getVideo(Dimension dim) throws IOException {
+	public void getVideo(Dimension dim, boolean demo) throws IOException {
 		loop = false;
 		stopped = false;
 		@SuppressWarnings("unused")
 		java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-
-		JFrame frame = new JFrame("" + file.getName() + " - Media Player");
+		String title = "" + file.getName() + " - Media Player";
+		if (demo) {
+			title = "Demonstration Version - Media Player";
+		}
+		JFrame frame = new JFrame(title);
 		mediaPlayerFactory = new MediaPlayerFactory();
 
 		JMenuBar main = new JMenuBar();
@@ -1069,6 +1073,37 @@ public class Media {
 		mediaPlayer.playMedia(file.getPath());
 		mediaPlayer.setEqualizer(mediaPlayerFactory.getAllPresetEqualizers().get("Flat"));
 		c.setBackground(Color.black);
+		
+		frame.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyPressed(KeyEvent k) {
+				int key = k.getKeyCode();
+				if (key == (KeyEvent.VK_NUMPAD0)) {
+					System.out.println("keyPressed");
+				}
+				
+			}
+
+			@Override
+			public void keyReleased(KeyEvent k) {
+				int key = k.getKeyCode();
+				if (key == (KeyEvent.VK_NUMPAD0)) {
+					System.out.println("keyReleased");
+				}
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent k) {
+				int key = k.getKeyCode();
+				if (key == (KeyEvent.VK_NUMPAD0)) {
+					System.out.println("keyTyped");
+				}
+				
+			}
+			
+		});
 
 		// Main logo (shown when stopped, no album art on audio).
 		// The album art is displayed over the logo.

@@ -6,8 +6,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class test {
 
 	public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-		gui media = new gui();
-		media.demo();
+		gui demo = new gui();
+		demo.demo();
 	}
 
 }
