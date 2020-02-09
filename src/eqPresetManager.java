@@ -29,42 +29,48 @@ public class eqPresetManager {
 		File file = new File("eqPresets.txt");
 		if (!file.exists()) {
 			file.createNewFile();
-		}
-		@SuppressWarnings("resource")
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		int advance = 0;
-		String st = "";
-		String presetName = "";
-		Float[] values = new Float[10];
-		while ((st = br.readLine()) != null) {
-			if (st.substring(0, 1).equals("[")) {
-				presetName = st.replace("[", "");
-				presetName = st.replace("]", "");
-			} else if (!st.equals("")) {
-				if (advance != 11) {
-					values[advance] = Float.valueOf(st);
-					advance++;
+		} else {
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			int advance = 0;
+			String st = "";
+			String presetName = "";
+			Float[] values = new Float[11];
+			while ((st = br.readLine()) != null) {
+				if (st.substring(0, 1).equals("[")) {
+					presetName = st.replace("[" , "");
+					presetName = presetName.replace("]", "");
 				} else {
-					advance = 0;
-					Equalizer eq = allPresetEqualizers.get("Flat");
-					for (int i = 0; i < 11; i++) {
-						eq.setAmp(i, values[i]);
+					if (advance < 10) {
+						values[advance] = Float.valueOf(st);
+						advance++;
+					} else {
+						values[advance] = Float.valueOf(st);
+						advance = 0;
+						Equalizer eq = allPresetEqualizers.get("Flat");
+						for (int i = 0; i < 11; i++) {
+							if (i == 0) {
+								eq.setPreamp(values[i]);
+							} else {
+								eq.setAmp(i - 1, values[i]);
+							}
+						}
+						allPresetEqualizers.put(presetName, eq);
 					}
-					allPresetEqualizers.put(presetName, eq);
-				}
 
+				}
 			}
+			br.close();
 		}
 	}
 
 	public void addPreset(String name, Float[] values) {
 		try {
-			@SuppressWarnings("resource")
 			FileWriter writer = new FileWriter("eqPresets.txt", true);
 			writer.write("[" + name + "]\n");
 			for (int i = 0; i < values.length; i++) {
-				writer.write(String.valueOf(values[i]));
+				writer.write(String.valueOf(values[i]) + "\n");
 			}
+			writer.close();
 		} catch (IOException e) {
 			System.out.println("Error saving the file. A series of Ls are below.");
 			e.printStackTrace();

@@ -791,8 +791,8 @@ public class Media {
 					@SuppressWarnings("unchecked")
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-
-						Equalizer set = presets.getEqualizer(((JComboBox<String>) arg0.getSource()).getSelectedItem());
+						String eqName = (String) ((JComboBox<String>) arg0.getSource()).getSelectedItem();
+						Equalizer set = presets.getEqualizer(eqName);
 						mediaPlayer.setEqualizer(set);
 						values[0] = mediaPlayer.getEqualizer().getPreamp();
 						for (int i = 1; i < 11; i++) {
