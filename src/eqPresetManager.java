@@ -47,7 +47,7 @@ public class eqPresetManager {
 						} else {
 							values[advance] = Float.valueOf(st);
 							advance = 0;
-							Equalizer neweq = allPresetEqualizers.get("Flat");
+							Equalizer neweq = new Equalizer(10);
 							for (int i = 0; i < 11; i++) {
 								if (i == 0) {
 									neweq.setPreamp(values[i]);
@@ -56,14 +56,7 @@ public class eqPresetManager {
 								}
 							}
 							allPresetEqualizers.put(presetName, neweq);
-							System.out.print("[" + presetName + "]: ");
-							for (int i = 0; i < 11; i++) {
-								if (i != 10) {
-									System.out.print(values[i] + ", ");
-								} else {
-									System.out.println(values[i]);
-								}
-							}
+							testOnTheWay(presetName, values);
 							values = new Float[11];
 							presetName = "";
 						}
@@ -106,5 +99,47 @@ public class eqPresetManager {
 
 	public Equalizer getEqualizer(Object object) {
 		return allPresetEqualizers.get(object);
+	}
+	
+	/**
+	 * Ensure each value as being read in works.
+	 * @param presetName
+	 * @param values
+	 */
+	private void testOnTheWay(String presetName, Float[] values) {
+		System.out.print("[" + presetName + "]: ");
+		for (int i = 0; i < 11; i++) {
+			if (i != 10) {
+				System.out.print(values[i] + ", ");
+			} else {
+				System.out.println(values[i]);
+			}
+		}
+	}
+	/**
+	 * Test the equalizer selected from media class.
+	 * @param set
+	 */
+	public void testEqualizer(Equalizer set) {
+		Float[] values = new Float[11];
+		values[0] = set.getPreamp();
+		for (int i = 1; i < 11; i++) {
+			if (set.getAmp(i - 1) != 0.0f) {
+				values[i] = set.getAmp(i - 1);
+			} else {
+				values[i] = 0.0f;
+			}
+		}
+		System.out.print("[ ");
+		for (int i = 0; i < 11; i++) {
+			System.out.print(values[i] + " ");
+		}
+		System.out.print("]\n");
+	}
+	/**
+	 * Test all equalizers and their values
+	 */
+	public void testAllEqualizer() {
+		System.out.println(allPresetEqualizers);
 	}
 }
