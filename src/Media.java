@@ -18,10 +18,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -798,7 +801,7 @@ public class Media {
 						String eqName = (String) ((JComboBox<String>) arg0.getSource()).getSelectedItem();
 						Equalizer set = presets.getEqualizer(eqName);
 						System.out.print("" + eqName + " -> ");
-						
+
 						mediaPlayer.setEqualizer(set);
 						values[0] = set.getPreamp();
 						for (int i = 1; i < 11; i++) {
@@ -1068,15 +1071,8 @@ public class Media {
 		volume.setPreferredSize(new Dimension(70, 18));
 		p1.add(volume);
 		p1.add(volumePercent);
-
-		frame.setSize(904, 645);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
-		frame.setVisible(true);
-		mediaPlayer.playMedia(file.getPath());
-		mediaPlayer.setEqualizer(mediaPlayerFactory.getAllPresetEqualizers().get("Flat"));
-		c.setBackground(Color.black);
 		
+		frame.setFocusable(true);
 		frame.addKeyListener(new KeyListener() {
 
 			@Override
@@ -1085,7 +1081,7 @@ public class Media {
 				if (key == (KeyEvent.VK_NUMPAD0)) {
 					System.out.println("keyPressed");
 				}
-				
+
 			}
 
 			@Override
@@ -1094,7 +1090,7 @@ public class Media {
 				if (key == (KeyEvent.VK_NUMPAD0)) {
 					System.out.println("keyReleased");
 				}
-				
+
 			}
 
 			@Override
@@ -1103,10 +1099,18 @@ public class Media {
 				if (key == (KeyEvent.VK_NUMPAD0)) {
 					System.out.println("keyTyped");
 				}
-				
+
 			}
-			
+
 		});
+
+		frame.setSize(904, 645);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+		frame.setVisible(true);
+		mediaPlayer.playMedia(file.getPath());
+		mediaPlayer.setEqualizer(mediaPlayerFactory.getAllPresetEqualizers().get("Flat"));
+		c.setBackground(Color.black);
 
 		// Main logo (shown when stopped, no album art on audio).
 		// The album art is displayed over the logo.
@@ -1228,6 +1232,7 @@ public class Media {
 				}
 			}
 		});
+
 	}
 
 	public void stop() {

@@ -11,6 +11,10 @@ public class BAbout {
 		String version = "Version " + version() + " -Equalizer Update";
 		String author = "Bitterli";
 		String changes = "Changelog:"
+				+ "\n(Feb 11 2020) Added ability to save Equalizers to text file."
+				+ "\n(Feb 7 2020) Added library default presets."
+				+ "\n(Feb 3 2020) Added mute button and volume slider."
+				+ "\n(Feb 3 2020) Finishing touches to Video effects panel."
 				+ "\n(Jan 30 2020) Added meta information for audio files."
 				+ "\n(Jan 28 2020) Fixed media looping."
 				+ "\n(Jan 16 2020) Removed References to online logo information."
