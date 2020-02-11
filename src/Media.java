@@ -798,10 +798,10 @@ public class Media {
 						String eqName = (String) ((JComboBox<String>) arg0.getSource()).getSelectedItem();
 						Equalizer set = presets.getEqualizer(eqName);
 						mediaPlayer.setEqualizer(set);
-						values[0] = mediaPlayer.getEqualizer().getPreamp();
+						values[0] = set.getPreamp();
 						for (int i = 1; i < 11; i++) {
 							if (mediaPlayer.getEqualizer().getAmp(i - 1) != 0.0f) {
-								values[i] = mediaPlayer.getEqualizer().getAmp(i - 1);
+								values[i] = set.getAmp(i - 1);
 							} else {
 								values[i] = 0.0f;
 							}
@@ -817,6 +817,7 @@ public class Media {
 						eq8.setValue((int) Math.round(values[8]));
 						eq9.setValue((int) Math.round(values[9]));
 						eq10.setValue((int) Math.round(values[10]));
+						presetSel.setSelectedItem(eqName);
 					}
 
 				});

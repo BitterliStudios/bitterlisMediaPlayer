@@ -36,27 +36,39 @@ public class eqPresetManager {
 			String presetName = "";
 			Float[] values = new Float[11];
 			while ((st = br.readLine()) != null) {
-				if (st.substring(0, 1).equals("[")) {
-					presetName = st.replace("[" , "");
-					presetName = presetName.replace("]", "");
-				} else {
-					if (advance < 10) {
-						values[advance] = Float.valueOf(st);
-						advance++;
+				if (!st.equals("")) {
+					if (st.substring(0, 1).equals("[")) {
+						presetName = st.replace("[" , "");
+						presetName = presetName.replace("]", "");
 					} else {
-						values[advance] = Float.valueOf(st);
-						advance = 0;
-						Equalizer eq = allPresetEqualizers.get("Flat");
-						for (int i = 0; i < 11; i++) {
-							if (i == 0) {
-								eq.setPreamp(values[i]);
-							} else {
-								eq.setAmp(i - 1, values[i]);
+						if (advance < 10) {
+							values[advance] = Float.valueOf(st);
+							advance++;
+						} else {
+							values[advance] = Float.valueOf(st);
+							advance = 0;
+							Equalizer neweq = allPresetEqualizers.get("Flat");
+							for (int i = 0; i < 11; i++) {
+								if (i == 0) {
+									neweq.setPreamp(values[i]);
+								} else {
+									neweq.setAmp(i - 1, values[i]);
+								}
 							}
+							allPresetEqualizers.put(presetName, neweq);
+							System.out.print("[" + presetName + "]: ");
+							for (int i = 0; i < 11; i++) {
+								if (i != 10) {
+									System.out.print(values[i] + ", ");
+								} else {
+									System.out.println(values[i]);
+								}
+							}
+							values = new Float[11];
+							presetName = "";
 						}
-						allPresetEqualizers.put(presetName, eq);
-					}
 
+					}
 				}
 			}
 			br.close();
@@ -70,6 +82,7 @@ public class eqPresetManager {
 			for (int i = 0; i < values.length; i++) {
 				writer.write(String.valueOf(values[i]) + "\n");
 			}
+			writer.write("\n");
 			writer.close();
 		} catch (IOException e) {
 			System.out.println("Error saving the file. A series of Ls are below.");
