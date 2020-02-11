@@ -1072,35 +1072,110 @@ public class Media {
 		p1.add(volume);
 		p1.add(volumePercent);
 		
+		
+		int csizex = c.getSize().width;
+		int csizey = c.getSize().height;
+		mediaPlayer.setMarqueeLocation((csizex / 4), (csizey - 60));
+		mediaPlayer.setMarqueeText("" + file.getName());
+		mediaPlayer.enableMarquee(true);
+		ActionListener marqueeTask = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				mediaPlayer.enableMarquee(false);
+				
+			}
+			
+		};
+		Timer text = new Timer(5000, marqueeTask);
+		text.setRepeats(false);
+		text.start();
+		
 		frame.setFocusable(true);
 		frame.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyPressed(KeyEvent k) {
 				int key = k.getKeyCode();
-				if (key == (KeyEvent.VK_NUMPAD0)) {
-					System.out.println("keyPressed");
-				}
+				if (key == (KeyEvent.VK_F)) {
+					System.out.println("Toggle fullscreen");
+				} else if (key == (KeyEvent.VK_ESCAPE)) {
+					System.out.println("Leave fullscreen/close dialogue");
+				} else if (key == (KeyEvent.VK_SPACE)) {
+					System.out.println("Play/pause");
+					
+					if (mediaPlayer.isPlaying()) {
+						mediaPlayer.pause();
+					} else {
+						mediaPlayer.play();
+					}
+				} else if (key == (KeyEvent.VK_PLUS)) {
+					System.out.println("Faster");
+					
+					mediaPlayer.setRate(mediaPlayer.getRate() + 0.1f);
+				} else if (key == (KeyEvent.VK_MINUS)) {
+					System.out.println("Slower");
+					
+					mediaPlayer.setRate(mediaPlayer.getRate() - 0.1f);
+				} else if (key == (KeyEvent.VK_EQUALS)) {
+					System.out.println("Faster");
+					
+					mediaPlayer.setRate(mediaPlayer.getRate() + 0.1f);
+				} else if (key == (KeyEvent.VK_N)) {
+					System.out.println("Next Track");
+					
+				} else if (key == (KeyEvent.VK_P)) {
+					System.out.println("Previus track");
+					
+				} else if (key == (KeyEvent.VK_S)) {
+					System.out.println("Stop");
+					mediaPlayer.stop();
+					
+				} else if (key == (KeyEvent.VK_UP)) {
+					System.out.println("Volume Up");
+					
+					mediaPlayer.setVolume(mediaPlayer.getVolume() + 10);
+				} else if (key == (KeyEvent.VK_DOWN)) {
+					System.out.println("Volume Down");
+					
+					mediaPlayer.setVolume(mediaPlayer.getVolume() - 10);
+				} else if (key == (KeyEvent.VK_RIGHT)) {
+					System.out.println("5% Dub ->");
+					
+					mediaPlayer.setPosition(mediaPlayer.getPosition() + 0.05f);
+				} else if (key == (KeyEvent.VK_LEFT)) {
+					System.out.println("<- 5% Dub");
+					
+					mediaPlayer.setPosition(mediaPlayer.getPosition() - 0.05f);
+				} else if (key == (KeyEvent.VK_M)) {
+					System.out.println("Mute");
+					
+					if (!mediaPlayer.isMute()) {
+						mediaPlayer.mute(true);
+					} else{
+						mediaPlayer.mute(false);
+					}
+				} else if (key == (KeyEvent.VK_E)) {
+					System.out.println("Next Frame");
+					
+					mediaPlayer.nextFrame();
+				} else if (key == (KeyEvent.VK_L)) {
+					System.out.println("Toggle looping");
+					
+					if (!mediaPlayer.getRepeat()) {
+						mediaPlayer.setRepeat(true);
+					} else {
+						mediaPlayer.setRepeat(false);
+					}
+				} 
 
 			}
 
 			@Override
-			public void keyReleased(KeyEvent k) {
-				int key = k.getKeyCode();
-				if (key == (KeyEvent.VK_NUMPAD0)) {
-					System.out.println("keyReleased");
-				}
-
-			}
+			public void keyReleased(KeyEvent k) { }
 
 			@Override
-			public void keyTyped(KeyEvent k) {
-				int key = k.getKeyCode();
-				if (key == (KeyEvent.VK_NUMPAD0)) {
-					System.out.println("keyTyped");
-				}
-
-			}
+			public void keyTyped(KeyEvent k) { }
 
 		});
 
