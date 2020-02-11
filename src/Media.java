@@ -1073,9 +1073,9 @@ public class Media {
 		p1.add(volumePercent);
 		
 		
-		int csizex = c.getSize().width;
+		int csizex = c.getSize().width / 2;
 		int csizey = c.getSize().height;
-		mediaPlayer.setMarqueeLocation((csizex / 4), (csizey - 60));
+		mediaPlayer.setMarqueeLocation((csizex / 2), (csizey - 60));
 		mediaPlayer.setMarqueeText("" + file.getName());
 		mediaPlayer.enableMarquee(true);
 		ActionListener marqueeTask = new ActionListener() {
@@ -1162,11 +1162,31 @@ public class Media {
 				} else if (key == (KeyEvent.VK_L)) {
 					System.out.println("Toggle looping");
 					
+					String marqueeText = "";
 					if (!mediaPlayer.getRepeat()) {
 						mediaPlayer.setRepeat(true);
+						marqueeText = "Looping On";
 					} else {
 						mediaPlayer.setRepeat(false);
+						marqueeText = "Looping Off";
 					}
+					
+					mediaPlayer.setMarqueeLocation((csizex - 15), (15));
+					mediaPlayer.setMarqueeText("" + marqueeText);
+					mediaPlayer.setMarqueeSize(22);
+					mediaPlayer.enableMarquee(true);
+					ActionListener marqueeTask = new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							mediaPlayer.enableMarquee(false);
+							
+						}
+						
+					};
+					Timer text = new Timer(1000, marqueeTask);
+					text.setRepeats(false);
+					text.start();
 				} 
 
 			}
