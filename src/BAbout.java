@@ -8,7 +8,7 @@ public class BAbout {
 
 	public void getAbout() {
 		String name = "Bitterli's Media Player in Java";
-		String version = "Version " + version() + " -Equalizer Update";
+		String version = "Version " + version() + " - Controls Update";
 		String author = "Bitterli";
 		String changes = "Changelog:"
 				+ "\n(Feb 11 2020) Added ability to save Equalizers to text file."
@@ -36,7 +36,7 @@ public class BAbout {
 	}
 	
 	public String version() {
-		return "B_0.8.1";
+		return "B_0.8.2";
 	}
 
 }
