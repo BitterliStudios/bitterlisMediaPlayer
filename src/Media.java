@@ -540,7 +540,7 @@ public class Media {
 							}
 							preampText.setText("" + values[0] + "dB");
 							mediaPlayer.getEqualizer().setPreamp(values[0]);
-							
+
 						}
 					}
 				};
@@ -855,7 +855,6 @@ public class Media {
 					public void actionPerformed(ActionEvent arg0) {
 						String eqName = (String) ((JComboBox<String>) arg0.getSource()).getSelectedItem();
 						Equalizer set = presets.getEqualizer(eqName);
-						System.out.print("" + eqName + " -> ");
 
 						mediaPlayer.setEqualizer(set);
 						values[0] = set.getPreamp();
@@ -866,6 +865,7 @@ public class Media {
 								values[i] = 0.0f;
 							}
 						}
+
 						preamp.setValue((int) Math.round(values[0]));
 						eq1.setValue((int) Math.round(values[1]));
 						eq2.setValue((int) Math.round(values[2]));
@@ -1343,7 +1343,7 @@ public class Media {
 						Timer text = new Timer(1000, marqueeTask);
 						text.setRepeats(false);
 						text.start();
-						
+
 						mediaPlayer.setVolume(newVol);
 						String vLabel = "N/A";
 						if (mediaPlayer.getVolume() < 100) {
@@ -1524,10 +1524,10 @@ public class Media {
 		mediaPlayer.playMedia(file.getPath());
 		mediaPlayer.setEqualizer(mediaPlayerFactory.getAllPresetEqualizers().get("Flat"));
 		c.setBackground(Color.black);
-		
-		EmbeddedMediaPlayer embeddedMediaPlayer = 
-			    mediaPlayerFactory.newEmbeddedMediaPlayer(new Win32FullScreenStrategy(frame));
-		
+
+		@SuppressWarnings("unused")
+		EmbeddedMediaPlayer embeddedMediaPlayer = mediaPlayerFactory
+				.newEmbeddedMediaPlayer(new Win32FullScreenStrategy(frame));
 
 		// Main logo (shown when stopped, no album art on audio).
 		// The album art is displayed over the logo.

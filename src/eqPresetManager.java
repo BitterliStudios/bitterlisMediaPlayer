@@ -38,7 +38,7 @@ public class eqPresetManager {
 			while ((st = br.readLine()) != null) {
 				if (!st.equals("")) {
 					if (st.substring(0, 1).equals("[")) {
-						presetName = st.replace("[" , "");
+						presetName = st.replace("[", "");
 						presetName = presetName.replace("]", "");
 					} else {
 						if (advance < 10) {
@@ -56,7 +56,6 @@ public class eqPresetManager {
 								}
 							}
 							allPresetEqualizers.put(presetName, neweq);
-							testOnTheWay(presetName, values);
 							values = new Float[11];
 							presetName = "";
 						}
@@ -100,12 +99,14 @@ public class eqPresetManager {
 	public Equalizer getEqualizer(Object object) {
 		return allPresetEqualizers.get(object);
 	}
-	
+
 	/**
 	 * Ensure each value as being read in works.
+	 * 
 	 * @param presetName
 	 * @param values
 	 */
+	@SuppressWarnings("unused")
 	private void testOnTheWay(String presetName, Float[] values) {
 		System.out.print("[" + presetName + "]: ");
 		for (int i = 0; i < 11; i++) {
@@ -116,8 +117,10 @@ public class eqPresetManager {
 			}
 		}
 	}
+
 	/**
 	 * Test the equalizer selected from media class.
+	 * 
 	 * @param set
 	 */
 	public void testEqualizer(Equalizer set) {
@@ -136,6 +139,7 @@ public class eqPresetManager {
 		}
 		System.out.print("]\n");
 	}
+
 	/**
 	 * Test all equalizers and their values
 	 */
