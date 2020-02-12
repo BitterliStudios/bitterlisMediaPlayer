@@ -1108,7 +1108,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1126,7 +1126,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1152,7 +1152,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1171,7 +1171,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1190,7 +1190,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1209,7 +1209,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1227,7 +1227,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1246,7 +1246,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1265,7 +1265,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1285,13 +1285,27 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
 					text.setRepeats(false);
 					text.start();
-					mediaPlayer.setVolume(mediaPlayer.getVolume() + 10);
+					int newVol = mediaPlayer.getVolume() + 10;
+					mediaPlayer.setVolume(newVol);
+					String vLabel = "N/A";
+					if (mediaPlayer.getVolume() < 100) {
+						if (mediaPlayer.getVolume() < 10) {
+							vLabel = "" + newVol + "%   ";
+						} else {
+							vLabel = "" + newVol + "%  ";
+						}
+					} else {
+						vLabel = "" + newVol + "%";
+					}
+					volumePercent.setText(vLabel);
+					volume.setValue(newVol);
+
 				} else if (key == (KeyEvent.VK_DOWN)) {
 					System.out.println("Volume Down");
 
@@ -1304,13 +1318,26 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
 					text.setRepeats(false);
 					text.start();
-					mediaPlayer.setVolume(mediaPlayer.getVolume() - 10);
+					int newVol = (mediaPlayer.getVolume() - 10);
+					mediaPlayer.setVolume(newVol);
+					String vLabel = "N/A";
+					if (mediaPlayer.getVolume() < 100) {
+						if (mediaPlayer.getVolume() < 10) {
+							vLabel = "" + newVol + "%   ";
+						} else {
+							vLabel = "" + newVol + "%  ";
+						}
+					} else {
+						vLabel = "" + newVol + "%";
+					}
+					volumePercent.setText(vLabel);
+					volume.setValue(newVol);
 				} else if (key == (KeyEvent.VK_RIGHT)) {
 					System.out.println("5% Dub ->");
 
@@ -1323,7 +1350,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1342,7 +1369,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1370,7 +1397,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1389,7 +1416,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1415,7 +1442,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-
+							text.stop();
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
