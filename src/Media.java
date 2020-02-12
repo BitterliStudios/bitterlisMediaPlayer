@@ -50,6 +50,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import uk.co.caprica.vlcj.binding.LibVlcConst;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -523,17 +524,23 @@ public class Media {
 				preampPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel preampLabel = new JLabel("Preamp");
 				JLabel preampText = new JLabel("" + values[0] + "dB");
-				preamp = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[0]));
-				preamp.setMajorTickSpacing(2);
+				preamp = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[0]));
+				preamp.setMajorTickSpacing(4);
 				preamp.setPaintTicks(true);
 				preamp.setPaintLabels(true);
 				ChangeListener preampC = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[0] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[0] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[0] = newValue;
+							}
 							preampText.setText("" + values[0] + "dB");
 							mediaPlayer.getEqualizer().setPreamp(values[0]);
+							
 						}
 					}
 				};
@@ -547,15 +554,20 @@ public class Media {
 				eq1Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq1Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(0) + "");
 				JLabel eq1Text = new JLabel("" + values[1] + "dB");
-				eq1 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[1]));
-				eq1.setMajorTickSpacing(2);
+				eq1 = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[1]));
+				eq1.setMajorTickSpacing(4);
 				eq1.setPaintTicks(true);
 				eq1.setPaintLabels(true);
 				ChangeListener eq1C = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[1] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[1] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[1] = newValue;
+							}
 							eq1Text.setText("" + values[1] + "dB");
 							mediaPlayer.getEqualizer().setAmp(0, values[1]);
 						}
@@ -571,15 +583,20 @@ public class Media {
 				eq2Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq2Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(1) + "");
 				JLabel eq2Text = new JLabel("" + values[1] + "dB");
-				eq2 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[2]));
-				eq2.setMajorTickSpacing(2);
+				eq2 = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[2]));
+				eq2.setMajorTickSpacing(4);
 				eq2.setPaintTicks(true);
 				eq2.setPaintLabels(true);
 				ChangeListener eq2C = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[2] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[2] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[2] = newValue;
+							}
 							eq2Text.setText("" + values[2] + "dB");
 							mediaPlayer.getEqualizer().setAmp(1, values[2]);
 						}
@@ -595,15 +612,20 @@ public class Media {
 				eq3Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq3Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(2) + "");
 				JLabel eq3Text = new JLabel("" + values[3] + "dB");
-				eq3 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[3]));
-				eq3.setMajorTickSpacing(2);
+				eq3 = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[3]));
+				eq3.setMajorTickSpacing(4);
 				eq3.setPaintTicks(true);
 				eq3.setPaintLabels(true);
 				ChangeListener eq3C = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[3] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[3] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[3] = newValue;
+							}
 							eq3Text.setText("" + values[3] + "dB");
 							mediaPlayer.getEqualizer().setAmp(2, values[3]);
 						}
@@ -619,15 +641,20 @@ public class Media {
 				eq4Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq4Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(3) + "");
 				JLabel eq4Text = new JLabel("" + values[4] + "dB");
-				eq4 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[4]));
-				eq4.setMajorTickSpacing(2);
+				eq4 = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[4]));
+				eq4.setMajorTickSpacing(4);
 				eq4.setPaintTicks(true);
 				eq4.setPaintLabels(true);
 				ChangeListener eq4C = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[4] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[4] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[4] = newValue;
+							}
 							eq4Text.setText("" + values[4] + "dB");
 							mediaPlayer.getEqualizer().setAmp(3, values[4]);
 						}
@@ -643,15 +670,20 @@ public class Media {
 				eq5Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq5Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(4) + "");
 				JLabel eq5Text = new JLabel("" + values[5] + "dB");
-				eq5 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[5]));
-				eq5.setMajorTickSpacing(2);
+				eq5 = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[5]));
+				eq5.setMajorTickSpacing(4);
 				eq5.setPaintTicks(true);
 				eq5.setPaintLabels(true);
 				ChangeListener eq5C = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[5] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[5] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[5] = newValue;
+							}
 							eq5Text.setText("" + values[5] + "dB");
 							mediaPlayer.getEqualizer().setAmp(4, values[5]);
 						}
@@ -667,15 +699,20 @@ public class Media {
 				eq6Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq6Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(5) + "");
 				JLabel eq6Text = new JLabel("" + values[6] + "dB");
-				eq6 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[6]));
-				eq6.setMajorTickSpacing(2);
+				eq6 = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[6]));
+				eq6.setMajorTickSpacing(4);
 				eq6.setPaintTicks(true);
 				eq6.setPaintLabels(true);
 				ChangeListener eq6C = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[6] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[6] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[6] = newValue;
+							}
 							eq6Text.setText("" + values[6] + "dB");
 							mediaPlayer.getEqualizer().setAmp(5, values[6]);
 						}
@@ -691,15 +728,20 @@ public class Media {
 				eq7Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq7Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(6) + "");
 				JLabel eq7Text = new JLabel("" + values[7] + "dB");
-				eq7 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[7]));
-				eq7.setMajorTickSpacing(2);
+				eq7 = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[7]));
+				eq7.setMajorTickSpacing(4);
 				eq7.setPaintTicks(true);
 				eq7.setPaintLabels(true);
 				ChangeListener eq7C = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[7] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[7] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[7] = newValue;
+							}
 							eq7Text.setText("" + values[7] + "dB");
 							mediaPlayer.getEqualizer().setAmp(6, values[7]);
 						}
@@ -715,15 +757,20 @@ public class Media {
 				eq8Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq8Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(7) + "");
 				JLabel eq8Text = new JLabel("" + values[8] + "dB");
-				eq8 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[8]));
-				eq8.setMajorTickSpacing(2);
+				eq8 = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[8]));
+				eq8.setMajorTickSpacing(4);
 				eq8.setPaintTicks(true);
 				eq8.setPaintLabels(true);
 				ChangeListener eq8C = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[8] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[8] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[8] = newValue;
+							}
 							eq8Text.setText("" + values[8] + "dB");
 							mediaPlayer.getEqualizer().setAmp(7, values[8]);
 						}
@@ -739,15 +786,20 @@ public class Media {
 				eq9Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq9Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(8) + "");
 				JLabel eq9Text = new JLabel("" + values[9] + "dB");
-				eq9 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[9]));
-				eq9.setMajorTickSpacing(2);
+				eq9 = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[9]));
+				eq9.setMajorTickSpacing(4);
 				eq9.setPaintTicks(true);
 				eq9.setPaintLabels(true);
 				ChangeListener eq9C = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[9] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[9] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[9] = newValue;
+							}
 							eq9Text.setText("" + values[9] + "dB");
 							mediaPlayer.getEqualizer().setAmp(8, values[9]);
 						}
@@ -763,15 +815,20 @@ public class Media {
 				eq10Panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 				JLabel eq10Label = new JLabel("" + mediaPlayerFactory.getEqualizerBandFrequencies().get(9) + "");
 				JLabel eq10Text = new JLabel("" + values[10] + "dB");
-				eq10 = new JSlider(JSlider.VERTICAL, -12, 12, (int) Math.round(values[10]));
-				eq10.setMajorTickSpacing(2);
+				eq10 = new JSlider(JSlider.VERTICAL, -20, 12, (int) Math.round(values[10]));
+				eq10.setMajorTickSpacing(4);
 				eq10.setPaintTicks(true);
 				eq10.setPaintLabels(true);
 				ChangeListener eq10C = new ChangeListener() {
 					public void stateChanged(ChangeEvent changeEvent) {
 						JSlider theSlider = (JSlider) changeEvent.getSource();
 						if (!theSlider.getValueIsAdjusting()) {
-							values[10] = (new Float(theSlider.getValue()));
+							float newValue = (new Float(theSlider.getValue()));
+							if (newValue == -20f) {
+								values[10] = LibVlcConst.MIN_GAIN;
+							} else {
+								values[10] = newValue;
+							}
 							eq10Text.setText("" + values[10] + "dB");
 							mediaPlayer.getEqualizer().setAmp(9, values[10]);
 						}
