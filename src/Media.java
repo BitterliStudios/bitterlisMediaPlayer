@@ -18,13 +18,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -57,6 +54,7 @@ import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
 
 public class Media {
 
@@ -1078,21 +1076,16 @@ public class Media {
 		mediaPlayer.setMarqueeText("" + file.getName());
 		mediaPlayer.enableMarquee(true);
 		ActionListener marqueeTask = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				mediaPlayer.enableMarquee(false);
-
 			}
-
 		};
 		Timer text = new Timer(5000, marqueeTask);
 		text.setRepeats(false);
 		text.start();
-
 		frame.setFocusable(true);
 		frame.addKeyListener(new KeyListener() {
-
 			@Override
 			public void keyPressed(KeyEvent k) {
 				int key = k.getKeyCode();
@@ -1275,69 +1268,74 @@ public class Media {
 
 				} else if (key == (KeyEvent.VK_UP)) {
 					System.out.println("Volume Up");
-
-					String marqueeText = "Volume Up";
-					mediaPlayer.setMarqueeLocation((csizex - 15), (15));
-					mediaPlayer.setMarqueeText("" + marqueeText);
-					mediaPlayer.setMarqueeSize(22);
-					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							mediaPlayer.enableMarquee(false);
-							text.stop();
-						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
-					text.setRepeats(false);
-					text.start();
 					int newVol = mediaPlayer.getVolume() + 10;
-					mediaPlayer.setVolume(newVol);
-					String vLabel = "N/A";
-					if (mediaPlayer.getVolume() < 100) {
-						if (mediaPlayer.getVolume() < 10) {
-							vLabel = "" + newVol + "%   ";
+					if (newVol <= 200) {
+
+						String marqueeText = "Volume Up";
+						mediaPlayer.setMarqueeLocation((csizex - 15), (15));
+						mediaPlayer.setMarqueeText("" + marqueeText);
+						mediaPlayer.setMarqueeSize(22);
+						mediaPlayer.enableMarquee(true);
+						ActionListener marqueeTask = new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								mediaPlayer.enableMarquee(false);
+								text.stop();
+							}
+						};
+						Timer text = new Timer(1000, marqueeTask);
+						text.setRepeats(false);
+						text.start();
+						
+						mediaPlayer.setVolume(newVol);
+						String vLabel = "N/A";
+						if (mediaPlayer.getVolume() < 100) {
+							if (mediaPlayer.getVolume() < 10) {
+								vLabel = "" + newVol + "%   ";
+							} else {
+								vLabel = "" + newVol + "%  ";
+							}
 						} else {
-							vLabel = "" + newVol + "%  ";
+							vLabel = "" + newVol + "%";
 						}
-					} else {
-						vLabel = "" + newVol + "%";
+						volumePercent.setText(vLabel);
+						volume.setValue(newVol);
 					}
-					volumePercent.setText(vLabel);
-					volume.setValue(newVol);
 
 				} else if (key == (KeyEvent.VK_DOWN)) {
 					System.out.println("Volume Down");
 
-					String marqueeText = "Volume Down";
-					mediaPlayer.setMarqueeLocation((csizex - 15), (15));
-					mediaPlayer.setMarqueeText("" + marqueeText);
-					mediaPlayer.setMarqueeSize(22);
-					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							mediaPlayer.enableMarquee(false);
-							text.stop();
-						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
-					text.setRepeats(false);
-					text.start();
 					int newVol = (mediaPlayer.getVolume() - 10);
-					mediaPlayer.setVolume(newVol);
-					String vLabel = "N/A";
-					if (mediaPlayer.getVolume() < 100) {
-						if (mediaPlayer.getVolume() < 10) {
-							vLabel = "" + newVol + "%   ";
+					if (newVol >= 0) {
+						String marqueeText = "Volume Down";
+						mediaPlayer.setMarqueeLocation((csizex - 15), (15));
+						mediaPlayer.setMarqueeText("" + marqueeText);
+						mediaPlayer.setMarqueeSize(22);
+						mediaPlayer.enableMarquee(true);
+						ActionListener marqueeTask = new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								mediaPlayer.enableMarquee(false);
+								text.stop();
+							}
+						};
+						Timer text = new Timer(1000, marqueeTask);
+						text.setRepeats(false);
+						text.start();
+						mediaPlayer.setVolume(newVol);
+						String vLabel = "N/A";
+						if (mediaPlayer.getVolume() < 100) {
+							if (mediaPlayer.getVolume() < 10) {
+								vLabel = "" + newVol + "%   ";
+							} else {
+								vLabel = "" + newVol + "%  ";
+							}
 						} else {
-							vLabel = "" + newVol + "%  ";
+							vLabel = "" + newVol + "%";
 						}
-					} else {
-						vLabel = "" + newVol + "%";
+						volumePercent.setText(vLabel);
+						volume.setValue(newVol);
 					}
-					volumePercent.setText(vLabel);
-					volume.setValue(newVol);
 				} else if (key == (KeyEvent.VK_RIGHT)) {
 					System.out.println("5% Dub ->");
 
@@ -1469,6 +1467,10 @@ public class Media {
 		mediaPlayer.playMedia(file.getPath());
 		mediaPlayer.setEqualizer(mediaPlayerFactory.getAllPresetEqualizers().get("Flat"));
 		c.setBackground(Color.black);
+		
+		EmbeddedMediaPlayer embeddedMediaPlayer = 
+			    mediaPlayerFactory.newEmbeddedMediaPlayer(new Win32FullScreenStrategy(frame));
+		
 
 		// Main logo (shown when stopped, no album art on audio).
 		// The album art is displayed over the logo.
