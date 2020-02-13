@@ -1524,10 +1524,18 @@ public class Media {
 		mediaPlayer.playMedia(file.getPath());
 		mediaPlayer.setEqualizer(mediaPlayerFactory.getAllPresetEqualizers().get("Flat"));
 		c.setBackground(Color.black);
-
-		@SuppressWarnings("unused")
-		EmbeddedMediaPlayer embeddedMediaPlayer = mediaPlayerFactory
-				.newEmbeddedMediaPlayer(new Win32FullScreenStrategy(frame));
+		
+		boolean testFullScreen = true;
+		if (testFullScreen) {
+			frame.remove(p0);
+			frame.remove(p1);
+			frame.setJMenuBar(null);
+			p.setSize(dim);
+			c.setSize(dim);
+			EmbeddedMediaPlayer fullScreenOperation = 
+				    mediaPlayerFactory.newEmbeddedMediaPlayer(new Win32FullScreenStrategy(frame));
+			fullScreenOperation.toggleFullScreen();
+		}
 
 		// Main logo (shown when stopped, no album art on audio).
 		// The album art is displayed over the logo.
