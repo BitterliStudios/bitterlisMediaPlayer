@@ -11,6 +11,7 @@ public class BAbout {
 		String version = "Version " + version() + " - Controls Update";
 		String author = "Bitterli";
 		String changes = "Changelog:"
+				+ "\n(Feb 12 2020) Added full screen strategy."
 				+ "\n(Feb 11 2020) Added ability to save Equalizers to text file."
 				+ "\n(Feb 7 2020) Added library default presets."
 				+ "\n(Feb 3 2020) Added mute button and volume slider."
@@ -36,7 +37,7 @@ public class BAbout {
 	}
 	
 	public String version() {
-		return "B_0.8.2";
+		return "B_0.9.0";
 	}
 
 }
