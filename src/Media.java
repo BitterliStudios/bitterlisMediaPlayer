@@ -1160,9 +1160,9 @@ public class Media {
 			public void keyPressed(KeyEvent k) {
 				int key = k.getKeyCode();
 				if (key == (KeyEvent.VK_F)) {
-					System.out.println("Toggle fullscreen");
+					System.out.println("Toggled fullscreen");
 
-					String marqueeText = "Toggle fullscreen";
+					String marqueeText = "Toggled fullscreen";
 					mediaPlayer.setMarqueeLocation((csizex - 15), (15));
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
@@ -1199,22 +1199,18 @@ public class Media {
 
 				} else if (key == (KeyEvent.VK_ESCAPE)) {
 					System.out.println("Leave fullscreen/close dialogue");
-
-					String marqueeText = "Leave fullscreen/close dialogue";
-					mediaPlayer.setMarqueeLocation((csizex - 15), (15));
-					mediaPlayer.setMarqueeText("" + marqueeText);
-					mediaPlayer.setMarqueeSize(22);
-					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							mediaPlayer.enableMarquee(false);
-							text.stop();
-						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
-					text.setRepeats(false);
-					text.start();
+					
+					if (fullScreenOperation.isFullScreen()) {
+						fullScreenOperation.toggleFullScreen();
+						frame.add(p0, BorderLayout.CENTER);
+						frame.add(p1, BorderLayout.SOUTH);
+						frame.setJMenuBar(main);
+						p.setSize(pSize);
+						c.setSize(cSize);
+						p.setBounds(100, 50, 1050, 600);
+						c.setBounds(100, 50, 1050, 500);
+						frame.repaint();
+					}
 				} else if (key == (KeyEvent.VK_SPACE)) {
 					System.out.println("Play/pause");
 
