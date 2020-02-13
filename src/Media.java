@@ -71,6 +71,9 @@ public class Media {
 
 	private eqPresetManager presets;
 
+	private Dimension pSize;
+	private Dimension cSize;
+
 	public Media(File f) {
 		file = f;
 		equalizer();
@@ -938,6 +941,12 @@ public class Media {
 		mediaPlayer = mediaPlayerFactory.newEmbeddedMediaPlayer();
 		mediaPlayer.setVideoSurface(mediaPlayerFactory.newVideoSurface(c));
 
+		EmbeddedMediaPlayer fullScreenOperation = mediaPlayerFactory
+				.newEmbeddedMediaPlayer(new Win32FullScreenStrategy(frame));
+
+		pSize = p.getSize();
+		cSize = c.getSize();
+
 		JPanel p0 = new JPanel();
 
 		JLabel time = new JLabel("0:00 / 0:00");
@@ -1127,6 +1136,10 @@ public class Media {
 		p1.add(volume);
 		p1.add(volumePercent);
 
+		p0.setFocusable(false);
+		p1.setFocusable(false);
+		p.setFocusable(false);
+
 		int csizex = c.getSize().width / 2;
 		int csizey = c.getSize().height;
 		mediaPlayer.setMarqueeLocation((csizex / 2), (csizey - 60));
@@ -1164,6 +1177,26 @@ public class Media {
 					Timer text = new Timer(1000, marqueeTask);
 					text.setRepeats(false);
 					text.start();
+
+					if (!fullScreenOperation.isFullScreen()) {
+						frame.remove(p0);
+						frame.remove(p1);
+						frame.setJMenuBar(null);
+						p.setSize(dim);
+						c.setSize(dim);
+						fullScreenOperation.toggleFullScreen();
+					} else {
+						fullScreenOperation.toggleFullScreen();
+						frame.add(p0, BorderLayout.CENTER);
+						frame.add(p1, BorderLayout.SOUTH);
+						frame.setJMenuBar(main);
+						p.setSize(pSize);
+						c.setSize(cSize);
+						p.setBounds(100, 50, 1050, 600);
+						c.setBounds(100, 50, 1050, 500);
+						frame.repaint();
+					}
+
 				} else if (key == (KeyEvent.VK_ESCAPE)) {
 					System.out.println("Leave fullscreen/close dialogue");
 
@@ -1524,18 +1557,6 @@ public class Media {
 		mediaPlayer.playMedia(file.getPath());
 		mediaPlayer.setEqualizer(mediaPlayerFactory.getAllPresetEqualizers().get("Flat"));
 		c.setBackground(Color.black);
-		
-		boolean testFullScreen = true;
-		if (testFullScreen) {
-			frame.remove(p0);
-			frame.remove(p1);
-			frame.setJMenuBar(null);
-			p.setSize(dim);
-			c.setSize(dim);
-			EmbeddedMediaPlayer fullScreenOperation = 
-				    mediaPlayerFactory.newEmbeddedMediaPlayer(new Win32FullScreenStrategy(frame));
-			fullScreenOperation.toggleFullScreen();
-		}
 
 		// Main logo (shown when stopped, no album art on audio).
 		// The album art is displayed over the logo.
@@ -1657,6 +1678,14 @@ public class Media {
 				}
 			}
 		});
+
+		pausebutton.setFocusable(false);
+		playbutton.setFocusable(false);
+		stopbutton.setFocusable(false);
+		loopbutton.setFocusable(false);
+		mutebutton.setFocusable(false);
+		volume.setFocusable(false);
+		c.setFocusable(false);
 
 	}
 
