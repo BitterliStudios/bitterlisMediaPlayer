@@ -27,7 +27,6 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -1029,56 +1028,35 @@ public class Media {
 		p1.setBounds(100, 900, 105, 200);
 		frame.add(p1, BorderLayout.SOUTH);
 		JButton playbutton = new JButton();
-		Image playimg = null;
-		try {
-			playimg = ImageIO.read(new File("Play.gif"));
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		Image playimg = ImageIO.read(new File("Play.gif"));
 		playbutton.setIcon(new ImageIcon(playimg));
 		playbutton.setBounds(50, 50, 150, 100);
 		playbutton.setBackground(Color.LIGHT_GRAY);
 		p1.add(playbutton);
 
 		JButton pausebutton = new JButton();
-		Image pauseimg = null;
-		try {
-			pauseimg = ImageIO.read(new File("Pause.png"));
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		Image pauseimg = ImageIO.read(new File("Pause.png"));
 		pausebutton.setIcon(new ImageIcon(pauseimg));
 		pausebutton.setBounds(80, 50, 150, 100);
 		pausebutton.setBackground(Color.LIGHT_GRAY);
 		p1.add(pausebutton);
 
+		JButton playpause = new JButton();
+		Image playpauseimg = ImageIO.read(new File("Pause.png"));
+		playpause.setIcon(new ImageIcon(playpauseimg));
+		playpause.setBounds(80, 50, 150, 100);
+		playpause.setBackground(Color.LIGHT_GRAY);
+		//p1.add(playpause);
+
 		JButton stopbutton = new JButton();
-		Image stopimg = null;
-		try {
-			stopimg = ImageIO.read(new File("Stop.gif"));
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		Image stopimg = ImageIO.read(new File("Stop.gif"));
 		stopbutton.setIcon(new ImageIcon(stopimg));
 		stopbutton.setBounds(80, 50, 150, 100);
 		stopbutton.setBackground(Color.LIGHT_GRAY);
 		p1.add(stopbutton);
 
 		JButton loopbutton = new JButton();
-		Image loopimg = null;
-		try {
-			loopimg = ImageIO.read(new File("Loop.png"));
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		Image loopimg = ImageIO.read(new File("Loop.png"));
 		loopimg = loopimg.getScaledInstance(18, 18, 0);
 		loopbutton.setIcon(new ImageIcon(loopimg));
 		loopbutton.setBounds(80, 50, 150, 100);
@@ -1086,14 +1064,7 @@ public class Media {
 		p1.add(loopbutton);
 
 		JButton mutebutton = new JButton();
-		Image muteimg = null;
-		try {
-			muteimg = ImageIO.read(new File("Mute.png"));
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		Image muteimg = ImageIO.read(new File("Mute.png"));
 		muteimg = muteimg.getScaledInstance(18, 18, 0);
 		mutebutton.setIcon(new ImageIcon(muteimg));
 		mutebutton.setBounds(80, 50, 150, 100);
@@ -1135,6 +1106,9 @@ public class Media {
 		volume.setPreferredSize(new Dimension(70, 18));
 		p1.add(volume);
 		p1.add(volumePercent);
+		
+		JPanel fullscreenOverlay = p1;
+		
 
 		p0.setFocusable(false);
 		p1.setFocusable(false);
@@ -1184,9 +1158,11 @@ public class Media {
 						frame.setJMenuBar(null);
 						p.setSize(dim);
 						c.setSize(dim);
+						frame.add(fullscreenOverlay);
 						fullScreenOperation.toggleFullScreen();
 					} else {
 						fullScreenOperation.toggleFullScreen();
+						frame.remove(fullscreenOverlay);
 						frame.add(p0, BorderLayout.CENTER);
 						frame.add(p1, BorderLayout.SOUTH);
 						frame.setJMenuBar(main);
@@ -1199,7 +1175,7 @@ public class Media {
 
 				} else if (key == (KeyEvent.VK_ESCAPE)) {
 					System.out.println("Leave fullscreen/close dialogue");
-					
+
 					if (fullScreenOperation.isFullScreen()) {
 						fullScreenOperation.toggleFullScreen();
 						frame.add(p0, BorderLayout.CENTER);
@@ -1673,6 +1649,27 @@ public class Media {
 					mutebutton.setBackground(Color.LIGHT_GRAY);
 				}
 			}
+		});
+		playpause.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Image playpauseimg = null;
+					if (mediaPlayer.isPlaying()) {
+						mediaPlayer.pause();
+						playpauseimg = ImageIO.read(new File("Play.gif"));
+						playpause.setIcon(new ImageIcon(playpauseimg));
+					} else {
+						mediaPlayer.play();
+						playpauseimg = ImageIO.read(new File("Pause.png"));
+						playpause.setIcon(new ImageIcon(playpauseimg));
+					}
+					pausebutton.setIcon(new ImageIcon(playpauseimg));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
 		});
 
 		pausebutton.setFocusable(false);
