@@ -23,6 +23,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -1115,6 +1116,74 @@ public class Media {
 		JPanel fullscreenOverlay = p0;
 		fullscreenOverlay.add(p1);
 		
+		p.addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseDragged(MouseEvent arg0) {
+				//YUH
+				
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent arg0) {
+				if (fullScreenOperation.isFullScreen()) {
+					System.out.println("F  - Fullscreen Mouse Moved");
+					Dimension newCSizeY = new Dimension(dim.width, dim.height-50);
+					c.setSize(newCSizeY);
+					p.add(fullscreenOverlay, BorderLayout.SOUTH);
+					ActionListener overlayOperation = new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							if (fullScreenOperation.isFullScreen()) {
+								p.remove(fullscreenOverlay);
+								c.setSize(dim);
+							}
+						}
+						
+					};
+					Timer overlay = new Timer(2000, overlayOperation);
+					overlay.setRepeats(false);
+					overlay.start();
+				}
+				
+			}
+			
+		});
+		c.addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseDragged(MouseEvent arg0) {
+				//YUH
+				
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent arg0) {
+				if (fullScreenOperation.isFullScreen()) {
+					System.out.println("C - Fullscreen Mouse Moved");
+					Dimension newCSizeY = new Dimension(dim.width, dim.height-50);
+					c.setSize(newCSizeY);
+					p.add(fullscreenOverlay, BorderLayout.SOUTH);
+					ActionListener overlayOperation = new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							if (fullScreenOperation.isFullScreen()) {
+								p.remove(fullscreenOverlay);
+								c.setSize(dim);
+							}
+						}
+						
+					};
+					Timer overlay = new Timer(2000, overlayOperation);
+					overlay.setRepeats(false);
+					overlay.start();
+				}
+				
+			}
+			
+		});
+		
+		c.setFocusable(false);
 		p0.setFocusable(false);
 		p1.setFocusable(false);
 		p.setFocusable(false);
@@ -1144,42 +1213,57 @@ public class Media {
 				if (key == (KeyEvent.VK_F)) {
 					System.out.println("Toggled fullscreen");
 
-					String marqueeText = "Toggled fullscreen";
-					mediaPlayer.setMarqueeLocation((csizex - 15), (15));
-					mediaPlayer.setMarqueeText("" + marqueeText);
-					mediaPlayer.setMarqueeSize(22);
-					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							mediaPlayer.enableMarquee(false);
-							text.stop();
-						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
-					text.setRepeats(false);
-					text.start();
+					if (!isAudio()) { //audio files should not be able to toggle fullscreen mode
+						String marqueeText = "Toggled fullscreen";
+						mediaPlayer.setMarqueeLocation((csizex - 15), (15));
+						mediaPlayer.setMarqueeText("" + marqueeText);
+						mediaPlayer.setMarqueeSize(22);
+						mediaPlayer.enableMarquee(true);
+						ActionListener marqueeTask = new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								mediaPlayer.enableMarquee(false);
+								
+							}
+						};
+						Timer text = new Timer(1000, marqueeTask);
+						text.setRepeats(false);
+						text.start();
 
-					if (!fullScreenOperation.isFullScreen()) {
-						frame.remove(p0);
-						frame.remove(p1);
-						frame.setJMenuBar(null);
-						p.setSize(dim);
-						Dimension newCSizeY = new Dimension(dim.width, dim.height-50);
-						c.setSize(newCSizeY);
-						p.add(fullscreenOverlay, BorderLayout.SOUTH);
-						fullScreenOperation.toggleFullScreen();
-					} else {
-						fullScreenOperation.toggleFullScreen();
-						frame.remove(fullscreenOverlay);
-						frame.add(p0, BorderLayout.CENTER);
-						frame.add(p1, BorderLayout.SOUTH);
-						frame.setJMenuBar(main);
-						p.setSize(pSize);
-						c.setSize(cSize);
-						p.setBounds(100, 50, 1050, 600);
-						c.setBounds(100, 50, 1050, 500);
-						frame.repaint();
+						if (!fullScreenOperation.isFullScreen()) {
+							c.setFocusable(true);
+							frame.remove(p0);
+							frame.remove(p1);
+							frame.setJMenuBar(null);
+							p.setSize(dim);
+							Dimension newCSizeY = new Dimension(dim.width, dim.height-50);
+							c.setSize(newCSizeY);
+							p.add(fullscreenOverlay, BorderLayout.SOUTH);
+							ActionListener overlayOperation = new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent arg0) {
+									p.remove(fullscreenOverlay);
+									c.setSize(dim);
+								}
+								
+							};
+							Timer overlay = new Timer(2000, overlayOperation);
+							overlay.setRepeats(false);
+							overlay.start();
+							fullScreenOperation.toggleFullScreen();
+						} else {
+							c.setFocusable(false);
+							fullScreenOperation.toggleFullScreen();
+							frame.remove(fullscreenOverlay);
+							frame.add(p0, BorderLayout.CENTER);
+							frame.add(p1, BorderLayout.SOUTH);
+							frame.setJMenuBar(main);
+							p.setSize(pSize);
+							c.setSize(cSize);
+							p.setBounds(100, 50, 1050, 600);
+							c.setBounds(100, 50, 1050, 500);
+							frame.repaint();
+						}
 					}
 
 				} else if (key == (KeyEvent.VK_ESCAPE)) {
@@ -1216,7 +1300,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1235,7 +1319,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1254,7 +1338,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1273,7 +1357,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1291,7 +1375,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1310,7 +1394,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1329,7 +1413,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1351,7 +1435,7 @@ public class Media {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
-								text.stop();
+								
 							}
 						};
 						Timer text = new Timer(1000, marqueeTask);
@@ -1387,7 +1471,7 @@ public class Media {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
-								text.stop();
+								
 							}
 						};
 						Timer text = new Timer(1000, marqueeTask);
@@ -1419,7 +1503,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1438,7 +1522,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1466,7 +1550,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1485,7 +1569,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1511,7 +1595,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							text.stop();
+							
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
