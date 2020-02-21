@@ -7,15 +7,3 @@ This is a side project I started back around December of 2018 after seeing a tut
 ## About
 This is my 2019 - 2020 Advanced Coding school project for the second semester.
 This project will be ongoing until April of 2020.
-
-## Plans
-- Have a media player similar to VLC media player but have more functionality.
-- Have it as a stand alone executable jar.
-- Incorporate multitrack audio mixing (single out individual audio channels in a surroundsound).
-- Add more advanced audio effects (really just a form of reverb, speed/pitch control, equalizer).
-- Have two versions, one with the vlcj library and one out of the default java library.
-
-## Website
-Go check out my website, it's not exactly java or coding related but...
-http://bitterli.us/
-and yes, I made my website in a notepad file. Odd flex but okay.
