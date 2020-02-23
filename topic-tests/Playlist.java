@@ -4,11 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Random;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -28,10 +30,13 @@ public class Playlist {
 	private static boolean shuffle = true;
 
 	public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-		playlist.add(new audioFile("test.wav"));
-		playlist.add(new audioFile("test1.wav"));
-		playlist.add(new audioFile("test2.wav"));
+		playlist.add(new audioFile("Jazz-Album\\01 Strollin'.wav"));
+		playlist.add(new audioFile("Jazz-Album\\02 Where You At_.wav"));
+		playlist.add(new audioFile("Jazz-Album\\03 Without You.wav"));
 		playlist.get(0).play();
+
+		// for shuffle
+		Random rand = new Random();
 
 		JFrame frame = new JFrame("LinkedList Playlist");
 
@@ -106,19 +111,51 @@ public class Playlist {
 			}
 		});
 		opt.add(loopS);
-		JMenuItem shuffle = new JMenuItem("Enable Shuffle");
-		loopS.addActionListener(new ActionListener() {
+		JMenuItem shuffleOpt = new JMenuItem("Enable Shuffle");
+		shuffleOpt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				shuffle();
-				if (sLoop) {
-					loopS.setText("Disable Shuffle");
+				if (shuffle) {
+					shuffleOpt.setText("Disable Shuffle");
 				} else {
-					loopS.setText("Enable Shuffle");
+					shuffleOpt.setText("Enable Shuffle");
 				}
 			}
 		});
-		opt.add(loopS);
+		opt.add(shuffleOpt);
+		JMenuItem removeTrack = new JMenuItem("Remove a track");
+		removeTrack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					String[] files = new String[playlist.size()];
+					for (int i = 0; i < playlist.size(); i++) {
+						files[i] = playlist.get(i).getName();
+					}
+					String remove = (String) JOptionPane.showInputDialog(null, "Select a track:", "Remove a track",
+							JOptionPane.QUESTION_MESSAGE, null, files, files[0]);
+					playlist.remove(new audioFile(remove)); //remove with provided node
+				} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		opt.add(removeTrack);
+		JMenuItem removeFirst = new JMenuItem("Remove first track");
+		removeFirst.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				playlist.removeFirst();
+			}
+		});
+		opt.add(removeFirst);
+		JMenuItem removeLast = new JMenuItem("Remove last track");
+		removeLast.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				playlist.removeLast();
+			}
+		});
+		opt.add(removeLast);
 		
+
 		mb.add(opt);
 
 		JMenu view = new JMenu("View");
@@ -141,11 +178,8 @@ public class Playlist {
 		mb.add(view);
 
 		JPanel pT = new JPanel();
-		JTextField name = new JTextField(playlist.get(pos).getName());
-		name.setEditable(false);
+		JLabel name = new JLabel(playlist.get(pos).getName());
 		pT.add(name);
-		
-		
 
 		JPanel pB = new JPanel(new GridLayout(0, 3));
 
@@ -221,7 +255,7 @@ public class Playlist {
 			public void actionPerformed(ActionEvent arg0) {
 				if (playlist.get(pos).isDone()) {
 					try {
-						if (!(pos + 1 == playlist.size()) && !sLoop) {
+						if (!(pos + 1 == playlist.size()) && !sLoop && !shuffle) {
 							playlist.get(pos).stop();
 							pos++;
 							name.setText(playlist.get(pos).getName());
@@ -229,7 +263,7 @@ public class Playlist {
 								playlist.get(pos).resetAudioStream();
 							}
 							playlist.get(pos).play();
-						} else if (pLoop) {
+						} else if (pLoop && !shuffle) {
 							playlist.get(pos).stop();
 							pos = 0;
 							name.setText(playlist.get(pos).getName());
@@ -237,6 +271,14 @@ public class Playlist {
 								playlist.get(pos).resetAudioStream();
 							}
 							playlist.get(pos).play();
+						} else if (shuffle) { // shuffle turns on playlist looping
+							pLoop = true;
+							playlist.get(pos).stop();
+							pos = rand.nextInt(playlist.size());
+							name.setText(playlist.get(pos).getName());
+							if (playlist.get(pos).opened()) {
+								playlist.get(pos).resetAudioStream();
+							}
 						}
 					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 						e.printStackTrace();
@@ -277,7 +319,7 @@ public class Playlist {
 			playlist.get(pos).loop(false);
 		}
 	}
-	
+
 	public static void shuffle() {
 		if (!shuffle) {
 			shuffle = true;
