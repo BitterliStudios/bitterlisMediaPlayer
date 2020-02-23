@@ -4,9 +4,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="topic-tests"/>
 	<classpathentry kind="lib" path="D:/The Flash 2.0/Advanced Workspace/Media Player/vlcj-3.12.1/vlcj-3.12.1.jar"/>
-	<classpathentry kind="lib" path="D:/The Flash 2.0/Advanced Workspace/Media Player/jvsthost-master/JVstHost.jar"/>
-	<classpathentry kind="lib" path="D:/The Flash 2.0/Advanced Workspace/Media Player/jVSTwRapper-Release-1.0beta/jVSTeXamples-1.0beta.jar"/>
-	<classpathentry kind="lib" path="D:/The Flash 2.0/Advanced Workspace/Media Player/jVSTwRapper-Release-1.0beta/jVSTsYstem-1.0beta.jar"/>
-	<classpathentry kind="lib" path="D:/The Flash 2.0/Advanced Workspace/Media Player/jVSTwRapper-Release-1.0beta/jVSTwRapper-1.0beta.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
