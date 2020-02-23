@@ -1,3 +1,11 @@
+
+/* BitterliStudios 2020
+ * Playlist.java
+ * 
+ * The main class file handling the GUI and
+ * houses the LinkedList
+ */
+
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -30,6 +38,9 @@ public class Playlist {
 	private static boolean shuffle = true;
 
 	public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+
+		// setting up simple three track playlist
+		// the actual track name will also house the folder name.
 		playlist.add(new audioFile("Jazz-Album\\01 Strollin'.wav"));
 		playlist.add(new audioFile("Jazz-Album\\02 Where You At_.wav"));
 		playlist.add(new audioFile("Jazz-Album\\03 Without You.wav"));
@@ -38,10 +49,16 @@ public class Playlist {
 		// for shuffle
 		Random rand = new Random();
 
+		// the main frame
 		JFrame frame = new JFrame("LinkedList Playlist");
 
+		// the label of the track in the main frame
+		JLabel name = new JLabel(playlist.get(pos).getName());
+
+		// the menubar
 		JMenuBar mb = new JMenuBar();
 
+		// simple file-close option
 		JMenu file = new JMenu("File");
 		JMenuItem close = new JMenuItem("Close");
 		close.addActionListener(new ActionListener() {
@@ -88,10 +105,11 @@ public class Playlist {
 		JMenuItem loopP = new JMenuItem("Enable Playlist Loop");
 		loopP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				loopPlaylist();
-				if (pLoop) {
+				if (!pLoop) {
+					pLoop = true;
 					loopP.setText("Disable Playlist Loop");
 				} else {
+					pLoop = false;
 					loopP.setText("Enable Playlist Loop");
 				}
 			}
@@ -102,62 +120,115 @@ public class Playlist {
 		JMenuItem loopS = new JMenuItem("Enable Single Loop");
 		loopS.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				loopSingleTrack();
-				if (sLoop) {
+				if (!sLoop) {
+					sLoop = true;
+					playlist.get(pos).loop(true);
 					loopS.setText("Disable Single Loop");
 				} else {
+					sLoop = false;
+					playlist.get(pos).loop(false);
 					loopS.setText("Enable Single Loop");
 				}
 			}
 		});
 		opt.add(loopS);
+
+		// shuffle the playlist
 		JMenuItem shuffleOpt = new JMenuItem("Enable Shuffle");
 		shuffleOpt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				shuffle();
-				if (shuffle) {
+				if (!shuffle) {
+					shuffle = true;
 					shuffleOpt.setText("Disable Shuffle");
 				} else {
+					shuffle = false;
 					shuffleOpt.setText("Enable Shuffle");
 				}
 			}
 		});
 		opt.add(shuffleOpt);
+
+		// remove a track.
 		JMenuItem removeTrack = new JMenuItem("Remove a track");
 		removeTrack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					String[] files = new String[playlist.size()];
-					for (int i = 0; i < playlist.size(); i++) {
-						files[i] = playlist.get(i).getName();
+				String[] files = new String[playlist.size()];
+				for (int i = 0; i < playlist.size(); i++) {
+					files[i] = playlist.get(i).getName();
+				}
+				String remove = (String) JOptionPane.showInputDialog(null, "Select a track:", "Remove a track",
+						JOptionPane.QUESTION_MESSAGE, null, files, files[0]);
+				int i = 0;
+				// because the audio object to remove and a new audio object
+				// are different, I can't just use remove() or indexOf().
+				for (audioFile find : playlist) {
+					if (find.getName().equals(remove)) {
+						if (i == pos) {
+							pos++;
+							playlist.remove(i);
+						} else {
+							playlist.remove(i);
+						}
+					} else {
+						i++;
 					}
-					String remove = (String) JOptionPane.showInputDialog(null, "Select a track:", "Remove a track",
-							JOptionPane.QUESTION_MESSAGE, null, files, files[0]);
-					playlist.remove(new audioFile(remove)); //remove with provided node
-				} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
-					e1.printStackTrace();
 				}
 			}
 		});
 		opt.add(removeTrack);
+
+		// remove the first track
 		JMenuItem removeFirst = new JMenuItem("Remove first track");
 		removeFirst.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				playlist.removeFirst();
+				if (pos == 0) {
+					try {
+						playlist.get(pos).stop();
+						playlist.removeFirst();
+						name.setText(playlist.get(pos).getName());
+						if (playlist.get(pos).opened()) {
+							playlist.get(pos).resetAudioStream();
+						}
+						playlist.get(pos).play();
+					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					playlist.removeFirst();
+				}
 			}
 		});
 		opt.add(removeFirst);
+
+		// remove the last track
 		JMenuItem removeLast = new JMenuItem("Remove last track");
 		removeLast.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				playlist.removeLast();
+				if (pos == playlist.size() - 1) {
+					try {
+						playlist.get(pos).stop();
+						pos = 0;
+						playlist.removeLast();
+						playlist.get(pos).stop();
+						playlist.removeFirst();
+						name.setText(playlist.get(pos).getName());
+						if (playlist.get(pos).opened()) {
+							playlist.get(pos).resetAudioStream();
+						}
+						playlist.get(pos).play();
+					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					playlist.removeLast();
+				}
 			}
 		});
 		opt.add(removeLast);
-		
 
 		mb.add(opt);
 
+		// print the linkedlist in a gui
 		JMenu view = new JMenu("View");
 		JMenuItem print = new JMenuItem("Print");
 		print.addActionListener(new ActionListener() {
@@ -169,7 +240,7 @@ public class Playlist {
 					printP.add(title);
 				}
 				printF.add(printP);
-				printF.setSize(new Dimension(200, 200));
+				printF.setSize(new Dimension(400, 400));
 				printF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				printF.setVisible(true);
 			}
@@ -177,10 +248,11 @@ public class Playlist {
 		view.add(print);
 		mb.add(view);
 
+		// panel for the text
 		JPanel pT = new JPanel();
-		JLabel name = new JLabel(playlist.get(pos).getName());
 		pT.add(name);
 
+		// panel for the buttons
 		JPanel pB = new JPanel(new GridLayout(0, 3));
 
 		// jump to previous track in playlist.
@@ -284,11 +356,10 @@ public class Playlist {
 						e.printStackTrace();
 					}
 				}
-
 			}
-
 		};
 
+		// timer to check when a track has ended.
 		Timer step = new Timer(1000, advance);
 		step.start();
 
@@ -300,32 +371,7 @@ public class Playlist {
 		frame.setSize(new Dimension(400, 150));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-	}
 
-	public static void loopPlaylist() {
-		if (!pLoop) {
-			pLoop = true;
-		} else {
-			pLoop = false;
-		}
+		// split the text and buttons to different panels to help the layout managers
 	}
-
-	public static void loopSingleTrack() {
-		if (!sLoop) {
-			sLoop = true;
-			playlist.get(pos).loop(true);
-		} else {
-			sLoop = false;
-			playlist.get(pos).loop(false);
-		}
-	}
-
-	public static void shuffle() {
-		if (!shuffle) {
-			shuffle = true;
-		} else {
-			shuffle = false;
-		}
-	}
-
 }

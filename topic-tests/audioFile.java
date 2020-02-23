@@ -1,3 +1,11 @@
+
+/* BitterliStudios 2020
+ * audioFile.java
+ * 
+ * The actual audio file object and it's playback methods.
+ * Only supports wav and au files.
+ */
+
 import java.io.File;
 import java.io.IOException;
 
