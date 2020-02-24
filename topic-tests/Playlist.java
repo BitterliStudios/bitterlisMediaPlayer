@@ -41,9 +41,9 @@ public class Playlist {
 
 		// setting up simple three track playlist
 		// the actual track name will also house the folder name.
-		playlist.add(new audioFile("Jazz-Album\\01 Strollin'.wav"));
-		playlist.add(new audioFile("Jazz-Album\\02 Where You At_.wav"));
-		playlist.add(new audioFile("Jazz-Album\\03 Without You.wav"));
+		playlist.add(new audioFile("01 Strollin'.wav"));
+		playlist.add(new audioFile("02 Where You At_.wav"));
+		playlist.add(new audioFile("03 Without You.wav"));
 		playlist.get(0).play();
 
 		// for shuffle
@@ -159,20 +159,22 @@ public class Playlist {
 				String remove = (String) JOptionPane.showInputDialog(null, "Select a track:", "Remove a track",
 						JOptionPane.QUESTION_MESSAGE, null, files, files[0]);
 				int i = 0;
+				boolean active = true;
 				// because the audio object to remove and a new audio object
 				// are different, I can't just use remove() or indexOf().
-				for (audioFile find : playlist) {
-					if (find.getName().equals(remove)) {
-						if (i == pos) {
-							pos++;
+				do {
+					for (audioFile find : playlist) {
+						if (find.getName().equals(remove)) {
+							if (i == pos) {
+								pos++;
+							}
 							playlist.remove(i);
+							active = false;
 						} else {
-							playlist.remove(i);
+							i++;
 						}
-					} else {
-						i++;
 					}
-				}
+				} while (active);
 			}
 		});
 		opt.add(removeTrack);

@@ -26,7 +26,7 @@ public class audioFile {
 
 	// constructor to initialize streams and clip
 	public audioFile(String filePathway) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-		filePath = filePathway;
+		filePath = "Jazz-Album\\" + filePathway;
 		audioInputStream = AudioSystem.getAudioInputStream(new File(filePath).getAbsoluteFile());
 
 		clip = AudioSystem.getClip();
@@ -111,7 +111,7 @@ public class audioFile {
 	}
 
 	public String getName() {
-		return filePath;
+		return filePath.replace("Jazz-Album\\", "");
 	}
 
 	public boolean opened() {
