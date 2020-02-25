@@ -14,7 +14,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -23,12 +22,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -45,7 +44,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
-import javax.swing.OverlayLayout;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
@@ -53,11 +51,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uk.co.caprica.vlcj.binding.LibVlcConst;
-import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
+import uk.co.caprica.vlcj.player.AudioDevice;
+import uk.co.caprica.vlcj.player.AudioOutput;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
-import uk.co.caprica.vlcj.player.MediaPlayer;
-import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
@@ -926,9 +923,50 @@ public class Media {
 
 		});
 
+		JMenuItem aD = new JMenuItem("Audio Device");
+		aD.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				List<AudioOutput> outputs = mediaPlayerFactory.getAudioOutputs();
+				for (AudioOutput a : outputs) {
+					System.out.println("" + a.getName() + ":");
+					List<AudioDevice> devices = a.getDevices();
+					for (AudioDevice b : devices) {
+						System.out.println("- " + b.getLongName());
+					}
+					System.out.println(" ");
+				}
+
+				String[] outputList = new String[outputs.size()];
+				for (int i = 0; i < outputs.size(); i++) {
+					outputList[i] = outputs.get(i).getName();
+				}
+
+				JFrame aF = new JFrame("Audio Outputs");
+				JPanel output = new JPanel(new GridLayout(2, 1));
+				JLabel selO = new JLabel("Select Output:");
+				@SuppressWarnings({ "unchecked", "rawtypes" })
+				JComboBox deviceList = new JComboBox(outputList);
+				deviceList.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						@SuppressWarnings({ "rawtypes" })
+						JComboBox box = (JComboBox) e.getSource();
+						System.out.println(box.getSelectedItem());
+					}
+				});
+				output.add(selO);
+				output.add(deviceList);
+				aF.add(output);
+				aF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				aF.setSize(new Dimension(300, 300));
+				aF.setVisible(true);
+
+			}
+		});
+
 		audioSettings.add(mute);
 		audioSettings.add(equalizer);
 		audioSettings.add(audioInfo);
+		audioSettings.add(aD);
 
 		main.add(audioSettings);
 
