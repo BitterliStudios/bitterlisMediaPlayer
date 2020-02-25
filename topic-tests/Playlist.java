@@ -328,6 +328,7 @@ public class Playlist {
 		ActionListener advance = new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (playlist.get(pos).isDone()) {
+					System.out.println("Next Track");
 					try {
 						if (!(pos + 1 == playlist.size()) && !sLoop && !shuffle) {
 							playlist.get(pos).stop();
@@ -353,6 +354,11 @@ public class Playlist {
 							if (playlist.get(pos).opened()) {
 								playlist.get(pos).resetAudioStream();
 							}
+							playlist.get(pos).play();
+						} else {
+							playlist.get(pos).stop();
+							frame.dispose();
+							// end of the playlist.
 						}
 					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 						e.printStackTrace();

@@ -53,8 +53,11 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uk.co.caprica.vlcj.binding.LibVlcConst;
+import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
@@ -118,9 +121,7 @@ public class Media {
 			title = "Demonstration Version - Media Player";
 		}
 		JFrame frame = new JFrame(title);
-		
-		
-		
+
 		mediaPlayerFactory = new MediaPlayerFactory();
 
 		JMenuBar main = new JMenuBar();
@@ -1052,7 +1053,7 @@ public class Media {
 		playpause.setIcon(new ImageIcon(playpauseimg));
 		playpause.setBounds(80, 50, 150, 100);
 		playpause.setBackground(Color.LIGHT_GRAY);
-		//p1.add(playpause);
+		// p1.add(playpause);
 
 		JButton stopbutton = new JButton();
 		Image stopimg = ImageIO.read(new File("Stop.gif"));
@@ -1112,77 +1113,10 @@ public class Media {
 		volume.setPreferredSize(new Dimension(70, 18));
 		p1.add(volume);
 		p1.add(volumePercent);
-		
+
 		JPanel fullscreenOverlay = p0;
 		fullscreenOverlay.add(p1);
-		
-		p.addMouseMotionListener(new MouseMotionListener() {
 
-			@Override
-			public void mouseDragged(MouseEvent arg0) {
-				//YUH
-				
-			}
-
-			@Override
-			public void mouseMoved(MouseEvent arg0) {
-				if (fullScreenOperation.isFullScreen()) {
-					System.out.println("F  - Fullscreen Mouse Moved");
-					Dimension newCSizeY = new Dimension(dim.width, dim.height-50);
-					c.setSize(newCSizeY);
-					p.add(fullscreenOverlay, BorderLayout.SOUTH);
-					ActionListener overlayOperation = new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							if (fullScreenOperation.isFullScreen()) {
-								p.remove(fullscreenOverlay);
-								c.setSize(dim);
-							}
-						}
-						
-					};
-					Timer overlay = new Timer(2000, overlayOperation);
-					overlay.setRepeats(false);
-					overlay.start();
-				}
-				
-			}
-			
-		});
-		c.addMouseMotionListener(new MouseMotionListener() {
-
-			@Override
-			public void mouseDragged(MouseEvent arg0) {
-				//YUH
-				
-			}
-
-			@Override
-			public void mouseMoved(MouseEvent arg0) {
-				if (fullScreenOperation.isFullScreen()) {
-					System.out.println("C - Fullscreen Mouse Moved");
-					Dimension newCSizeY = new Dimension(dim.width, dim.height-50);
-					c.setSize(newCSizeY);
-					p.add(fullscreenOverlay, BorderLayout.SOUTH);
-					ActionListener overlayOperation = new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							if (fullScreenOperation.isFullScreen()) {
-								p.remove(fullscreenOverlay);
-								c.setSize(dim);
-							}
-						}
-						
-					};
-					Timer overlay = new Timer(2000, overlayOperation);
-					overlay.setRepeats(false);
-					overlay.start();
-				}
-				
-			}
-			
-		});
-		
 		c.setFocusable(false);
 		p0.setFocusable(false);
 		p1.setFocusable(false);
@@ -1213,7 +1147,7 @@ public class Media {
 				if (key == (KeyEvent.VK_F)) {
 					System.out.println("Toggled fullscreen");
 
-					if (!isAudio()) { //audio files should not be able to toggle fullscreen mode
+					if (!isAudio()) { // audio files should not be able to toggle fullscreen mode
 						String marqueeText = "Toggled fullscreen";
 						mediaPlayer.setMarqueeLocation((csizex - 15), (15));
 						mediaPlayer.setMarqueeText("" + marqueeText);
@@ -1223,7 +1157,7 @@ public class Media {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
-								
+
 							}
 						};
 						Timer text = new Timer(1000, marqueeTask);
@@ -1236,20 +1170,9 @@ public class Media {
 							frame.remove(p1);
 							frame.setJMenuBar(null);
 							p.setSize(dim);
-							Dimension newCSizeY = new Dimension(dim.width, dim.height-50);
+							Dimension newCSizeY = new Dimension(dim.width, dim.height - 50);
 							c.setSize(newCSizeY);
 							p.add(fullscreenOverlay, BorderLayout.SOUTH);
-							ActionListener overlayOperation = new ActionListener() {
-								@Override
-								public void actionPerformed(ActionEvent arg0) {
-									p.remove(fullscreenOverlay);
-									c.setSize(dim);
-								}
-								
-							};
-							Timer overlay = new Timer(2000, overlayOperation);
-							overlay.setRepeats(false);
-							overlay.start();
 							fullScreenOperation.toggleFullScreen();
 						} else {
 							c.setFocusable(false);
@@ -1300,7 +1223,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1319,7 +1242,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1338,7 +1261,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1357,7 +1280,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1375,7 +1298,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1394,7 +1317,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1413,7 +1336,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1435,7 +1358,7 @@ public class Media {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
-								
+
 							}
 						};
 						Timer text = new Timer(1000, marqueeTask);
@@ -1471,7 +1394,7 @@ public class Media {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
-								
+
 							}
 						};
 						Timer text = new Timer(1000, marqueeTask);
@@ -1503,7 +1426,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1522,7 +1445,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1550,7 +1473,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1569,7 +1492,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
@@ -1595,7 +1518,7 @@ public class Media {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
-							
+
 						}
 					};
 					Timer text = new Timer(1000, marqueeTask);
