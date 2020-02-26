@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -27,6 +28,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -162,7 +164,9 @@ public class Media {
 						"mxf", "mxg", "nsv", "nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp",
 						"tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
 				j.showOpenDialog(null);
-				file = j.getSelectedFile();
+				if (j.getSelectedFile().exists()) {
+					file = j.getSelectedFile();
+				}
 			}
 
 		});
@@ -927,35 +931,70 @@ public class Media {
 		aD.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				List<AudioOutput> outputs = mediaPlayerFactory.getAudioOutputs();
-				for (AudioOutput a : outputs) {
-					System.out.println("" + a.getName() + ":");
-					List<AudioDevice> devices = a.getDevices();
-					for (AudioDevice b : devices) {
-						System.out.println("- " + b.getLongName());
-					}
-					System.out.println(" ");
-				}
-
-				String[] outputList = new String[outputs.size()];
+				String[] outputList = new String[outputs.size() + 1];
+				outputList[0] = "none";
 				for (int i = 0; i < outputs.size(); i++) {
-					outputList[i] = outputs.get(i).getName();
+					outputList[i + 1] = outputs.get(i).getName();
 				}
 
 				JFrame aF = new JFrame("Audio Outputs");
-				JPanel output = new JPanel(new GridLayout(2, 1));
-				JLabel selO = new JLabel("Select Output:");
-				@SuppressWarnings({ "unchecked", "rawtypes" })
-				JComboBox deviceList = new JComboBox(outputList);
-				deviceList.addActionListener(new ActionListener() {
+				JPanel d = new JPanel(new FlowLayout());
+				JLabel dL = new JLabel("Select Output Device:");
+				ArrayList<String> alOptions = new ArrayList<String>();
+
+				int[] indexes = findAudioDevices();
+				for (int i = 0; i < indexes.length; i++) {
+					List<AudioDevice> list = mediaPlayerFactory.getAudioOutputs().get(indexes[i]).getDevices();
+					for (AudioDevice a : list) {
+						if (!a.getLongName().equals("Microsoft Soundmapper")) { // it's a dead device
+							alOptions.add("[" + mediaPlayerFactory.getAudioOutputs().get(indexes[i]).getName() + "] "
+									+ a.getLongName());
+						}
+					}
+				}
+				String[] options = new String[alOptions.size()];
+				for (int i = 0; i < alOptions.size(); i++) {
+					options[i] = alOptions.get(i);
+				}
+				JComboBox<String> devices = new JComboBox<String>(options);
+				devices.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						@SuppressWarnings({ "rawtypes" })
-						JComboBox box = (JComboBox) e.getSource();
-						System.out.println(box.getSelectedItem());
+						@SuppressWarnings("unchecked")
+						JComboBox<String> box = (JComboBox<String>) e.getSource();
+						String split = alOptions.get(box.getSelectedIndex());
+						String[] cut = split.split("] ");
+						String output = cut[0].replace("[", "");
+						String device = cut[1];
+
+						if (output.equals("mmdevice")) {
+							String id = findId(0, device);
+							mediaPlayer.setAudioOutputDevice("mmdevice", id);
+							System.out.println(mediaPlayer.getAudioOutputDevice());
+						} else if (output.equals("waveout")) {
+							String id = findId(1, device);
+							mediaPlayer.setAudioOutputDevice("waveout", id);
+							System.out.println(mediaPlayer.getAudioOutputDevice());
+						}
+					}
+
+					private String findId(int i, String device) {
+						int size = mediaPlayerFactory.getAudioOutputs().get(indexes[i]).getDevices().size();
+						String ID = "null";
+						for (int a = 0; a < size; a++) {
+							if (mediaPlayerFactory.getAudioOutputs().get(indexes[i]).getDevices().get(a).getDeviceId()
+									.equals(device)) {
+								ID = (mediaPlayerFactory.getAudioOutputs().get(indexes[i]).getDevices().get(a)
+										.getDeviceId());
+							}
+						}
+						return ID;
 					}
 				});
-				output.add(selO);
-				output.add(deviceList);
-				aF.add(output);
+
+				d.add(dL);
+				d.add(devices);
+				aF.add(d);
+
 				aF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				aF.setSize(new Dimension(300, 300));
 				aF.setVisible(true);
@@ -966,7 +1005,8 @@ public class Media {
 		audioSettings.add(mute);
 		audioSettings.add(equalizer);
 		audioSettings.add(audioInfo);
-		audioSettings.add(aD);
+		// audioSettings.add(aD);
+		// It's just not working yet. It's fighting.
 
 		main.add(audioSettings);
 
@@ -984,6 +1024,9 @@ public class Media {
 		frame.add(p, BorderLayout.NORTH);
 		mediaPlayer = mediaPlayerFactory.newEmbeddedMediaPlayer();
 		mediaPlayer.setVideoSurface(mediaPlayerFactory.newVideoSurface(c));
+		
+		mediaPlayer.setAudioOutputDevice("mmdevice",
+				mediaPlayerFactory.getAudioOutputs().get(findAudioDevices()[0]).getDevices().get(0).getDeviceId());
 
 		EmbeddedMediaPlayer fullScreenOperation = mediaPlayerFactory
 				.newEmbeddedMediaPlayer(new Win32FullScreenStrategy(frame));
@@ -1739,6 +1782,19 @@ public class Media {
 	public void stop() {
 		mediaPlayer.stop();
 		mediaPlayer.pause();
+	}
+
+	public int[] findAudioDevices() {
+		int[] returns = new int[2];
+		int a = 0;
+		List<AudioOutput> output = mediaPlayerFactory.getAudioOutputs();
+		for (int i = 0; i < output.size(); i++) {
+			if (output.get(i).getName().equals("mmdevice") || output.get(i).getName().equals("waveout")) {
+				returns[a] = i;
+				a++;
+			}
+		}
+		return returns;
 	}
 
 }
