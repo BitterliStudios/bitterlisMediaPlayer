@@ -27,6 +27,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -68,8 +69,10 @@ public class Media {
 	private boolean stopped;
 	private Equalizer eq;
 	private MediaPlayerFactory mediaPlayerFactory;
-	private MediaListPlayer mediaListPlayer;
-	private MediaList mediaList;
+	
+	private ArrayList<File> list = new ArrayList<File>();
+	private int listP = 0;
+	private boolean pLoop;
 
 	private Canvas c;
 	private Object[] videoEffectValues = new Object[6];
@@ -82,8 +85,9 @@ public class Media {
 
 	public Media() {
 		mediaPlayerFactory = new MediaPlayerFactory();
-		mediaListPlayer = mediaPlayerFactory.newMediaListPlayer();
-		mediaList = mediaPlayerFactory.newMediaList();
+		
+		//for testing
+		pLoop = false;
 
 		openFile();
 		equalizer();
@@ -107,9 +111,8 @@ public class Media {
 		j.showOpenDialog(null);
 		File[] theList = j.getSelectedFiles();
 		for (int i = 0; i < theList.length; i++) {
-			mediaList.addMedia(theList[i].getPath());
+			list.add(theList[i]);
 		}
-		mediaListPlayer.setMediaList(mediaList);
 	}
 
 	private void equalizer() {
@@ -121,14 +124,13 @@ public class Media {
 	}
 
 	private boolean isAudio() {
-		File file = new File(mediaListPlayer.currentMrl());
 
 		boolean isAudio = false;
 		String[] audio = { "3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob",
 				"ape", "au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka", "mlp",
 				"mod", "mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus", "qcp", "ra",
 				"rmi", "s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma", "wv", "xa", "xm" };
-		String fileName = file.getName();
+		String fileName = list.get(listP).getName();
 		String fileType = "";
 		for (int i = fileName.length() - 3; i < fileName.length(); i++) {
 			fileType += fileName.substring(i, i + 1);
@@ -146,7 +148,7 @@ public class Media {
 		stopped = false;
 		@SuppressWarnings("unused")
 		java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		String title = "Media Player";
+		String title = "" + list.get(listP) + " - Media Player";
 		if (demo) {
 			title = "Demonstration Version - Media Player";
 		}
@@ -161,8 +163,9 @@ public class Media {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				getFile();
+				listP++;
 				mediaPlayer.stop();
-				mediaListPlayer.play();
+				mediaPlayer.playMedia(list.get(listP).getPath());
 			}
 
 			private void getFile() {
@@ -182,9 +185,8 @@ public class Media {
 						"tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
 				j.showOpenDialog(null);
 				if (j.getSelectedFile().exists()) {
-					mediaList.addMedia(j.getSelectedFile().getPath());
+					list.add(j.getSelectedFile());
 				}
-				mediaListPlayer.setMediaList(mediaList);
 			}
 
 		});
@@ -196,7 +198,7 @@ public class Media {
 			public void actionPerformed(ActionEvent arg0) {
 				getFile();
 				mediaPlayer.stop();
-				mediaListPlayer.play();
+				mediaPlayer.playMedia(list.get(listP).getPath());
 			}
 
 			private void getFile() {
@@ -218,9 +220,10 @@ public class Media {
 				j.showOpenDialog(null);
 				File[] theList = j.getSelectedFiles();
 				for (int i = 0; i < theList.length; i++) {
-					mediaList.addMedia(theList[i].getPath());
+					if (j.getSelectedFile().exists()) {
+						list.add(j.getSelectedFile());
+					}
 				}
-				mediaListPlayer.setMediaList(mediaList);
 			}
 
 		});
@@ -448,11 +451,19 @@ public class Media {
 					JPanel bigPanel = new JPanel();
 
 					JPanel albumArtPanel = new JPanel();
-					BufferedImage artB = mediaPlayer.getMediaMeta().getArtwork();
-					Image art = artB;
-					art = art.getScaledInstance(87, 87, 0);
-					JLabel albumArt = new JLabel(new ImageIcon(art));
-					albumArtPanel.add(albumArt);
+					try {
+						BufferedImage artB = mediaPlayer.getMediaMeta().getArtwork();
+						Image art = artB;
+						art = art.getScaledInstance(87, 87, 0);
+						JLabel albumArt = new JLabel(new ImageIcon(art));
+						albumArtPanel.add(albumArt);
+					} catch (NullPointerException f) {
+						BufferedImage artB = new BufferedImage();
+						Image art = artB;
+						art = art.getScaledInstance(87, 87, 0);
+						JLabel albumArt = new JLabel(new ImageIcon(art));
+						albumArtPanel.add(albumArt);
+					}
 
 					JPanel albumInfo = new JPanel(new GridLayout(10, 1));
 
@@ -1361,7 +1372,7 @@ public class Media {
 					text.setRepeats(false);
 					text.start();
 
-					mediaListPlayer.playNext();
+					next();
 
 				} else if (key == (KeyEvent.VK_P)) {
 					System.out.println("Previus track");
@@ -1382,7 +1393,7 @@ public class Media {
 					text.setRepeats(false);
 					text.start();
 
-					mediaListPlayer.playPrevious();
+					previous();
 
 				} else if (key == (KeyEvent.VK_S)) {
 					System.out.println("Stop");
@@ -1603,11 +1614,7 @@ public class Media {
 		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
 		frame.setVisible(true);
 
-		mediaListPlayer.setMediaPlayer(mediaPlayer);
-		mediaListPlayer.setMode(MediaListPlayerMode.LOOP);
-		mediaListPlayer.play();
-
-		// mediaPlayer.playMedia(file.getPath());
+		mediaPlayer.playMedia(list.get(listP).getPath());
 		mediaPlayer.setEqualizer(mediaPlayerFactory.getAllPresetEqualizers().get("Flat"));
 		c.setBackground(Color.black);
 
@@ -1645,18 +1652,23 @@ public class Media {
 		if (isAudio()) {
 			ActionListener drawArt = new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					BufferedImage before = mediaPlayer.getMediaMeta().getArtwork();
-					int w = before.getWidth();
-					int h = before.getHeight();
-					BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-					AffineTransform at = new AffineTransform();
-					at.scale(0.5, 0.5);
-					AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-					after = scaleOp.filter(before, after);
-					int imgWidth = (after.getWidth()) / 4;
-					int imgHeight = (after.getHeight()) / 4;
+					try {
+						BufferedImage before = mediaPlayer.getMediaMeta().getArtwork();
+						int w = before.getWidth();
+						int h = before.getHeight();
+						BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+						AffineTransform at = new AffineTransform();
+						at.scale(0.5, 0.5);
+						AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+						after = scaleOp.filter(before, after);
+						int imgWidth = (after.getWidth()) / 4;
+						int imgHeight = (after.getHeight()) / 4;
 
-					c.getGraphics().drawImage(after, 444 - imgWidth, 250 - imgHeight, null);
+						c.getGraphics().drawImage(after, 444 - imgWidth, 250 - imgHeight, null);
+					} catch (NullPointerException e) {
+						// this only happens when there is no album art.
+						// this isn't a progream breaking exception.
+					}
 				}
 			};
 			Timer artTimer = new Timer(1000, drawArt);
@@ -1762,23 +1774,29 @@ public class Media {
 		c.setFocusable(false);
 
 	}
-
-	public void stop() {
-		mediaPlayer.stop();
-		mediaPlayer.pause();
-	}
-
-	public int[] findAudioDevices() {
-		int[] returns = new int[2];
-		int a = 0;
-		List<AudioOutput> output = mediaPlayerFactory.getAudioOutputs();
-		for (int i = 0; i < output.size(); i++) {
-			if (output.get(i).getName().equals("mmdevice") || output.get(i).getName().equals("waveout")) {
-				returns[a] = i;
-				a++;
-			}
+	
+	private void next() {
+		if (listP + 1 != list.size()) {
+			listP++;
+			mediaPlayer.stop();
+			mediaPlayer.playMedia(list.get(listP).getPath());
+		} else if (pLoop) {
+			listP = 0;
+			mediaPlayer.stop();
+			mediaPlayer.playMedia(list.get(listP).getPath());
 		}
-		return returns;
+	}
+	
+	private void previous() {
+		if (listP -1 != -1) {
+			listP--;
+			mediaPlayer.stop();
+			mediaPlayer.playMedia(list.get(listP).getPath());
+		} else if (pLoop) {
+			listP = list.size() - 1;
+			mediaPlayer.stop();
+			mediaPlayer.playMedia(list.get(listP).getPath());
+		}
 	}
 
 }
