@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -28,7 +27,6 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -53,22 +51,26 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uk.co.caprica.vlcj.binding.LibVlcConst;
-import uk.co.caprica.vlcj.player.AudioDevice;
+import uk.co.caprica.vlcj.medialist.MediaList;
 import uk.co.caprica.vlcj.player.AudioOutput;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
+import uk.co.caprica.vlcj.player.list.MediaListPlayer;
+import uk.co.caprica.vlcj.player.list.MediaListPlayerMode;
 
 public class Media {
 
 	private boolean loop;
 	private EmbeddedMediaPlayer mediaPlayer;
-	private File file;
 	private boolean stopped;
 	private Equalizer eq;
 	private MediaPlayerFactory mediaPlayerFactory;
+	private MediaListPlayer mediaListPlayer;
+	private MediaList mediaList;
+
 	private Canvas c;
 	private Object[] videoEffectValues = new Object[6];
 	private boolean videoEffectToggle;
@@ -78,9 +80,36 @@ public class Media {
 	private Dimension pSize;
 	private Dimension cSize;
 
-	public Media(File f) {
-		file = f;
+	public Media() {
+		mediaPlayerFactory = new MediaPlayerFactory();
+		mediaListPlayer = mediaPlayerFactory.newMediaListPlayer();
+		mediaList = mediaPlayerFactory.newMediaList();
+
+		openFile();
 		equalizer();
+	}
+
+	private void openFile() {
+		JFileChooser j = new JFileChooser();
+		j.setMultiSelectionEnabled(true);
+		j.setFileFilter(new FileNameExtensionFilter("Media Files",
+				// audio formats
+				"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob", "ape",
+				"au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka", "mlp", "mod",
+				"mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus", "qcp", "ra", "rmi",
+				"s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma", "wv", "xa", "xm",
+				// video formats
+				"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo", "f4v",
+				"flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2", "mp2v", "mp4",
+				"mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv", "mxf", "mxg", "nsv",
+				"nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp", "tod", "ts", "tts", "txd",
+				"vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
+		j.showOpenDialog(null);
+		File[] theList = j.getSelectedFiles();
+		for (int i = 0; i < theList.length; i++) {
+			mediaList.addMedia(theList[i].getPath());
+		}
+		mediaListPlayer.setMediaList(mediaList);
 	}
 
 	private void equalizer() {
@@ -91,7 +120,9 @@ public class Media {
 
 	}
 
-	public boolean isAudio() {
+	private boolean isAudio() {
+		File file = new File(mediaListPlayer.currentMrl());
+
 		boolean isAudio = false;
 		String[] audio = { "3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob",
 				"ape", "au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka", "mlp",
@@ -115,37 +146,23 @@ public class Media {
 		stopped = false;
 		@SuppressWarnings("unused")
 		java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		String title = "" + file.getName() + " - Media Player";
+		String title = "Media Player";
 		if (demo) {
 			title = "Demonstration Version - Media Player";
 		}
 		JFrame frame = new JFrame(title);
 
-		mediaPlayerFactory = new MediaPlayerFactory();
-
 		JMenuBar main = new JMenuBar();
 		WrapLayout layout = new WrapLayout(WrapLayout.LEFT, 0, 0);
 		main.setLayout(layout);
-		JMenu fileMenu = new JMenu("File");
-		JMenuItem open = new JMenuItem("Open");
-		open.addActionListener(new ActionListener() {
-
+		JMenu fileMenu = new JMenu("Media");
+		JMenuItem openFile = new JMenuItem("Open from file (CTRL+O)");
+		openFile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				getFile();
 				mediaPlayer.stop();
-				mediaPlayer.playMedia(file.getPath());
-			}
-
-			@SuppressWarnings("unused")
-			// I will use this later on, not just now.
-			private String fileType() {
-				String fileName = file.getName();
-				String fileType = "";
-				for (int i = fileName.length() - 3; i < fileName.length(); i++) {
-					fileType += fileName.substring(i, i + 1);
-				}
-				return fileType;
+				mediaListPlayer.play();
 			}
 
 			private void getFile() {
@@ -165,14 +182,51 @@ public class Media {
 						"tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
 				j.showOpenDialog(null);
 				if (j.getSelectedFile().exists()) {
-					file = j.getSelectedFile();
+					mediaList.addMedia(j.getSelectedFile().getPath());
 				}
+				mediaListPlayer.setMediaList(mediaList);
 			}
 
 		});
-		fileMenu.add(open);
+		fileMenu.add(openFile);
 
-		JMenuItem close = new JMenuItem("Close");
+		JMenuItem openMultiFiles = new JMenuItem("Open multiple files (CTRL+SHIFT+O)");
+		openMultiFiles.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				getFile();
+				mediaPlayer.stop();
+				mediaListPlayer.play();
+			}
+
+			private void getFile() {
+				JFileChooser j = new JFileChooser();
+				j.setMultiSelectionEnabled(true);
+				j.setFileFilter(new FileNameExtensionFilter("Media Files",
+						// audio formats
+						"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob",
+						"ape", "au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka",
+						"mlp", "mod", "mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus",
+						"qcp", "ra", "rmi", "s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma",
+						"wv", "xa", "xm",
+						// video formats
+						"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo",
+						"f4v", "flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2",
+						"mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv",
+						"mxf", "mxg", "nsv", "nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp",
+						"tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
+				j.showOpenDialog(null);
+				File[] theList = j.getSelectedFiles();
+				for (int i = 0; i < theList.length; i++) {
+					mediaList.addMedia(theList[i].getPath());
+				}
+				mediaListPlayer.setMediaList(mediaList);
+			}
+
+		});
+		fileMenu.add(openMultiFiles);
+
+		JMenuItem close = new JMenuItem("Quot (CTRL+Q)");
 		close.addActionListener(new ActionListener() {
 
 			@Override
@@ -927,86 +981,9 @@ public class Media {
 
 		});
 
-		JMenuItem aD = new JMenuItem("Audio Device");
-		aD.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				List<AudioOutput> outputs = mediaPlayerFactory.getAudioOutputs();
-				String[] outputList = new String[outputs.size() + 1];
-				outputList[0] = "none";
-				for (int i = 0; i < outputs.size(); i++) {
-					outputList[i + 1] = outputs.get(i).getName();
-				}
-
-				JFrame aF = new JFrame("Audio Outputs");
-				JPanel d = new JPanel(new FlowLayout());
-				JLabel dL = new JLabel("Select Output Device:");
-				ArrayList<String> alOptions = new ArrayList<String>();
-
-				int[] indexes = findAudioDevices();
-				for (int i = 0; i < indexes.length; i++) {
-					List<AudioDevice> list = mediaPlayerFactory.getAudioOutputs().get(indexes[i]).getDevices();
-					for (AudioDevice a : list) {
-						if (!a.getLongName().equals("Microsoft Soundmapper")) { // it's a dead device
-							alOptions.add("[" + mediaPlayerFactory.getAudioOutputs().get(indexes[i]).getName() + "] "
-									+ a.getLongName());
-						}
-					}
-				}
-				String[] options = new String[alOptions.size()];
-				for (int i = 0; i < alOptions.size(); i++) {
-					options[i] = alOptions.get(i);
-				}
-				JComboBox<String> devices = new JComboBox<String>(options);
-				devices.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						@SuppressWarnings("unchecked")
-						JComboBox<String> box = (JComboBox<String>) e.getSource();
-						String split = alOptions.get(box.getSelectedIndex());
-						String[] cut = split.split("] ");
-						String output = cut[0].replace("[", "");
-						String device = cut[1];
-
-						if (output.equals("mmdevice")) {
-							String id = findId(0, device);
-							mediaPlayer.setAudioOutputDevice("mmdevice", id);
-							System.out.println(mediaPlayer.getAudioOutputDevice());
-						} else if (output.equals("waveout")) {
-							String id = findId(1, device);
-							mediaPlayer.setAudioOutputDevice("waveout", id);
-							System.out.println(mediaPlayer.getAudioOutputDevice());
-						}
-					}
-
-					private String findId(int i, String device) {
-						int size = mediaPlayerFactory.getAudioOutputs().get(indexes[i]).getDevices().size();
-						String ID = "null";
-						for (int a = 0; a < size; a++) {
-							if (mediaPlayerFactory.getAudioOutputs().get(indexes[i]).getDevices().get(a).getDeviceId()
-									.equals(device)) {
-								ID = (mediaPlayerFactory.getAudioOutputs().get(indexes[i]).getDevices().get(a)
-										.getDeviceId());
-							}
-						}
-						return ID;
-					}
-				});
-
-				d.add(dL);
-				d.add(devices);
-				aF.add(d);
-
-				aF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				aF.setSize(new Dimension(300, 300));
-				aF.setVisible(true);
-
-			}
-		});
-
 		audioSettings.add(mute);
 		audioSettings.add(equalizer);
 		audioSettings.add(audioInfo);
-		// audioSettings.add(aD);
-		// It's just not working yet. It's fighting.
 
 		main.add(audioSettings);
 
@@ -1022,11 +999,9 @@ public class Media {
 		p.add(c, BorderLayout.CENTER);
 		p.setBounds(100, 50, 1050, 600);
 		frame.add(p, BorderLayout.NORTH);
+
 		mediaPlayer = mediaPlayerFactory.newEmbeddedMediaPlayer();
 		mediaPlayer.setVideoSurface(mediaPlayerFactory.newVideoSurface(c));
-		
-		mediaPlayer.setAudioOutputDevice("mmdevice",
-				mediaPlayerFactory.getAudioOutputs().get(findAudioDevices()[0]).getDevices().get(0).getDeviceId());
 
 		EmbeddedMediaPlayer fullScreenOperation = mediaPlayerFactory
 				.newEmbeddedMediaPlayer(new Win32FullScreenStrategy(frame));
@@ -1209,7 +1184,7 @@ public class Media {
 		int csizex = c.getSize().width / 2;
 		int csizey = c.getSize().height;
 		mediaPlayer.setMarqueeLocation((csizex / 2), (csizey - 60));
-		mediaPlayer.setMarqueeText("" + file.getName());
+		// mediaPlayer.setMarqueeText("" + file.getName());
 		mediaPlayer.enableMarquee(true);
 		ActionListener marqueeTask = new ActionListener() {
 			@Override
@@ -1386,6 +1361,8 @@ public class Media {
 					text.setRepeats(false);
 					text.start();
 
+					mediaListPlayer.playNext();
+
 				} else if (key == (KeyEvent.VK_P)) {
 					System.out.println("Previus track");
 
@@ -1404,6 +1381,8 @@ public class Media {
 					Timer text = new Timer(1000, marqueeTask);
 					text.setRepeats(false);
 					text.start();
+
+					mediaListPlayer.playPrevious();
 
 				} else if (key == (KeyEvent.VK_S)) {
 					System.out.println("Stop");
@@ -1623,7 +1602,12 @@ public class Media {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
 		frame.setVisible(true);
-		mediaPlayer.playMedia(file.getPath());
+
+		mediaListPlayer.setMediaPlayer(mediaPlayer);
+		mediaListPlayer.setMode(MediaListPlayerMode.LOOP);
+		mediaListPlayer.play();
+
+		// mediaPlayer.playMedia(file.getPath());
 		mediaPlayer.setEqualizer(mediaPlayerFactory.getAllPresetEqualizers().get("Flat"));
 		c.setBackground(Color.black);
 
