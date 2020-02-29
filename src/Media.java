@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -27,10 +28,10 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -44,6 +45,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
@@ -52,15 +54,11 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uk.co.caprica.vlcj.binding.LibVlcConst;
-import uk.co.caprica.vlcj.medialist.MediaList;
-import uk.co.caprica.vlcj.player.AudioOutput;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
-import uk.co.caprica.vlcj.player.list.MediaListPlayer;
-import uk.co.caprica.vlcj.player.list.MediaListPlayerMode;
 
 public class Media {
 
@@ -69,14 +67,15 @@ public class Media {
 	private boolean stopped;
 	private Equalizer eq;
 	private MediaPlayerFactory mediaPlayerFactory;
-	
-	private ArrayList<File> list = new ArrayList<File>();
+
+	private LinkedList<File> list = new LinkedList<File>();
 	private int listP = 0;
 	private boolean pLoop;
 
 	private Canvas c;
 	private Object[] videoEffectValues = new Object[6];
 	private boolean videoEffectToggle;
+	private boolean albumArt = false;
 
 	private eqPresetManager presets;
 
@@ -85,10 +84,6 @@ public class Media {
 
 	public Media() {
 		mediaPlayerFactory = new MediaPlayerFactory();
-		
-		//for testing
-		pLoop = false;
-
 		openFile();
 		equalizer();
 	}
@@ -130,7 +125,7 @@ public class Media {
 				"ape", "au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka", "mlp",
 				"mod", "mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus", "qcp", "ra",
 				"rmi", "s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma", "wv", "xa", "xm" };
-		String fileName = list.get(listP).getName();
+		String fileName = list.get(listP).getPath();
 		String fileType = "";
 		for (int i = fileName.length() - 3; i < fileName.length(); i++) {
 			fileType += fileName.substring(i, i + 1);
@@ -148,7 +143,7 @@ public class Media {
 		stopped = false;
 		@SuppressWarnings("unused")
 		java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		String title = "" + list.get(listP) + " - Media Player";
+		String title = "" + list.get(listP).getName() + " - Media Player";
 		if (demo) {
 			title = "Demonstration Version - Media Player";
 		}
@@ -458,11 +453,15 @@ public class Media {
 						JLabel albumArt = new JLabel(new ImageIcon(art));
 						albumArtPanel.add(albumArt);
 					} catch (NullPointerException f) {
-						BufferedImage artB = new BufferedImage();
-						Image art = artB;
-						art = art.getScaledInstance(87, 87, 0);
-						JLabel albumArt = new JLabel(new ImageIcon(art));
-						albumArtPanel.add(albumArt);
+						try {
+							BufferedImage artB = ImageIO.read(new File("logoTapes.png"));
+							Image art = artB;
+							art = art.getScaledInstance(87, 87, 0);
+							JLabel albumArt = new JLabel(new ImageIcon(art));
+							albumArtPanel.add(albumArt);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
 					}
 
 					JPanel albumInfo = new JPanel(new GridLayout(10, 1));
@@ -996,7 +995,172 @@ public class Media {
 		audioSettings.add(equalizer);
 		audioSettings.add(audioInfo);
 
+		JMenu lMenu = new JMenu("Playlist");
+		JMenuItem plLoop = new JMenuItem("Enable playlist looping");
+		plLoop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!pLoop) {
+					plLoop.setText("Disable playlist looping");
+					pLoop = true;
+				} else {
+					plLoop.setText("Enable playlist looping");
+					pLoop = false;
+				}
+			}
+		});
+		lMenu.add(plLoop);
+		JMenuItem sLoop = new JMenuItem("Enable Single Track looping");
+		sLoop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!mediaPlayer.getRepeat()) {
+					sLoop.setText("Disable Single Track looping");
+					mediaPlayer.setRepeat(true);
+				} else {
+					sLoop.setText("Enable Single Track looping");
+					mediaPlayer.setRepeat(false);
+				}
+			}
+		});
+		lMenu.add(sLoop);
+		JMenuItem topAdd = new JMenuItem("Add tracks to top");
+		topAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser j = new JFileChooser();
+				j.setMultiSelectionEnabled(true);
+				j.setFileFilter(new FileNameExtensionFilter("Media Files",
+						// audio formats
+						"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob",
+						"ape", "au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka",
+						"mlp", "mod", "mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus",
+						"qcp", "ra", "rmi", "s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma",
+						"wv", "xa", "xm",
+						// video formats
+						"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo",
+						"f4v", "flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2",
+						"mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv",
+						"mxf", "mxg", "nsv", "nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp",
+						"tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
+				j.showOpenDialog(null);
+				File[] theList = j.getSelectedFiles();
+				for (int i = theList.length - 1; i >= 0; i--) {
+					list.addFirst(theList[i]);
+				}
+			}
+		});
+		lMenu.add(topAdd);
+		JMenuItem endAdd = new JMenuItem("Add tracks to end");
+		endAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser j = new JFileChooser();
+				j.setMultiSelectionEnabled(true);
+				j.setFileFilter(new FileNameExtensionFilter("Media Files",
+						// audio formats
+						"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob",
+						"ape", "au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka",
+						"mlp", "mod", "mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus",
+						"qcp", "ra", "rmi", "s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma",
+						"wv", "xa", "xm",
+						// video formats
+						"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo",
+						"f4v", "flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2",
+						"mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv",
+						"mxf", "mxg", "nsv", "nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp",
+						"tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
+				j.showOpenDialog(null);
+				File[] theList = j.getSelectedFiles();
+				for (int i = 0; i < theList.length; i++) {
+					if (j.getSelectedFile().exists()) {
+						list.add(j.getSelectedFile());
+					}
+				}
+			}
+		});
+		lMenu.add(endAdd);
+		JMenuItem topRemove = new JMenuItem("Remove first track");
+		topRemove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				list.removeLast();
+			}
+		});
+		lMenu.add(topRemove);
+		JMenuItem endRemove = new JMenuItem("Remove last track");
+		endRemove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				list.removeFirst();
+			}
+		});
+		lMenu.add(endRemove);
+		JMenuItem removeSel = new JMenuItem("Remove a track");
+		removeSel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String[] tracks = new String[list.size()];
+				for (int i = 0; i < list.size(); i++) {
+					tracks[i] = list.get(i).getName();
+				}
+				JComboBox comboBox = new JComboBox(tracks);
+				comboBox.setSelectedIndex(0);
+				JOptionPane.showMessageDialog(null, comboBox, "Select a track to remove", JOptionPane.QUESTION_MESSAGE);
+				String selected = (String) comboBox.getSelectedItem();
+
+				File selectedFile = null;
+				for (int i = 0; i < list.size(); i++) {
+					if (list.get(i).getName().equals(selected)) {
+						selectedFile = list.get(i);
+					}
+				}
+				list.removeFirstOccurrence(selectedFile);
+			}
+		});
+		lMenu.add(removeSel);
+		JMenuItem printList = new JMenuItem("View Playlist");
+		printList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrame listF = new JFrame("Playlist");
+				listF.setSize(new Dimension(300, 800));
+				listF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+				JPanel theList = new JPanel(new FlowLayout());
+				for (int i = 0; i < list.size(); i++) {
+					int listPos = i + 1;
+					JTextField textField = new JTextField("" + listPos + " | " + list.get(i).getName());
+					textField.setEditable(false);
+					if (i == listP) {
+						textField.setBackground(Color.GREEN);
+					} else {
+						if (i % 2 == 1) {
+							textField.setBackground(Color.WHITE);
+						} else {
+							textField.setBackground(Color.LIGHT_GRAY);
+						}
+					}
+					theList.add(textField);
+				}
+				// listF.add(theList);
+
+				JPanel table = new JPanel(new GridLayout(3, 1));
+				JLabel tLabel1 = new JLabel("Playlist:");
+				tLabel1.setSize(300, 50);
+				table.add(tLabel1);
+				String[] header = { "Number", "Track" };
+				Object[][] tracks = new Object[list.size()][2];
+				for (int i = 0; i < list.size(); i++) {
+					tracks[i][0] = i + 1;
+					tracks[i][1] = list.get(i).getName();
+				}
+				JTable pTable = new JTable(tracks, header);
+				table.add(pTable);
+				JLabel tLabel2 = new JLabel("Currently playing: " + list.get(listP).getName());
+				tLabel2.setSize(300, 50);
+				table.add(tLabel2);
+				listF.add(table);
+				table.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+				listF.setVisible(true);
+			}
+		});
+		lMenu.add(printList);
+
 		main.add(audioSettings);
+		main.add(lMenu);
 
 		helpMenu.add(about);
 		main.add(helpMenu);
@@ -1195,7 +1359,7 @@ public class Media {
 		int csizex = c.getSize().width / 2;
 		int csizey = c.getSize().height;
 		mediaPlayer.setMarqueeLocation((csizex / 2), (csizey - 60));
-		// mediaPlayer.setMarqueeText("" + file.getName());
+		// mediaPlayer.setMarqueeText("" + file.getPath());
 		mediaPlayer.enableMarquee(true);
 		ActionListener marqueeTask = new ActionListener() {
 			@Override
@@ -1645,9 +1809,11 @@ public class Media {
 			}
 		};
 
-		Timer logoTimer = new Timer(100, drawLogo);
-		logoTimer.setRepeats(false);
+		Timer logoTimer = new Timer(200, drawLogo);
 		logoTimer.start();
+		if (!albumArt) {
+			logoTimer.setRepeats(false);
+		}
 
 		if (isAudio()) {
 			ActionListener drawArt = new ActionListener() {
@@ -1665,6 +1831,7 @@ public class Media {
 						int imgHeight = (after.getHeight()) / 4;
 
 						c.getGraphics().drawImage(after, 444 - imgWidth, 250 - imgHeight, null);
+						albumArt = true;
 					} catch (NullPointerException e) {
 						// this only happens when there is no album art.
 						// this isn't a progream breaking exception.
@@ -1672,7 +1839,6 @@ public class Media {
 				}
 			};
 			Timer artTimer = new Timer(1000, drawArt);
-			artTimer.setRepeats(false);
 			artTimer.start();
 		}
 
@@ -1773,8 +1939,19 @@ public class Media {
 		volume.setFocusable(false);
 		c.setFocusable(false);
 
+		ActionListener advance = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (mediaPlayer.getPosition() >= 0.99) {
+					next();
+				}
+			}
+		};
+
+		Timer listAdvance = new Timer(1000, advance);
+		listAdvance.start();
+
 	}
-	
+
 	private void next() {
 		if (listP + 1 != list.size()) {
 			listP++;
@@ -1786,9 +1963,9 @@ public class Media {
 			mediaPlayer.playMedia(list.get(listP).getPath());
 		}
 	}
-	
+
 	private void previous() {
-		if (listP -1 != -1) {
+		if (listP - 1 != -1) {
 			listP--;
 			mediaPlayer.stop();
 			mediaPlayer.playMedia(list.get(listP).getPath());
