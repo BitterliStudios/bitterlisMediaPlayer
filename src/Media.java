@@ -30,6 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -55,6 +56,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uk.co.caprica.vlcj.binding.LibVlcConst;
+import uk.co.caprica.vlcj.binding.internal.libvlc_track_type_t;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -75,6 +77,7 @@ public class Media {
 	private int listP = 0;
 	private boolean pLoop;
 	private boolean sLoop;
+	private boolean onShuffle;
 
 	private Canvas c;
 	private Object[] videoEffectValues = new Object[6];
@@ -94,6 +97,7 @@ public class Media {
 		pLoop = false;
 		sLoop = false;
 		stopped = false;
+		onShuffle = false;
 		mediaPlayerFactory = new MediaPlayerFactory();
 		openFile();
 		equalizer();
@@ -393,119 +397,6 @@ public class Media {
 		main.add(videoSettings);
 
 		JMenu audioSettings = new JMenu("Audio");
-
-		JMenuItem audioInfo = new JMenuItem("Track Info");
-		audioInfo.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (isAudio()) {
-					MediaMetaData meta = mediaPlayer.getMediaMeta().asMediaMetaData();
-
-					JFrame i = new JFrame("Track Info");
-					JPanel bigPanel = new JPanel();
-
-					JPanel albumArtPanel = new JPanel();
-					try {
-						BufferedImage artB = mediaPlayer.getMediaMeta().getArtwork();
-						Image art = artB;
-						art = art.getScaledInstance(87, 87, 0);
-						JLabel albumArt = new JLabel(new ImageIcon(art));
-						albumArtPanel.add(albumArt);
-					} catch (NullPointerException f) {
-						try {
-							BufferedImage artB = ImageIO.read(new File("img\\logoTapes.png"));
-							Image art = artB;
-							art = art.getScaledInstance(87, 87, 0);
-							JLabel albumArt = new JLabel(new ImageIcon(art));
-							albumArtPanel.add(albumArt);
-						} catch (IOException e1) {
-							e1.printStackTrace();
-						}
-					}
-
-					JPanel albumInfo = new JPanel(new GridLayout(10, 1));
-
-					JLabel titleL = new JLabel("Title: ");
-					String titleT = "N/A";
-					if (!String.valueOf(meta.getTitle()).equals("null")) {
-						titleT = meta.getTitle();
-					}
-					JTextField title = new JTextField(titleT, 10);
-					title.setEditable(false); // Will enable when I add meta information updating.
-					albumInfo.add(titleL);
-					albumInfo.add(title);
-
-					JLabel albumNameL = new JLabel("Album Title: ");
-					String albumNameT = "N/A";
-					if (!String.valueOf(meta.getAlbum()).equals("null")) {
-						albumNameT = meta.getAlbum();
-					}
-					JTextField albumName = new JTextField(albumNameT, 10);
-					albumName.setEditable(false); // Will enable when I add meta information updating.
-					albumInfo.add(albumNameL);
-					albumInfo.add(albumName);
-
-					JLabel albumArtistL = new JLabel("Album Artist: ");
-					String albumArtistT = "N/A";
-					if (!String.valueOf(meta.getAlbumArtist()).equals("null")) {
-						albumArtistT = meta.getAlbumArtist();
-					}
-					JTextField albumArtist = new JTextField(albumArtistT, 10);
-					albumArtist.setEditable(false); // Will enable when I add meta information updating.
-					albumInfo.add(albumArtistL);
-					albumInfo.add(albumArtist);
-
-					JLabel trackNumL = new JLabel("Track Number / Total Number of Tracks: ");
-					String trackNumT = "N/A";
-					if (String.valueOf(meta.getTrackNumber()).equals("null")
-							&& !String.valueOf(meta.getTrackTotal()).equals("null")) {
-						trackNumT = "N/A / " + meta.getTrackTotal();
-					} else if (String.valueOf(meta.getTrackTotal()).equals("null")
-							&& !(String.valueOf(meta.getTrackNumber()).equals("null"))) {
-						trackNumT = meta.getTrackNumber() + " / N/A";
-					} else if (!(String.valueOf(meta.getTrackNumber()).equals("null")
-							&& String.valueOf(meta.getTrackTotal()).equals("null"))) {
-						trackNumT = "" + meta.getTrackNumber() + "/" + meta.getTrackTotal();
-					}
-					JTextField trackNum = new JTextField(trackNumT, 10);
-					trackNum.setEditable(false); // Will enable when I add meta information updating.
-					albumInfo.add(trackNumL);
-					albumInfo.add(trackNum);
-
-					JLabel diskL = new JLabel("Disk Number / Total Number of Disks");
-					String diskT = "N/A";
-					if (String.valueOf(meta.getDiscNumber()).equals("null")
-							&& !String.valueOf(meta.getDiscTotal()).equals("null")) {
-						diskT = "N/A / " + meta.getDiscTotal();
-					} else if (String.valueOf(meta.getDiscTotal()).equals("null")
-							&& !String.valueOf(meta.getDiscNumber()).equals("null")) {
-						diskT = meta.getDiscNumber() + "/ N/A";
-					} else if (!(String.valueOf(meta.getDiscTotal()).equals("null")
-							&& String.valueOf(meta.getDiscTotal()).equals("null"))) {
-						diskT = "" + meta.getDiscNumber() + "/" + meta.getDiscTotal();
-					}
-					JTextField disk = new JTextField(diskT, 10);
-					disk.setEditable(false); // Will enable when I add meta information updating.
-					albumInfo.add(diskL);
-					albumInfo.add(disk);
-
-					bigPanel.add(albumArtPanel);
-					bigPanel.add(albumInfo);
-
-					i.add(bigPanel);
-
-					i.setSize(300, 400);
-					i.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-					i.setLocation(dim.width / 2 - i.getSize().width / 2, dim.height / 2 - i.getSize().height / 2);
-					i.setResizable(false);
-					i.setVisible(true);
-				} else {
-					JOptionPane.showMessageDialog(null, "This is not an audio format.");
-				}
-			}
-
-		});
 
 		JMenuItem mute = new JMenuItem("Mute");
 		mute.addActionListener(new ActionListener() {
@@ -970,7 +861,6 @@ public class Media {
 		audioSettings.add(audioTrack);
 		audioSettings.add(mute);
 		audioSettings.add(equalizer);
-		audioSettings.add(audioInfo);
 
 		JMenu lMenu = new JMenu("Playlist");
 		JMenuItem plLoop = new JMenuItem("Enable playlist looping");
@@ -1072,145 +962,7 @@ public class Media {
 		JMenuItem playlistPanel = new JMenuItem("Panel");
 		playlistPanel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFrame listF = new JFrame("Playlist");
-				JPanel table = new JPanel(new BorderLayout());
-				JLabel tLabel1 = new JLabel("Playlist:");
-				tLabel1.setSize(300, 50);
-				table.add(tLabel1, BorderLayout.PAGE_START);
-				String[] header = { "Number", "Track" };
-				Object[][] tracks = new Object[list.size()][2];
-				for (int i = 0; i < list.size(); i++) {
-					tracks[i][0] = i + 1;
-					tracks[i][1] = list.get(i).getName();
-				}
-				JTable pTable = new JTable(tracks, header);
-				table.add(pTable, BorderLayout.CENTER);
-				JLabel tLabel2 = new JLabel("Currently playing: " + list.get(listP).getName());
-				tLabel2.setSize(300, 50);
-				table.add(tLabel2, BorderLayout.PAGE_END);
-
-				JPanel buttons = new JPanel(new GridLayout());
-				try {
-					JButton pLoopButton = new JButton();
-					Image loopimg = ImageIO.read(new File("img\\Loop.png"));
-					loopimg = loopimg.getScaledInstance(18, 18, 0);
-					pLoopButton.setIcon(new ImageIcon(loopimg));
-					pLoopButton.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							try {
-								if (!pLoop && !sLoop) { // playlist loop
-									pLoop = true;
-									Image loopimg = ImageIO.read(new File("img\\loopAll.png"));
-									loopimg = loopimg.getScaledInstance(18, 18, 0);
-									loopbutton.setIcon(new ImageIcon(loopimg));
-									pLoopButton.setIcon(new ImageIcon(loopimg));
-								} else if (pLoop && !sLoop) { // single loop
-									pLoop = false;
-									sLoop = true;
-									Image loopimg = ImageIO.read(new File("img\\loopS.png"));
-									loopimg = loopimg.getScaledInstance(18, 18, 0);
-									loopbutton.setIcon(new ImageIcon(loopimg));
-									pLoopButton.setIcon(new ImageIcon(loopimg));
-									mediaPlayer.setRepeat(true);
-								} else if (!pLoop && sLoop) { // no loop
-									sLoop = false;
-									mediaPlayer.setRepeat(false);
-									Image loopimg = ImageIO.read(new File("img\\Loop.png"));
-									loopimg = loopimg.getScaledInstance(18, 18, 0);
-									loopbutton.setIcon(new ImageIcon(loopimg));
-									pLoopButton.setIcon(new ImageIcon(loopimg));
-								}
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-					});
-					buttons.add(pLoopButton);
-
-					JButton topAddButton = new JButton();
-					Image topAddButtonImg = ImageIO.read(new File("img\\addtop.png"));
-					topAddButtonImg = topAddButtonImg.getScaledInstance(18, 18, 0);
-					topAddButton.setIcon(new ImageIcon(topAddButtonImg));
-					topAddButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							openMultiple(true);
-						}
-					});
-					buttons.add(topAddButton);
-
-					JButton endAddButton = new JButton();
-					Image endAddButtonImg = ImageIO.read(new File("img\\addend.png"));
-					endAddButtonImg = endAddButtonImg.getScaledInstance(18, 18, 0);
-					endAddButton.setIcon(new ImageIcon(endAddButtonImg));
-					endAddButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							openMultiple(false);
-						}
-					});
-					buttons.add(endAddButton);
-
-					JButton topRemoveButton = new JButton();
-					Image topRemoveButtonImg = ImageIO.read(new File("img\\removetop.png"));
-					topRemoveButtonImg = topRemoveButtonImg.getScaledInstance(18, 18, 0);
-					topRemoveButton.setIcon(new ImageIcon(topRemoveButtonImg));
-					topRemoveButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							list.removeFirst();
-						}
-					});
-					buttons.add(topRemoveButton);
-
-					JButton endRemoveButton = new JButton("Remove Last File");
-					Image endRemoveButtonImg = ImageIO.read(new File("img\\removeend.png"));
-					endRemoveButtonImg = endRemoveButtonImg.getScaledInstance(18, 18, 0);
-					endRemoveButton.setIcon(new ImageIcon(endRemoveButtonImg));
-					endRemoveButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							list.removeLast();
-						}
-					});
-					buttons.add(endRemoveButton);
-
-					JButton removeButton = new JButton("Remove a track");
-					removeButton.addActionListener(new ActionListener() {
-						@SuppressWarnings({ "rawtypes", "unchecked" })
-						public void actionPerformed(ActionEvent e) {
-							String[] tracks = new String[list.size()];
-							for (int i = 0; i < list.size(); i++) {
-								tracks[i] = list.get(i).getName();
-							}
-							JComboBox comboBox = new JComboBox(tracks);
-							comboBox.setSelectedIndex(0);
-							JOptionPane.showMessageDialog(null, comboBox, "Select a track to remove",
-									JOptionPane.QUESTION_MESSAGE);
-							String selected = (String) comboBox.getSelectedItem();
-
-							File selectedFile = null;
-							for (int i = 0; i < list.size(); i++) {
-								if (list.get(i).getName().equals(selected)) {
-									selectedFile = list.get(i);
-								}
-							}
-							list.removeFirstOccurrence(selectedFile);
-						}
-					});
-					buttons.add(removeButton);
-				} catch (IOException r) {
-					// yeah
-				}
-
-				table.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-				buttons.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-
-				listF.setLayout(new BorderLayout());
-				listF.add(buttons, BorderLayout.PAGE_START);
-				listF.add(table, BorderLayout.PAGE_END);
-
-				int height = 135 + (list.size() * 15);
-				listF.setSize(400, height);
-
-				listF.setVisible(true);
+				playlistPanel();
 			}
 		});
 		lMenu.add(playlistPanel);
@@ -1247,10 +999,10 @@ public class Media {
 		subtracks.start();
 
 		main.add(subtitle);
-
+		
 		helpMenu.add(about);
+		
 		main.add(helpMenu);
-
 		frame.setJMenuBar(main);
 
 		c = new Canvas();
@@ -1359,39 +1111,6 @@ public class Media {
 
 		p1.setBounds(100, 900, 105, 200);
 		frame.add(p1, BorderLayout.SOUTH);
-		JButton playbutton = new JButton();
-		Image playimg = ImageIO.read(new File("img\\Play.gif"));
-		playbutton.setIcon(new ImageIcon(playimg));
-		playbutton.setBounds(50, 50, 150, 100);
-		playbutton.setBackground(Color.LIGHT_GRAY);
-		playbutton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (stopped) {
-					stopped = false;
-					stop.stop();
-					mediaPlayer.play();
-				} else {
-					mediaPlayer.play();
-				}
-			}
-		});
-		playbutton.setFocusable(false);
-		// p1.add(playbutton);
-
-		JButton pausebutton = new JButton();
-		Image pauseimg = ImageIO.read(new File("img\\Pause.png"));
-		pausebutton.setIcon(new ImageIcon(pauseimg));
-		pausebutton.setBounds(80, 50, 150, 100);
-		pausebutton.setBackground(Color.LIGHT_GRAY);
-		pausebutton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				mediaPlayer.pause();
-			}
-		});
-		pausebutton.setFocusable(false);
-		// p1.add(pausebutton);
 
 		JButton playpause = new JButton();
 		playpauseimg = ImageIO.read(new File("img\\Pause.png"));
@@ -1426,7 +1145,25 @@ public class Media {
 
 		});
 		playpause.setFocusable(false);
-		p1.add(playpause);
+		p1.add(playpause, BorderLayout.LINE_START);
+
+		JLabel spacer = new JLabel(" ");
+		spacer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		p1.add(spacer, BorderLayout.LINE_START);
+
+		JButton prevButton = new JButton();
+		Image prevIcon = ImageIO.read(new File("img\\prevTrack.png"));
+		prevIcon = prevIcon.getScaledInstance(18, 18, 0);
+		prevButton.setIcon(new ImageIcon(prevIcon));
+		prevButton.setBounds(80, 50, 150, 100);
+		prevButton.setBackground(Color.LIGHT_GRAY);
+		prevButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				previous();
+			}
+		});
+		prevButton.setFocusable(false);
+		p1.add(prevButton, BorderLayout.LINE_START);
 
 		JButton stopbutton = new JButton();
 		Image stopimg = ImageIO.read(new File("img\\Stop.gif"));
@@ -1434,7 +1171,6 @@ public class Media {
 		stopbutton.setBounds(80, 50, 150, 100);
 		stopbutton.setBackground(Color.LIGHT_GRAY);
 		stopbutton.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					playpauseimg = ImageIO.read(new File("img\\Play.gif"));
@@ -1449,7 +1185,37 @@ public class Media {
 			}
 		});
 		stopbutton.setFocusable(false);
-		p1.add(stopbutton);
+		p1.add(stopbutton, BorderLayout.LINE_START);
+
+		JButton nextButton = new JButton();
+		Image nextIcon = ImageIO.read(new File("img\\nextTrack.png"));
+		nextIcon = nextIcon.getScaledInstance(18, 18, 0);
+		nextButton.setIcon(new ImageIcon(nextIcon));
+		nextButton.setBounds(80, 50, 150, 100);
+		nextButton.setBackground(Color.LIGHT_GRAY);
+		nextButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				next();
+			}
+		});
+		nextButton.setFocusable(false);
+		p1.add(nextButton, BorderLayout.LINE_START);
+
+		p1.add(spacer, BorderLayout.LINE_START);
+
+		JButton playlistButton = new JButton();
+		Image playlistImg = ImageIO.read(new File("img\\playlist.png"));
+		playlistImg = playlistImg.getScaledInstance(18, 18, 0);
+		playlistButton.setIcon(new ImageIcon(playlistImg));
+		playlistButton.setBounds(80, 50, 150, 100);
+		playlistButton.setBackground(Color.LIGHT_GRAY);
+		playlistButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				playlistPanel();
+			}
+		});
+		playlistButton.setFocusable(false);
+		p1.add(playlistButton, BorderLayout.LINE_START);
 
 		loopbutton = new JButton();
 		Image loopimg = ImageIO.read(new File("img\\Loop.png"));
@@ -1458,7 +1224,6 @@ public class Media {
 		loopbutton.setBounds(80, 50, 150, 100);
 		loopbutton.setBackground(Color.LIGHT_GRAY);
 		loopbutton.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					if (!pLoop && !sLoop) { // playlist loop
@@ -1486,7 +1251,35 @@ public class Media {
 			}
 		});
 		loopbutton.setFocusable(false);
-		p1.add(loopbutton);
+		p1.add(loopbutton, BorderLayout.LINE_START);
+
+		JButton shuffleButton = new JButton();
+		Image shuffleImg = ImageIO.read(new File("img\\shuffle.png"));
+		shuffleImg = shuffleImg.getScaledInstance(18, 18, 0);
+		shuffleButton.setIcon(new ImageIcon(shuffleImg));
+		shuffleButton.setBounds(80, 50, 150, 100);
+		shuffleButton.setBackground(Color.LIGHT_GRAY);
+		shuffleButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (!onShuffle) {
+						onShuffle = true;
+						Image shuffleOn = ImageIO.read(new File("img\\shuffleOn.png"));
+						shuffleOn = shuffleOn.getScaledInstance(18, 18, 0);
+						shuffleButton.setIcon(new ImageIcon(shuffleOn));
+					} else {
+						onShuffle = false;
+						Image shuffleOn = ImageIO.read(new File("img\\shuffle.png"));
+						shuffleOn = shuffleOn.getScaledInstance(18, 18, 0);
+						shuffleButton.setIcon(new ImageIcon(shuffleOn));
+					}
+				} catch (IOException q) {
+
+				}
+			}
+		});
+		shuffleButton.setFocusable(false);
+		p1.add(shuffleButton, BorderLayout.LINE_START);
 
 		JButton mutebutton = new JButton();
 		Image muteimg = ImageIO.read(new File("img\\Mute.png"));
@@ -1495,19 +1288,26 @@ public class Media {
 		mutebutton.setBounds(80, 50, 150, 100);
 		mutebutton.setBackground(Color.LIGHT_GRAY);
 		mutebutton.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!mediaPlayer.isMute()) {
-					mediaPlayer.mute(true);
-					mutebutton.setBackground(Color.GRAY);
-				} else {
-					mediaPlayer.mute(false);
-					mutebutton.setBackground(Color.LIGHT_GRAY);
+				try {
+					if (!mediaPlayer.isMute()) {
+						mediaPlayer.mute(true);
+						Image muteimg = ImageIO.read(new File("img\\muteOn.png"));
+						muteimg = muteimg.getScaledInstance(18, 18, 0);
+						mutebutton.setIcon(new ImageIcon(muteimg));
+					} else {
+						mediaPlayer.mute(false);
+						Image muteimg = ImageIO.read(new File("img\\Mute.png"));
+						muteimg = muteimg.getScaledInstance(18, 18, 0);
+						mutebutton.setIcon(new ImageIcon(muteimg));
+					}
+				} catch (IOException f) {
+					// yeah
 				}
 			}
 		});
 		mutebutton.setFocusable(false);
-		p1.add(mutebutton);
+		p1.add(mutebutton, BorderLayout.LINE_END);
 
 		String vLabel = "N/A";
 		if (mediaPlayer.getVolume() < 100) {
@@ -1523,7 +1323,6 @@ public class Media {
 		JLabel volumePercent = new JLabel(vLabel);
 		JSlider volume = new JSlider(0, 200, mediaPlayer.getVolume());
 		volume.addChangeListener(new ChangeListener() {
-			@Override
 			public void stateChanged(ChangeEvent changeEvent) {
 				JSlider theSlider = (JSlider) changeEvent.getSource();
 				mediaPlayer.setVolume(theSlider.getValue());
@@ -1571,7 +1370,6 @@ public class Media {
 		text.start();
 		frame.setFocusable(true);
 		frame.addKeyListener(new KeyListener() {
-			@Override
 			public void keyPressed(KeyEvent k) {
 				int key = k.getKeyCode();
 				if (key == (KeyEvent.VK_F)) {
@@ -1647,7 +1445,6 @@ public class Media {
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
 					Timer text = new Timer(1000, new ActionListener() {
-						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
@@ -1665,7 +1462,6 @@ public class Media {
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
 					Timer text = new Timer(1000, new ActionListener() {
-						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
@@ -1683,7 +1479,6 @@ public class Media {
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
 					Timer text = new Timer(1000, new ActionListener() {
-						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
@@ -1718,7 +1513,6 @@ public class Media {
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
 					Timer text = new Timer(1000, new ActionListener() {
-						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
@@ -1738,7 +1532,6 @@ public class Media {
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
 					Timer text = new Timer(1000, new ActionListener() {
-						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
@@ -1758,7 +1551,6 @@ public class Media {
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
 					Timer text = new Timer(1000, new ActionListener() {
-						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
@@ -1779,7 +1571,6 @@ public class Media {
 						mediaPlayer.setMarqueeSize(22);
 						mediaPlayer.enableMarquee(true);
 						Timer text = new Timer(1000, new ActionListener() {
-							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
 
@@ -1845,7 +1636,6 @@ public class Media {
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
 					Timer text = new Timer(1000, new ActionListener() {
-						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
@@ -2109,18 +1899,157 @@ public class Media {
 			}
 		});
 		listAdvance.start();
+		
+		JMenu tools = new JMenu("Tools");
+		JMenuItem mediaInfo = new JMenuItem("Media Info");
+		mediaInfo.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (isAudio()) {
+					MediaMetaData meta = mediaPlayer.getMediaMeta().asMediaMetaData();
+
+					JFrame i = new JFrame("Track Info");
+					JPanel bigPanel = new JPanel();
+
+					JPanel albumArtPanel = new JPanel();
+					try {
+						BufferedImage artB = mediaPlayer.getMediaMeta().getArtwork();
+						Image art = artB;
+						art = art.getScaledInstance(87, 87, 0);
+						JLabel albumArt = new JLabel(new ImageIcon(art));
+						albumArtPanel.add(albumArt);
+					} catch (NullPointerException f) {
+						try {
+							BufferedImage artB = ImageIO.read(new File("img\\logoTapes.png"));
+							Image art = artB;
+							art = art.getScaledInstance(87, 87, 0);
+							JLabel albumArt = new JLabel(new ImageIcon(art));
+							albumArtPanel.add(albumArt);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
+
+					JPanel albumInfo = new JPanel(new GridLayout(10, 1));
+
+					JLabel titleL = new JLabel("Title: ");
+					String titleT = "N/A";
+					if (!String.valueOf(meta.getTitle()).equals("null")) {
+						titleT = meta.getTitle();
+					}
+					JTextField title = new JTextField(titleT, 10);
+					title.setEditable(false); // Will enable when I add meta information updating.
+					albumInfo.add(titleL);
+					albumInfo.add(title);
+
+					JLabel albumNameL = new JLabel("Album Title: ");
+					String albumNameT = "N/A";
+					if (!String.valueOf(meta.getAlbum()).equals("null")) {
+						albumNameT = meta.getAlbum();
+					}
+					JTextField albumName = new JTextField(albumNameT, 10);
+					albumName.setEditable(false); // Will enable when I add meta information updating.
+					albumInfo.add(albumNameL);
+					albumInfo.add(albumName);
+
+					JLabel albumArtistL = new JLabel("Album Artist: ");
+					String albumArtistT = "N/A";
+					if (!String.valueOf(meta.getAlbumArtist()).equals("null")) {
+						albumArtistT = meta.getAlbumArtist();
+					}
+					JTextField albumArtist = new JTextField(albumArtistT, 10);
+					albumArtist.setEditable(false); // Will enable when I add meta information updating.
+					albumInfo.add(albumArtistL);
+					albumInfo.add(albumArtist);
+
+					JLabel trackNumL = new JLabel("Track Number / Total Number of Tracks: ");
+					String trackNumT = "N/A";
+					if (String.valueOf(meta.getTrackNumber()).equals("null")
+							&& !String.valueOf(meta.getTrackTotal()).equals("null")) {
+						trackNumT = "N/A / " + meta.getTrackTotal();
+					} else if (String.valueOf(meta.getTrackTotal()).equals("null")
+							&& !(String.valueOf(meta.getTrackNumber()).equals("null"))) {
+						trackNumT = meta.getTrackNumber() + " / N/A";
+					} else if (!(String.valueOf(meta.getTrackNumber()).equals("null")
+							&& String.valueOf(meta.getTrackTotal()).equals("null"))) {
+						trackNumT = "" + meta.getTrackNumber() + "/" + meta.getTrackTotal();
+					}
+					JTextField trackNum = new JTextField(trackNumT, 10);
+					trackNum.setEditable(false); // Will enable when I add meta information updating.
+					albumInfo.add(trackNumL);
+					albumInfo.add(trackNum);
+
+					JLabel diskL = new JLabel("Disk Number / Total Number of Disks");
+					String diskT = "N/A";
+					if (String.valueOf(meta.getDiscNumber()).equals("null")
+							&& !String.valueOf(meta.getDiscTotal()).equals("null")) {
+						diskT = "N/A / " + meta.getDiscTotal();
+					} else if (String.valueOf(meta.getDiscTotal()).equals("null")
+							&& !String.valueOf(meta.getDiscNumber()).equals("null")) {
+						diskT = meta.getDiscNumber() + "/ N/A";
+					} else if (!(String.valueOf(meta.getDiscTotal()).equals("null")
+							&& String.valueOf(meta.getDiscTotal()).equals("null"))) {
+						diskT = "" + meta.getDiscNumber() + "/" + meta.getDiscTotal();
+					}
+					JTextField disk = new JTextField(diskT, 10);
+					disk.setEditable(false); // Will enable when I add meta information updating.
+					albumInfo.add(diskL);
+					albumInfo.add(disk);
+					
+					/**
+					
+					JLabel formatL = new JLabel("Codec:");
+					String codec = mediaPlayer.getCodecDescription(libvlc_track_type_t.libvlc_track_audio, 0);
+					JTextField codecText = new JTextField(codec, 10);
+					codecText.setEditable(false);
+					albumInfo.add(formatL);
+					albumInfo.add(codecText);
+					
+					**/
+
+					bigPanel.add(albumArtPanel);
+					bigPanel.add(albumInfo);
+
+					i.add(bigPanel);
+
+					i.setSize(300, 400);
+					i.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					i.setLocation(dim.width / 2 - i.getSize().width / 2, dim.height / 2 - i.getSize().height / 2);
+					i.setResizable(false);
+					i.setVisible(true);
+				} else {
+					JMenu mIF = new JMenu("Video Information");
+				}
+			}
+
+		});
+		tools.add(mediaInfo);
+		
+		main.add(tools);
+		
+		main.add(helpMenu);
+		frame.setJMenuBar(main);
 	}
 
 	private void next() {
-		if (listP + 1 != list.size()) {
+		if (listP + 1 != list.size() && !pLoop && !onShuffle) {
 			listP++;
 			mediaPlayer.stop();
 			mediaPlayer.playMedia(list.get(listP).getPath());
 
 			String title = "" + list.get(listP).getName() + " - Media Player";
 			frame.setTitle(title);
-		} else if (pLoop) {
+		} else if (pLoop && !onShuffle) {
 			listP = 0;
+			mediaPlayer.stop();
+			mediaPlayer.playMedia(list.get(listP).getPath());
+
+			String title = "" + list.get(listP).getName() + " - Media Player";
+			frame.setTitle(title);
+		} else if (onShuffle) {
+			Random rand = new Random();
+			listP = rand.nextInt(list.size());
 			mediaPlayer.stop();
 			mediaPlayer.playMedia(list.get(listP).getPath());
 
@@ -2195,4 +2124,145 @@ public class Media {
 		}
 	}
 
+	public void playlistPanel() {
+		JFrame listF = new JFrame("Playlist");
+		JPanel table = new JPanel(new BorderLayout());
+		JLabel tLabel1 = new JLabel("Playlist:");
+		tLabel1.setSize(300, 50);
+		table.add(tLabel1, BorderLayout.PAGE_START);
+		String[] header = { "Number", "Track" };
+		Object[][] tracks = new Object[list.size()][2];
+		for (int i = 0; i < list.size(); i++) {
+			tracks[i][0] = i + 1;
+			tracks[i][1] = list.get(i).getName();
+		}
+		JTable pTable = new JTable(tracks, header);
+		table.add(pTable, BorderLayout.CENTER);
+		JLabel tLabel2 = new JLabel("Currently playing: " + list.get(listP).getName());
+		tLabel2.setSize(300, 50);
+		table.add(tLabel2, BorderLayout.PAGE_END);
+
+		JPanel buttons = new JPanel(new GridLayout());
+		try {
+			JButton pLoopButton = new JButton();
+			Image loopimg = ImageIO.read(new File("img\\Loop.png"));
+			loopimg = loopimg.getScaledInstance(18, 18, 0);
+			pLoopButton.setIcon(new ImageIcon(loopimg));
+			pLoopButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					try {
+						if (!pLoop && !sLoop) { // playlist loop
+							pLoop = true;
+							Image loopimg = ImageIO.read(new File("img\\loopAll.png"));
+							loopimg = loopimg.getScaledInstance(18, 18, 0);
+							loopbutton.setIcon(new ImageIcon(loopimg));
+							pLoopButton.setIcon(new ImageIcon(loopimg));
+						} else if (pLoop && !sLoop) { // single loop
+							pLoop = false;
+							sLoop = true;
+							Image loopimg = ImageIO.read(new File("img\\loopS.png"));
+							loopimg = loopimg.getScaledInstance(18, 18, 0);
+							loopbutton.setIcon(new ImageIcon(loopimg));
+							pLoopButton.setIcon(new ImageIcon(loopimg));
+							mediaPlayer.setRepeat(true);
+						} else if (!pLoop && sLoop) { // no loop
+							sLoop = false;
+							mediaPlayer.setRepeat(false);
+							Image loopimg = ImageIO.read(new File("img\\Loop.png"));
+							loopimg = loopimg.getScaledInstance(18, 18, 0);
+							loopbutton.setIcon(new ImageIcon(loopimg));
+							pLoopButton.setIcon(new ImageIcon(loopimg));
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			buttons.add(pLoopButton);
+
+			JButton topAddButton = new JButton();
+			Image topAddButtonImg = ImageIO.read(new File("img\\addtop.png"));
+			topAddButtonImg = topAddButtonImg.getScaledInstance(18, 18, 0);
+			topAddButton.setIcon(new ImageIcon(topAddButtonImg));
+			topAddButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					openMultiple(true);
+				}
+			});
+			buttons.add(topAddButton);
+
+			JButton endAddButton = new JButton();
+			Image endAddButtonImg = ImageIO.read(new File("img\\addend.png"));
+			endAddButtonImg = endAddButtonImg.getScaledInstance(18, 18, 0);
+			endAddButton.setIcon(new ImageIcon(endAddButtonImg));
+			endAddButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					openMultiple(false);
+				}
+			});
+			buttons.add(endAddButton);
+
+			JButton topRemoveButton = new JButton();
+			Image topRemoveButtonImg = ImageIO.read(new File("img\\removetop.png"));
+			topRemoveButtonImg = topRemoveButtonImg.getScaledInstance(18, 18, 0);
+			topRemoveButton.setIcon(new ImageIcon(topRemoveButtonImg));
+			topRemoveButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					list.removeFirst();
+				}
+			});
+			buttons.add(topRemoveButton);
+
+			JButton endRemoveButton = new JButton("Remove Last File");
+			Image endRemoveButtonImg = ImageIO.read(new File("img\\removeend.png"));
+			endRemoveButtonImg = endRemoveButtonImg.getScaledInstance(18, 18, 0);
+			endRemoveButton.setIcon(new ImageIcon(endRemoveButtonImg));
+			endRemoveButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					list.removeLast();
+				}
+			});
+			buttons.add(endRemoveButton);
+
+			JButton removeButton = new JButton("Remove a track");
+			removeButton.addActionListener(new ActionListener() {
+				@SuppressWarnings({ "rawtypes", "unchecked" })
+				public void actionPerformed(ActionEvent e) {
+					String[] tracks = new String[list.size()];
+					for (int i = 0; i < list.size(); i++) {
+						tracks[i] = list.get(i).getName();
+					}
+					JComboBox comboBox = new JComboBox(tracks);
+					comboBox.setSelectedIndex(0);
+					JOptionPane.showMessageDialog(null, comboBox, "Select a track to remove",
+							JOptionPane.QUESTION_MESSAGE);
+					String selected = (String) comboBox.getSelectedItem();
+
+					File selectedFile = null;
+					for (int i = 0; i < list.size(); i++) {
+						if (list.get(i).getName().equals(selected)) {
+							selectedFile = list.get(i);
+						}
+					}
+					list.removeFirstOccurrence(selectedFile);
+				}
+			});
+			buttons.add(removeButton);
+		} catch (IOException r) {
+			// yeah
+		}
+
+		table.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+		buttons.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+		listF.setLayout(new BorderLayout());
+		listF.add(buttons, BorderLayout.PAGE_START);
+		listF.add(table, BorderLayout.PAGE_END);
+
+		int height = 135 + (list.size() * 15);
+		listF.setSize(400, height);
+
+		listF.setVisible(true);
+	}
 }
