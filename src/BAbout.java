@@ -1,4 +1,22 @@
-import javax.swing.JOptionPane;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class BAbout {
 
@@ -9,9 +27,10 @@ public class BAbout {
 	public void getAbout() {
 		String name = "Bitterli's Media Player in Java";
 		String version = "Version " + version();
-		String author = "Bitterli";
 		String changes = "Changelog:"
-				+ "\n(Mar 01 2020) Added Subtitle Controls."
+				+ "\n(Mar 01 2020) Added audio track switch option."
+				+ "\n(Mar 01 2020) Added single button for play and pause."
+				+ "\n(Mar 01 2020) Added subtitle controls."
 				+ "\n(Feb 29 2020) Updated main class info."
 				+ "\n(Feb 28 2020) Added playlist functionality."
 				+ "\n(Feb 18 2020) Added fullscreen media controls."
@@ -35,13 +54,62 @@ public class BAbout {
 				+ "\n(Dec 02 2019) Added midi player class GUI."
 				+ "\n(Nov 22 2019) Added midi player class base.";
 		String copyright = "(C) 2020 bitterli.us";
-		JOptionPane.showMessageDialog(null,
-				name + "\n" + version + "\n" + "Written by: " + author + "\n\n" + changes + "\n\n" + copyright, "About",
-				1);
+
+		try {
+			JFrame about = new JFrame("About");
+			JPanel titleArea = new JPanel(new BorderLayout());
+			
+			Image logoImg = ImageIO.read(new File("img\\\\logoTapes.png"));
+			logoImg = logoImg.getScaledInstance(64, 64, 0);
+			ImageIcon logo = new ImageIcon(logoImg);
+			JLabel imageLabel = new JLabel(logo);
+			imageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+			titleArea.add(imageLabel, BorderLayout.LINE_START);
+			
+			JPanel textTitle = new JPanel(new GridLayout(2,1));
+			textTitle.add(new JLabel(name));
+			textTitle.add(new JLabel(version));
+			
+			titleArea.add(textTitle);
+			
+			JPanel changeLog = new JPanel();
+			JTextArea textArea = new JTextArea(20, 40);  
+	        JScrollPane scrollableTextArea = new JScrollPane(textArea);
+	        scrollableTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 
+	        scrollableTextArea.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+	        textArea.setText(changes);
+	        
+	        changeLog.add(scrollableTextArea);
+	        
+	        JPanel footer = new JPanel(new BorderLayout());
+	        footer.add(new JLabel(copyright), BorderLayout.LINE_START);
+	        
+	        JButton close = new JButton("Close");
+	        close.addActionListener(new ActionListener() {
+	        	public void actionPerformed(ActionEvent e) {
+	        		about.dispose();
+	        	}
+	        });
+	        
+	        footer.add(close, BorderLayout.LINE_END);
+	        
+	        footer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+	        
+	        about.setLayout(new BorderLayout());
+	        about.add(titleArea, BorderLayout.PAGE_START);
+	        about.add(changeLog, BorderLayout.CENTER);
+	        about.add(footer, BorderLayout.PAGE_END);
+	        about.setSize(new Dimension(500, 515));
+	        about.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	        about.setBackground(Color.LIGHT_GRAY);
+	        about.setVisible(true);
+		} catch (IOException e) {
+			
+		}
 	}
 	
 	public String version() {
-		return "B_0.9.2 - Playlist update";
+		return "B_0.9.3 - Options update";
 	}
 
 }
