@@ -23,6 +23,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -62,7 +64,6 @@ import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
 
 public class Media {
 
-	private boolean loop;
 	private EmbeddedMediaPlayer mediaPlayer;
 	private boolean stopped;
 	private Equalizer eq;
@@ -71,6 +72,7 @@ public class Media {
 	private LinkedList<File> list = new LinkedList<File>();
 	private int listP = 0;
 	private boolean pLoop;
+	private boolean sLoop;
 
 	private Canvas c;
 	private Object[] videoEffectValues = new Object[6];
@@ -82,7 +84,14 @@ public class Media {
 	private Dimension pSize;
 	private Dimension cSize;
 
+	private JFrame frame;
+
+	private JButton loopbutton;
+
 	public Media() {
+		pLoop = false;
+		sLoop = false;
+		stopped = false;
 		mediaPlayerFactory = new MediaPlayerFactory();
 		openFile();
 		equalizer();
@@ -139,15 +148,11 @@ public class Media {
 	}
 
 	public void getVideo(Dimension dim, boolean demo) throws IOException {
-		loop = false;
-		stopped = false;
-		@SuppressWarnings("unused")
-		java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 		String title = "" + list.get(listP).getName() + " - Media Player";
 		if (demo) {
 			title = "Demonstration Version - Media Player";
 		}
-		JFrame frame = new JFrame(title);
+		frame = new JFrame(title);
 
 		JMenuBar main = new JMenuBar();
 		WrapLayout layout = new WrapLayout(WrapLayout.LEFT, 0, 0);
@@ -999,29 +1004,55 @@ public class Media {
 		JMenuItem plLoop = new JMenuItem("Enable playlist looping");
 		plLoop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!pLoop) {
-					plLoop.setText("Disable playlist looping");
-					pLoop = true;
-				} else {
-					plLoop.setText("Enable playlist looping");
-					pLoop = false;
+				try {
+					if (!pLoop) {
+						sLoop = false;
+						pLoop = true;
+						Image loopimg = ImageIO.read(new File("loopAll.png"));
+						loopimg = loopimg.getScaledInstance(18, 18, 0);
+						loopbutton.setIcon(new ImageIcon(loopimg));
+						plLoop.setText("Disable playlist looping");
+						pLoop = true;
+					} else {
+						Image loopimg = ImageIO.read(new File("Loop.png"));
+						loopimg = loopimg.getScaledInstance(18, 18, 0);
+						loopbutton.setIcon(new ImageIcon(loopimg));
+						plLoop.setText("Enable playlist looping");
+						pLoop = false;
+					}
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
 			}
 		});
 		lMenu.add(plLoop);
-		JMenuItem sLoop = new JMenuItem("Enable Single Track looping");
-		sLoop.addActionListener(new ActionListener() {
+		JMenuItem siLoop = new JMenuItem("Enable Single Track looping");
+		siLoop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!mediaPlayer.getRepeat()) {
-					sLoop.setText("Disable Single Track looping");
-					mediaPlayer.setRepeat(true);
-				} else {
-					sLoop.setText("Enable Single Track looping");
-					mediaPlayer.setRepeat(false);
+				try {
+					if (!mediaPlayer.getRepeat()) {
+						siLoop.setText("Disable Single Track looping");
+						pLoop = false;
+						sLoop = true;
+						Image loopimg = ImageIO.read(new File("loopS.png"));
+						loopimg = loopimg.getScaledInstance(18, 18, 0);
+						loopbutton.setIcon(new ImageIcon(loopimg));
+						mediaPlayer.setRepeat(true);
+					} else {
+						siLoop.setText("Enable Single Track looping");
+						mediaPlayer.setRepeat(false);
+						sLoop = false;
+						Image loopimg = ImageIO.read(new File("Loop.png"));
+						loopimg = loopimg.getScaledInstance(18, 18, 0);
+						loopbutton.setIcon(new ImageIcon(loopimg));
+						siLoop.setText("Enable playlist looping");
+					}
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
 			}
 		});
-		lMenu.add(sLoop);
+		lMenu.add(siLoop);
 		JMenuItem topAdd = new JMenuItem("Add tracks to top");
 		topAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1092,6 +1123,7 @@ public class Media {
 		lMenu.add(endRemove);
 		JMenuItem removeSel = new JMenuItem("Remove a track");
 		removeSel.addActionListener(new ActionListener() {
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			public void actionPerformed(ActionEvent e) {
 				String[] tracks = new String[list.size()];
 				for (int i = 0; i < list.size(); i++) {
@@ -1293,7 +1325,7 @@ public class Media {
 		stopbutton.setBackground(Color.LIGHT_GRAY);
 		p1.add(stopbutton);
 
-		JButton loopbutton = new JButton();
+		loopbutton = new JButton();
 		Image loopimg = ImageIO.read(new File("Loop.png"));
 		loopimg = loopimg.getScaledInstance(18, 18, 0);
 		loopbutton.setIcon(new ImageIcon(loopimg));
@@ -1760,7 +1792,6 @@ public class Media {
 					text.setRepeats(false);
 					text.start();
 				}
-
 			}
 
 			@Override
@@ -1771,6 +1802,87 @@ public class Media {
 			public void keyTyped(KeyEvent k) {
 			}
 
+		});
+
+		frame.addMouseWheelListener(new MouseWheelListener() {
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				System.out.println(e.getWheelRotation());
+
+				if (e.getWheelRotation() < 0) {
+					int newVol = mediaPlayer.getVolume() + 5;
+					if (!(newVol > 200)) {
+						mediaPlayer.setVolume(newVol);
+
+						String marqueeText = "" + newVol + "%";
+						mediaPlayer.setMarqueeLocation((csizex - 15), (15));
+						mediaPlayer.setMarqueeText("" + marqueeText);
+						mediaPlayer.setMarqueeSize(22);
+						mediaPlayer.enableMarquee(true);
+						ActionListener marqueeTask = new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								mediaPlayer.enableMarquee(false);
+
+							}
+						};
+						Timer text = new Timer(1000, marqueeTask);
+						text.setRepeats(false);
+						text.start();
+
+						String vLabel = "N/A";
+						if (mediaPlayer.getVolume() < 100) {
+							if (mediaPlayer.getVolume() < 10) {
+								vLabel = "" + mediaPlayer.getVolume() + "%   ";
+							} else {
+								vLabel = "" + mediaPlayer.getVolume() + "%  ";
+							}
+							;
+						} else {
+							vLabel = "" + mediaPlayer.getVolume() + "%";
+						}
+						volumePercent.setText(vLabel);
+						volume.setValue(newVol);
+					}
+				} else {
+					int newVol = mediaPlayer.getVolume() - 5;
+
+					if (!(newVol < 0)) {
+						mediaPlayer.setVolume(newVol);
+
+						String marqueeText = "" + newVol + "%";
+						mediaPlayer.setMarqueeLocation((csizex - 15), (15));
+						mediaPlayer.setMarqueeText("" + marqueeText);
+						mediaPlayer.setMarqueeSize(22);
+						mediaPlayer.enableMarquee(true);
+						ActionListener marqueeTask = new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								mediaPlayer.enableMarquee(false);
+
+							}
+						};
+						Timer text = new Timer(1000, marqueeTask);
+						text.setRepeats(false);
+						text.start();
+
+						String vLabel = "N/A";
+						if (mediaPlayer.getVolume() < 100) {
+							if (mediaPlayer.getVolume() < 10) {
+								vLabel = "" + mediaPlayer.getVolume() + "%   ";
+							} else {
+								vLabel = "" + mediaPlayer.getVolume() + "%  ";
+							}
+							;
+						} else {
+							vLabel = "" + mediaPlayer.getVolume() + "%";
+						}
+						volumePercent.setText(vLabel);
+						volume.setValue(newVol);
+					}
+				}
+			}
 		});
 
 		frame.setSize(904, 645);
@@ -1834,7 +1946,7 @@ public class Media {
 						albumArt = true;
 					} catch (NullPointerException e) {
 						// this only happens when there is no album art.
-						// this isn't a progream breaking exception.
+						// this isn't a program breaking exception.
 					}
 				}
 			};
@@ -1878,22 +1990,28 @@ public class Media {
 		loopbutton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (!loop) {
-					if (!stopped) {
-						loopbutton.setBackground(Color.GRAY);
-						loop = true;
+				try {
+					if (!pLoop && !sLoop) { // playlist loop
+						pLoop = true;
+						Image loopimg = ImageIO.read(new File("loopAll.png"));
+						loopimg = loopimg.getScaledInstance(18, 18, 0);
+						loopbutton.setIcon(new ImageIcon(loopimg));
+					} else if (pLoop && !sLoop) { // single loop
+						pLoop = false;
+						sLoop = true;
+						Image loopimg = ImageIO.read(new File("loopS.png"));
+						loopimg = loopimg.getScaledInstance(18, 18, 0);
+						loopbutton.setIcon(new ImageIcon(loopimg));
 						mediaPlayer.setRepeat(true);
-					} else {
-						mediaPlayer.play();
-						stopped = false;
-						loopbutton.setBackground(Color.GRAY);
-						loop = true;
-						mediaPlayer.setRepeat(true);
+					} else if (!pLoop && sLoop) { // no loop
+						sLoop = false;
+						mediaPlayer.setRepeat(false);
+						Image loopimg = ImageIO.read(new File("Loop.png"));
+						loopimg = loopimg.getScaledInstance(18, 18, 0);
+						loopbutton.setIcon(new ImageIcon(loopimg));
 					}
-				} else {
-					loopbutton.setBackground(Color.LIGHT_GRAY);
-					loop = false;
-					mediaPlayer.setRepeat(false);
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		});
@@ -1941,7 +2059,7 @@ public class Media {
 
 		ActionListener advance = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (mediaPlayer.getPosition() >= 0.99) {
+				if (mediaPlayer.getPosition() >= 0.99 && !sLoop) {
 					next();
 				}
 			}
@@ -1957,10 +2075,16 @@ public class Media {
 			listP++;
 			mediaPlayer.stop();
 			mediaPlayer.playMedia(list.get(listP).getPath());
+
+			String title = "" + list.get(listP).getName() + " - Media Player";
+			frame.setTitle(title);
 		} else if (pLoop) {
 			listP = 0;
 			mediaPlayer.stop();
 			mediaPlayer.playMedia(list.get(listP).getPath());
+
+			String title = "" + list.get(listP).getName() + " - Media Player";
+			frame.setTitle(title);
 		}
 	}
 
@@ -1969,10 +2093,16 @@ public class Media {
 			listP--;
 			mediaPlayer.stop();
 			mediaPlayer.playMedia(list.get(listP).getPath());
+
+			String title = "" + list.get(listP).getName() + " - Media Player";
+			frame.setTitle(title);
 		} else if (pLoop) {
 			listP = list.size() - 1;
 			mediaPlayer.stop();
 			mediaPlayer.playMedia(list.get(listP).getPath());
+
+			String title = "" + list.get(listP).getName() + " - Media Player";
+			frame.setTitle(title);
 		}
 	}
 
