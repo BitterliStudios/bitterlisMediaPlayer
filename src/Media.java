@@ -59,6 +59,7 @@ import uk.co.caprica.vlcj.binding.LibVlcConst;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
+import uk.co.caprica.vlcj.player.TrackDescription;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
 
@@ -80,6 +81,8 @@ public class Media {
 	private boolean albumArt = false;
 
 	private eqPresetManager presets;
+
+	private JMenu subtrack = new JMenu("Subtrack");
 
 	private Dimension pSize;
 	private Dimension cSize;
@@ -162,31 +165,10 @@ public class Media {
 		openFile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				getFile();
+				openSingle();
 				listP++;
 				mediaPlayer.stop();
 				mediaPlayer.playMedia(list.get(listP).getPath());
-			}
-
-			private void getFile() {
-				JFileChooser j = new JFileChooser();
-				j.setFileFilter(new FileNameExtensionFilter("Media Files",
-						// audio formats
-						"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob",
-						"ape", "au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka",
-						"mlp", "mod", "mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus",
-						"qcp", "ra", "rmi", "s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma",
-						"wv", "xa", "xm",
-						// video formats
-						"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo",
-						"f4v", "flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2",
-						"mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv",
-						"mxf", "mxg", "nsv", "nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp",
-						"tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
-				j.showOpenDialog(null);
-				if (j.getSelectedFile().exists()) {
-					list.add(j.getSelectedFile());
-				}
 			}
 
 		});
@@ -196,36 +178,10 @@ public class Media {
 		openMultiFiles.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				getFile();
+				openMultiple();
 				mediaPlayer.stop();
 				mediaPlayer.playMedia(list.get(listP).getPath());
 			}
-
-			private void getFile() {
-				JFileChooser j = new JFileChooser();
-				j.setMultiSelectionEnabled(true);
-				j.setFileFilter(new FileNameExtensionFilter("Media Files",
-						// audio formats
-						"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob",
-						"ape", "au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka",
-						"mlp", "mod", "mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus",
-						"qcp", "ra", "rmi", "s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma",
-						"wv", "xa", "xm",
-						// video formats
-						"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo",
-						"f4v", "flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2",
-						"mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv",
-						"mxf", "mxg", "nsv", "nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp",
-						"tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
-				j.showOpenDialog(null);
-				File[] theList = j.getSelectedFiles();
-				for (int i = 0; i < theList.length; i++) {
-					if (j.getSelectedFile().exists()) {
-						list.add(j.getSelectedFile());
-					}
-				}
-			}
-
 		});
 		fileMenu.add(openMultiFiles);
 
@@ -1056,54 +1012,14 @@ public class Media {
 		JMenuItem topAdd = new JMenuItem("Add tracks to top");
 		topAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser j = new JFileChooser();
-				j.setMultiSelectionEnabled(true);
-				j.setFileFilter(new FileNameExtensionFilter("Media Files",
-						// audio formats
-						"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob",
-						"ape", "au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka",
-						"mlp", "mod", "mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus",
-						"qcp", "ra", "rmi", "s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma",
-						"wv", "xa", "xm",
-						// video formats
-						"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo",
-						"f4v", "flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2",
-						"mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv",
-						"mxf", "mxg", "nsv", "nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp",
-						"tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
-				j.showOpenDialog(null);
-				File[] theList = j.getSelectedFiles();
-				for (int i = theList.length - 1; i >= 0; i--) {
-					list.addFirst(theList[i]);
-				}
+				openMultiple();
 			}
 		});
 		lMenu.add(topAdd);
 		JMenuItem endAdd = new JMenuItem("Add tracks to end");
 		endAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser j = new JFileChooser();
-				j.setMultiSelectionEnabled(true);
-				j.setFileFilter(new FileNameExtensionFilter("Media Files",
-						// audio formats
-						"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob",
-						"ape", "au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka",
-						"mlp", "mod", "mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus",
-						"qcp", "ra", "rmi", "s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma",
-						"wv", "xa", "xm",
-						// video formats
-						"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo",
-						"f4v", "flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2",
-						"mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv",
-						"mxf", "mxg", "nsv", "nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp",
-						"tod", "ts", "tts", "txd", "vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
-				j.showOpenDialog(null);
-				File[] theList = j.getSelectedFiles();
-				for (int i = 0; i < theList.length; i++) {
-					if (j.getSelectedFile().exists()) {
-						list.add(j.getSelectedFile());
-					}
-				}
+				openMultiple();
 			}
 		});
 		lMenu.add(endAdd);
@@ -1194,6 +1110,26 @@ public class Media {
 		main.add(audioSettings);
 		main.add(lMenu);
 
+		Timer subtracks = new Timer(2000, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (TrackDescription sub : mediaPlayer.getSpuDescriptions()) {
+					JMenuItem temp = new JMenuItem(sub.description());
+					temp.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							mediaPlayer.setSpu(sub.id());
+						}
+					});
+					subtrack.add(temp);
+				}
+			}
+		});
+		subtracks.setRepeats(false);
+		subtracks.start();
+
+		JMenu subtitle = new JMenu("Subtitle");
+		subtitle.add(subtrack);
+		main.add(subtitle);
+
 		helpMenu.add(about);
 		main.add(helpMenu);
 
@@ -1251,7 +1187,7 @@ public class Media {
 
 		});
 
-		ActionListener taskPerformed = new ActionListener() {
+		Timer t = new Timer(100, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int getSliderValue = (int) (mediaPlayer.getPosition() * 100);
 				slider.setValue(getSliderValue);
@@ -1284,8 +1220,7 @@ public class Media {
 
 				time.setText("" + position + " / " + length);
 			}
-		};
-		Timer t = new Timer(100, taskPerformed);
+		});
 		t.start();
 		p0.add(time);
 		p0.add(slider);
@@ -1393,13 +1328,12 @@ public class Media {
 		mediaPlayer.setMarqueeLocation((csizex / 2), (csizey - 60));
 		// mediaPlayer.setMarqueeText("" + file.getPath());
 		mediaPlayer.enableMarquee(true);
-		ActionListener marqueeTask = new ActionListener() {
+		Timer text = new Timer(5000, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				mediaPlayer.enableMarquee(false);
 			}
-		};
-		Timer text = new Timer(5000, marqueeTask);
+		});
 		text.setRepeats(false);
 		text.start();
 		frame.setFocusable(true);
@@ -1416,19 +1350,17 @@ public class Media {
 						mediaPlayer.setMarqueeText("" + marqueeText);
 						mediaPlayer.setMarqueeSize(22);
 						mediaPlayer.enableMarquee(true);
-						ActionListener marqueeTask = new ActionListener() {
+						Timer text = new Timer(1000, new ActionListener() {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
 
 							}
-						};
-						Timer text = new Timer(1000, marqueeTask);
+						});
 						text.setRepeats(false);
 						text.start();
 
 						if (!fullScreenOperation.isFullScreen()) {
-							c.setFocusable(true);
 							frame.remove(p0);
 							frame.remove(p1);
 							frame.setJMenuBar(null);
@@ -1438,7 +1370,6 @@ public class Media {
 							p.add(fullscreenOverlay, BorderLayout.SOUTH);
 							fullScreenOperation.toggleFullScreen();
 						} else {
-							c.setFocusable(false);
 							fullScreenOperation.toggleFullScreen();
 							frame.remove(fullscreenOverlay);
 							frame.add(p0, BorderLayout.CENTER);
@@ -1482,14 +1413,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 				} else if (key == (KeyEvent.VK_PLUS)) {
@@ -1501,14 +1431,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 				} else if (key == (KeyEvent.VK_MINUS)) {
@@ -1520,14 +1449,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 				} else if (key == (KeyEvent.VK_EQUALS)) {
@@ -1539,14 +1467,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 				} else if (key == (KeyEvent.VK_N)) {
@@ -1557,14 +1484,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 
@@ -1578,14 +1504,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 
@@ -1599,14 +1524,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 					mediaPlayer.stop();
@@ -1621,14 +1545,13 @@ public class Media {
 						mediaPlayer.setMarqueeText("" + marqueeText);
 						mediaPlayer.setMarqueeSize(22);
 						mediaPlayer.enableMarquee(true);
-						ActionListener marqueeTask = new ActionListener() {
+						Timer text = new Timer(1000, new ActionListener() {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
 
 							}
-						};
-						Timer text = new Timer(1000, marqueeTask);
+						});
 						text.setRepeats(false);
 						text.start();
 
@@ -1657,14 +1580,13 @@ public class Media {
 						mediaPlayer.setMarqueeText("" + marqueeText);
 						mediaPlayer.setMarqueeSize(22);
 						mediaPlayer.enableMarquee(true);
-						ActionListener marqueeTask = new ActionListener() {
+						Timer text = new Timer(1000, new ActionListener() {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
 
 							}
-						};
-						Timer text = new Timer(1000, marqueeTask);
+						});
 						text.setRepeats(false);
 						text.start();
 						mediaPlayer.setVolume(newVol);
@@ -1689,14 +1611,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 					mediaPlayer.setPosition(mediaPlayer.getPosition() + 0.05f);
@@ -1708,14 +1629,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 
@@ -1736,14 +1656,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 				} else if (key == (KeyEvent.VK_E)) {
@@ -1755,14 +1674,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 				} else if (key == (KeyEvent.VK_L)) {
@@ -1781,14 +1699,13 @@ public class Media {
 					mediaPlayer.setMarqueeText("" + marqueeText);
 					mediaPlayer.setMarqueeSize(22);
 					mediaPlayer.enableMarquee(true);
-					ActionListener marqueeTask = new ActionListener() {
+					Timer text = new Timer(1000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							mediaPlayer.enableMarquee(false);
 
 						}
-					};
-					Timer text = new Timer(1000, marqueeTask);
+					});
 					text.setRepeats(false);
 					text.start();
 				}
@@ -1820,14 +1737,13 @@ public class Media {
 						mediaPlayer.setMarqueeText("" + marqueeText);
 						mediaPlayer.setMarqueeSize(22);
 						mediaPlayer.enableMarquee(true);
-						ActionListener marqueeTask = new ActionListener() {
+						Timer text = new Timer(1000, new ActionListener() {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
 
 							}
-						};
-						Timer text = new Timer(1000, marqueeTask);
+						});
 						text.setRepeats(false);
 						text.start();
 
@@ -1856,14 +1772,13 @@ public class Media {
 						mediaPlayer.setMarqueeText("" + marqueeText);
 						mediaPlayer.setMarqueeSize(22);
 						mediaPlayer.enableMarquee(true);
-						ActionListener marqueeTask = new ActionListener() {
+						Timer text = new Timer(1000, new ActionListener() {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								mediaPlayer.enableMarquee(false);
 
 							}
-						};
-						Timer text = new Timer(1000, marqueeTask);
+						});
 						text.setRepeats(false);
 						text.start();
 
@@ -1900,7 +1815,7 @@ public class Media {
 		// The main logo to ensure it's drawn over the video object.
 		// The album art to ensure the album art has loaded in (null pointer errors)
 
-		ActionListener drawLogo = new ActionListener() {
+		Timer logoTimer = new Timer(200, new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				try {
 					BufferedImage before = ImageIO.read(new File("logoTapes.png"));
@@ -1919,16 +1834,14 @@ public class Media {
 					e.printStackTrace();
 				}
 			}
-		};
-
-		Timer logoTimer = new Timer(200, drawLogo);
+		});
 		logoTimer.start();
 		if (!albumArt) {
 			logoTimer.setRepeats(false);
 		}
 
 		if (isAudio()) {
-			ActionListener drawArt = new ActionListener() {
+			Timer artTimer = new Timer(1000, new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					try {
 						BufferedImage before = mediaPlayer.getMediaMeta().getArtwork();
@@ -1949,8 +1862,7 @@ public class Media {
 						// this isn't a program breaking exception.
 					}
 				}
-			};
-			Timer artTimer = new Timer(1000, drawArt);
+			});
 			artTimer.start();
 		}
 
@@ -2057,17 +1969,14 @@ public class Media {
 		volume.setFocusable(false);
 		c.setFocusable(false);
 
-		ActionListener advance = new ActionListener() {
+		Timer listAdvance = new Timer(1000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (mediaPlayer.getPosition() >= 0.99 && !sLoop) {
 					next();
 				}
 			}
-		};
-
-		Timer listAdvance = new Timer(1000, advance);
+		});
 		listAdvance.start();
-
 	}
 
 	private void next() {
@@ -2103,6 +2012,50 @@ public class Media {
 
 			String title = "" + list.get(listP).getName() + " - Media Player";
 			frame.setTitle(title);
+		}
+	}
+
+	private void openSingle() {
+		JFileChooser j = new JFileChooser();
+		j.setFileFilter(new FileNameExtensionFilter("Media Files",
+				// audio formats
+				"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob", "ape",
+				"au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka", "mlp", "mod",
+				"mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus", "qcp", "ra", "rmi",
+				"s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma", "wv", "xa", "xm",
+				// video formats
+				"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo", "f4v",
+				"flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2", "mp2v", "mp4",
+				"mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv", "mxf", "mxg", "nsv",
+				"nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp", "tod", "ts", "tts", "txd",
+				"vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
+		j.showOpenDialog(null);
+		if (j.getSelectedFile().exists()) {
+			list.add(j.getSelectedFile());
+		}
+	}
+
+	private void openMultiple() {
+		JFileChooser j = new JFileChooser();
+		j.setMultiSelectionEnabled(true);
+		j.setFileFilter(new FileNameExtensionFilter("Media Files",
+				// audio formats
+				"3ga", "669", "a52", "aac", "ac3", "adt", "adts", "aif", "aifc", "aiff", "amb", "amr", "aob", "ape",
+				"au", "awb", "caf", "dts", "flac", "it", "kar", "m4a", "m4b", "m4p", "m5p", "mid", "mka", "mlp", "mod",
+				"mp1", "mp2", "mp3", "mpa", "mpc", "mpga", "mus", "oga", "ogg", "oma", "opus", "qcp", "ra", "rmi",
+				"s3m", "sid", "spx", "tak", "thd", "tta", "voc", "vqf", "w64", "wav", "wma", "wv", "xa", "xm",
+				// video formats
+				"3g2", "3gp", "3gp2", "3gpp", "amv", "asf", "avi", "bik", "bin", "divx", "drc", "dv", "evo", "f4v",
+				"flv", "gvi", "gxf", "iso", "m1v", "m2t", "m2ts", "m2v", "m4v", "mkv", "mov", "mp2", "mp2v", "mp4",
+				"mp4v", "mpe", "mpeg", "mpeg1", "mpeg2", "mpeg4", "mpg", "mpv2", "mts", "mtv", "mxf", "mxg", "nsv",
+				"nuv", "ogg", "ogm", "ogv", "ogx", "ps", "rec", "rm", "rmvb", "rpl", "thp", "tod", "ts", "tts", "txd",
+				"vob", "vro", "webm", "wm", "wmv", "wtv", "xesc"));
+		j.showOpenDialog(null);
+		File[] theList = j.getSelectedFiles();
+		for (int i = 0; i < theList.length; i++) {
+			if (j.getSelectedFile().exists()) {
+				list.add(j.getSelectedFile());
+			}
 		}
 	}
 
