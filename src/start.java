@@ -35,7 +35,7 @@ public class start {
 		JFrame welcome = new JFrame("Loading... - Audio Player");
 		welcome.setResizable(false);
 		JPanel welcomeComponents = new JPanel();
-		Image logo = ImageIO.read(new File("namelogo.png"));
+		Image logo = ImageIO.read(new File("img\\namelogo.png"));
 		logo = logo.getScaledInstance(700, 145, 0);
 		welcomeComponents.add(new JLabel(new ImageIcon(logo)));
 		String text = "<html><center><p><br><br>Bitterli's Media Player<br>Version " + new BAbout().version()
