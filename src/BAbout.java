@@ -58,58 +58,57 @@ public class BAbout {
 		try {
 			JFrame about = new JFrame("About");
 			JPanel titleArea = new JPanel(new BorderLayout());
-			
+
 			Image logoImg = ImageIO.read(new File("img\\\\logoTapes.png"));
 			logoImg = logoImg.getScaledInstance(64, 64, 0);
 			ImageIcon logo = new ImageIcon(logoImg);
 			JLabel imageLabel = new JLabel(logo);
 			imageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 			titleArea.add(imageLabel, BorderLayout.LINE_START);
-			
-			JPanel textTitle = new JPanel(new GridLayout(2,1));
+
+			JPanel textTitle = new JPanel(new GridLayout(2, 1));
 			textTitle.add(new JLabel(name));
 			textTitle.add(new JLabel(version));
-			
+
 			titleArea.add(textTitle);
-			
+
 			JPanel changeLog = new JPanel();
-			JTextArea textArea = new JTextArea(20, 40);  
-	        JScrollPane scrollableTextArea = new JScrollPane(textArea);
-	        scrollableTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 
-	        scrollableTextArea.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-	        textArea.setText(changes);
-	        
-	        changeLog.add(scrollableTextArea);
-	        
-	        JPanel footer = new JPanel(new BorderLayout());
-	        footer.add(new JLabel(copyright), BorderLayout.LINE_START);
-	        
-	        JButton close = new JButton("Close");
-	        close.addActionListener(new ActionListener() {
-	        	public void actionPerformed(ActionEvent e) {
-	        		about.dispose();
-	        	}
-	        });
-	        
-	        footer.add(close, BorderLayout.LINE_END);
-	        
-	        footer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-	        
-	        about.setLayout(new BorderLayout());
-	        about.add(titleArea, BorderLayout.PAGE_START);
-	        about.add(changeLog, BorderLayout.CENTER);
-	        about.add(footer, BorderLayout.PAGE_END);
-	        about.setSize(new Dimension(500, 515));
-	        about.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	        about.setBackground(Color.LIGHT_GRAY);
-	        about.setVisible(true);
+			JTextArea textArea = new JTextArea(20, 40);
+			JScrollPane scrollableTextArea = new JScrollPane(textArea);
+			scrollableTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			scrollableTextArea.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			textArea.setText(changes);
+
+			changeLog.add(scrollableTextArea);
+
+			JPanel footer = new JPanel(new BorderLayout());
+			footer.add(new JLabel(copyright), BorderLayout.LINE_START);
+
+			JButton close = new JButton("Close");
+			close.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					about.dispose();
+				}
+			});
+
+			footer.add(close, BorderLayout.LINE_END);
+
+			footer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+			about.setLayout(new BorderLayout());
+			about.add(titleArea, BorderLayout.PAGE_START);
+			about.add(changeLog, BorderLayout.CENTER);
+			about.add(footer, BorderLayout.PAGE_END);
+			about.setSize(new Dimension(500, 515));
+			about.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			about.setBackground(Color.LIGHT_GRAY);
+			about.setVisible(true);
 		} catch (IOException e) {
-			
+
 		}
 	}
 	
 	public String version() {
 		return "B_0.9.3 - Options update";
 	}
-
 }
