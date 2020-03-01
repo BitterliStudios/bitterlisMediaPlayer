@@ -8,14 +8,18 @@ public class BAbout {
 
 	public void getAbout() {
 		String name = "Bitterli's Media Player in Java";
-		String version = "Version " + version() + " - Controls Update";
+		String version = "Version " + version();
 		String author = "Bitterli";
 		String changes = "Changelog:"
+				+ "\n(Mar 01 2020) Added Subtitle Controls."
+				+ "\n(Feb 29 2020) Updated main class info."
+				+ "\n(Feb 28 2020) Added playlist functionality."
+				+ "\n(Feb 18 2020) Added fullscreen media controls."
 				+ "\n(Feb 12 2020) Added Fullscreen Function"
 				+ "\n(Feb 11 2020) Added ability to save Equalizers to text file."
-				+ "\n(Feb 7 2020) Added library default presets."
-				+ "\n(Feb 3 2020) Added mute button and volume slider."
-				+ "\n(Feb 3 2020) Finishing touches to Video effects panel."
+				+ "\n(Feb 07 2020) Added library default presets."
+				+ "\n(Feb 03 2020) Added mute button and volume slider."
+				+ "\n(Feb 03 2020) Finishing touches to Video effects panel."
 				+ "\n(Jan 30 2020) Added meta information for audio files."
 				+ "\n(Jan 28 2020) Fixed media looping."
 				+ "\n(Jan 16 2020) Removed References to online logo information."
@@ -37,7 +41,7 @@ public class BAbout {
 	}
 	
 	public String version() {
-		return "B_0.9.0";
+		return "B_0.9.2 - Playlist update";
 	}
 
 }
