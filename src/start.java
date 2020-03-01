@@ -1,5 +1,5 @@
 
-/* "main" class
+/* main class
  * Handles player runtime, sets up file reading.
  * 
  * this class handles the graphical interface of the audio player.
@@ -28,17 +28,10 @@ import com.sun.jna.NativeLibrary;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
-public class gui {
-
-	JFrame frame = new JFrame("Media Player");
-
-	public gui() {
-		// constructor
-	}
+public class start {
 
 	@SuppressWarnings("deprecation")
-	public void start() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-
+	public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		JFrame welcome = new JFrame("Loading... - Audio Player");
 		welcome.setResizable(false);
 		JPanel welcomeComponents = new JPanel();
