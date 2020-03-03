@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -30,6 +31,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -56,11 +58,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uk.co.caprica.vlcj.binding.LibVlcConst;
-import uk.co.caprica.vlcj.binding.internal.libvlc_track_type_t;
+import uk.co.caprica.vlcj.player.AudioTrackInfo;
 import uk.co.caprica.vlcj.player.Equalizer;
 import uk.co.caprica.vlcj.player.MediaMetaData;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.TrackDescription;
+import uk.co.caprica.vlcj.player.TrackInfo;
+import uk.co.caprica.vlcj.player.VideoTrackInfo;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
 
@@ -999,9 +1003,9 @@ public class Media {
 		subtracks.start();
 
 		main.add(subtitle);
-		
+
 		helpMenu.add(about);
-		
+
 		main.add(helpMenu);
 		frame.setJMenuBar(main);
 
@@ -1899,10 +1903,10 @@ public class Media {
 			}
 		});
 		listAdvance.start();
-		
+
 		JMenu tools = new JMenu("Tools");
-		JMenuItem mediaInfo = new JMenuItem("Media Info");
-		mediaInfo.addActionListener(new ActionListener() {
+		JMenuItem audioMeta = new JMenuItem("Audio Meta Info");
+		audioMeta.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1996,17 +2000,6 @@ public class Media {
 					disk.setEditable(false); // Will enable when I add meta information updating.
 					albumInfo.add(diskL);
 					albumInfo.add(disk);
-					
-					/**
-					
-					JLabel formatL = new JLabel("Codec:");
-					String codec = mediaPlayer.getCodecDescription(libvlc_track_type_t.libvlc_track_audio, 0);
-					JTextField codecText = new JTextField(codec, 10);
-					codecText.setEditable(false);
-					albumInfo.add(formatL);
-					albumInfo.add(codecText);
-					
-					**/
 
 					bigPanel.add(albumArtPanel);
 					bigPanel.add(albumInfo);
@@ -2018,16 +2011,129 @@ public class Media {
 					i.setLocation(dim.width / 2 - i.getSize().width / 2, dim.height / 2 - i.getSize().height / 2);
 					i.setResizable(false);
 					i.setVisible(true);
-				} else {
-					JMenu mIF = new JMenu("Video Information");
 				}
 			}
 
 		});
-		tools.add(mediaInfo);
-		
+		tools.add(audioMeta);
+
+		JMenuItem codec = new JMenuItem("Codec Info");
+		codec.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrame cF = new JFrame("Codec Information");
+				List<TrackInfo> info = mediaPlayer.getTrackInfo();
+				System.out.println(info);
+
+				JPanel bigOne = new JPanel(new BorderLayout());
+
+				JPanel codecInfo = new JPanel(new FlowLayout());
+				for (TrackInfo in : info) {
+					String type = in.toString().substring(0, 14);
+					JPanel eachStream = new JPanel(new GridLayout(5, 1));
+
+					JTextField defaultSize = new JTextField("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
+					Dimension fSize = defaultSize.getSize();
+
+					JLabel inTitle = new JLabel("Stream " + in.id() + ": ");
+					JLabel filler = new JLabel("");
+					eachStream.add(inTitle);
+					eachStream.add(filler);
+
+					JLabel inDescL = new JLabel("Description:  ");
+					String inDescT = in.codecDescription();
+					JTextField inDescF = new JTextField(inDescT, 20);
+					inDescF.setEditable(false);
+					inDescF.setSize(fSize);
+					eachStream.add(inDescL);
+					eachStream.add(inDescF);
+
+					JLabel inTypeL = new JLabel("Type:  ");
+					String inTypeT = type.substring(0, 5);
+					JTextField inTypeF = new JTextField(inTypeT, 20);
+					inTypeF.setEditable(false);
+					inTypeF.setSize(fSize);
+					eachStream.add(inTypeL);
+					eachStream.add(inTypeF);
+
+					if (type.equals("VideoTrackInfo")) {
+						VideoTrackInfo vid = (VideoTrackInfo) in;
+						JLabel inResL = new JLabel("Video Resolution: ");
+						String inResT = "" + vid.width() + "x" + vid.height();
+						JTextField inResF = new JTextField(inResT, 20);
+						inResF.setEditable(false);
+						inResF.setSize(fSize);
+						eachStream.add(inResL);
+						eachStream.add(inResF);
+
+						JLabel inFPSL = new JLabel("Frame rate: ");
+						String inFPST = "" + vid.frameRate();
+						JTextField inFPSF = new JTextField(inFPST, 20);
+						inFPSF.setEditable(false);
+						inFPSF.setSize(fSize);
+						eachStream.add(inFPSL);
+						eachStream.add(inFPSF);
+
+					} else if (type.equals("AudioTrackInfo")) {
+						AudioTrackInfo aud = (AudioTrackInfo) in;
+						JLabel inChanL = new JLabel("Channels");
+						String channels = String.valueOf(aud.channels());
+						if (aud.channels() == 1) {
+							channels = "Mono";
+						} else if (aud.channels() == 2) {
+							channels = "Stereo";
+						}
+						JTextField inChanF = new JTextField(channels, 20);
+						inChanF.setEditable(false);
+						inChanF.setSize(fSize);
+						eachStream.add(inChanL);
+						eachStream.add(inChanF);
+
+						JLabel inSamL = new JLabel("Sample Rate");
+						String inSamT = "" + aud.rate() + " Hz";
+						JTextField inSamF = new JTextField(inSamT, 20);
+						inSamF.setEditable(false);
+						inSamF.setSize(fSize);
+						eachStream.add(inSamL);
+						eachStream.add(inSamF);
+
+					}
+
+					// eachStream.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+					codecInfo.add(eachStream);
+				}
+
+				JPanel lastLine = new JPanel(new BorderLayout());
+				lastLine.add(new JLabel("Location: "), BorderLayout.LINE_START);
+				JTextField location = new JTextField(list.get(listP).getPath());
+				location.setEditable(false);
+				lastLine.add(location, BorderLayout.CENTER);
+				codecInfo.add(lastLine);
+
+				JPanel close = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+				JButton closeButton = new JButton("Close");
+				closeButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						cF.dispose();
+					}
+				});
+				close.add(closeButton);
+
+				bigOne.add(codecInfo, BorderLayout.CENTER);
+				bigOne.add(close, BorderLayout.SOUTH);
+				cF.add(bigOne);
+
+				cF.setSize(500, 300);
+				cF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				cF.setLocation(dim.width / 2 - cF.getSize().width / 2, dim.height / 2 - cF.getSize().height / 2);
+				// cF.setResizable(false);
+				cF.setVisible(true);
+			}
+		});
+		tools.add(codec);
+
 		main.add(tools);
-		
+
 		main.add(helpMenu);
 		frame.setJMenuBar(main);
 	}
