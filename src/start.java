@@ -48,7 +48,7 @@ public class start {
 		welcome.setLocation(dim.width / 2 - welcome.getSize().width / 2, dim.height / 2 - welcome.getSize().height / 2);
 		welcome.setVisible(true);
 
-		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "vlc");
+		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		SwingUtilities.invokeLater(() -> {
 			try {
