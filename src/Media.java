@@ -48,6 +48,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -2025,11 +2026,12 @@ public class Media {
 				System.out.println(info);
 
 				JPanel bigOne = new JPanel(new BorderLayout());
+				JPanel content = new JPanel(new BorderLayout());
 
 				JPanel codecInfo = new JPanel(new FlowLayout());
 				for (TrackInfo in : info) {
 					String type = in.toString().substring(0, 14);
-					JPanel eachStream = new JPanel(new GridLayout(5, 1));
+					JPanel eachStream = new JPanel();
 
 					JTextField defaultSize = new JTextField("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
 					Dimension fSize = defaultSize.getSize();
@@ -2046,6 +2048,14 @@ public class Media {
 					inDescF.setSize(fSize);
 					eachStream.add(inDescL);
 					eachStream.add(inDescF);
+
+					JLabel inLanL = new JLabel("Language: ");
+					String inLanT = in.language();
+					JTextField inLanF = new JTextField(inLanT, 20);
+					inLanF.setEditable(false);
+					inLanF.setSize(fSize);
+					eachStream.add(inLanL);
+					eachStream.add(inLanF);
 
 					JLabel inTypeL = new JLabel("Type:  ");
 					String inTypeT = type.substring(0, 5);
@@ -2066,16 +2076,18 @@ public class Media {
 						eachStream.add(inResF);
 
 						JLabel inFPSL = new JLabel("Frame rate: ");
-						String inFPST = "" + vid.frameRate();
+						String inFPST = "" + (vid.frameRate() / 1000) + "." + (vid.frameRate() % 1000);
 						JTextField inFPSF = new JTextField(inFPST, 20);
 						inFPSF.setEditable(false);
 						inFPSF.setSize(fSize);
 						eachStream.add(inFPSL);
 						eachStream.add(inFPSF);
 
+						eachStream.setLayout(new GridLayout(6, 2));
+
 					} else if (type.equals("AudioTrackInfo")) {
 						AudioTrackInfo aud = (AudioTrackInfo) in;
-						JLabel inChanL = new JLabel("Channels");
+						JLabel inChanL = new JLabel("Channels: ");
 						String channels = String.valueOf(aud.channels());
 						if (aud.channels() == 1) {
 							channels = "Mono";
@@ -2088,7 +2100,7 @@ public class Media {
 						eachStream.add(inChanL);
 						eachStream.add(inChanF);
 
-						JLabel inSamL = new JLabel("Sample Rate");
+						JLabel inSamL = new JLabel("Sample Rate: ");
 						String inSamT = "" + aud.rate() + " Hz";
 						JTextField inSamF = new JTextField(inSamT, 20);
 						inSamF.setEditable(false);
@@ -2096,19 +2108,23 @@ public class Media {
 						eachStream.add(inSamL);
 						eachStream.add(inSamF);
 
-					}
+						eachStream.setLayout(new GridLayout(6, 2));
 
-					// eachStream.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+					} else if (type.substring(0, 13).equals("TextTrackInfo")) {
+						eachStream.setLayout(new GridLayout(4, 2));
+					}
 
 					codecInfo.add(eachStream);
 				}
+
+				content.add(codecInfo);
 
 				JPanel lastLine = new JPanel(new BorderLayout());
 				lastLine.add(new JLabel("Location: "), BorderLayout.LINE_START);
 				JTextField location = new JTextField(list.get(listP).getPath());
 				location.setEditable(false);
 				lastLine.add(location, BorderLayout.CENTER);
-				codecInfo.add(lastLine);
+				lastLine.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
 				JPanel close = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 				JButton closeButton = new JButton("Close");
@@ -2119,11 +2135,14 @@ public class Media {
 				});
 				close.add(closeButton);
 
-				bigOne.add(codecInfo, BorderLayout.CENTER);
+				JScrollPane scroll = new JScrollPane(content);
+
+				bigOne.add(scroll, BorderLayout.CENTER);
+				bigOne.add(lastLine, BorderLayout.NORTH);
 				bigOne.add(close, BorderLayout.SOUTH);
 				cF.add(bigOne);
 
-				cF.setSize(500, 300);
+				cF.setSize(500, 270);
 				cF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				cF.setLocation(dim.width / 2 - cF.getSize().width / 2, dim.height / 2 - cF.getSize().height / 2);
 				// cF.setResizable(false);
