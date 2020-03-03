@@ -842,7 +842,6 @@ public class Media {
 				frameEQ.setSize(new Dimension(800, 400));
 				frameEQ.setResizable(false);
 				frameEQ.setVisible(true);
-
 			}
 
 		});
@@ -2012,6 +2011,8 @@ public class Media {
 					i.setLocation(dim.width / 2 - i.getSize().width / 2, dim.height / 2 - i.getSize().height / 2);
 					i.setResizable(false);
 					i.setVisible(true);
+				} else {
+					// custom error message thing
 				}
 			}
 
