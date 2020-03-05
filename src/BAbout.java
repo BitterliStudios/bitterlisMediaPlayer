@@ -28,6 +28,7 @@ public class BAbout {
 		String name = "Bitterli's Media Player in Java";
 		String version = "Version " + version();
 		String changes = "Changelog:"
+				+ "\n(Mar 02 2020) Added codec listing tool."
 				+ "\n(Mar 01 2020) Added audio track switch option."
 				+ "\n(Mar 01 2020) Added single button for play and pause."
 				+ "\n(Mar 01 2020) Added subtitle controls."
