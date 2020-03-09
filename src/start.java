@@ -55,8 +55,7 @@ public class start {
 				Media vlcPlayer = new Media();
 				vlcPlayer.getVideo(dim, false);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
 			}
 		});
 
