@@ -74,6 +74,8 @@ import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
 
 public class Media {
 
+	private Dimension dim;
+
 	private EmbeddedMediaPlayer mediaPlayer;
 	private boolean stopped;
 	private Equalizer eq;
@@ -101,7 +103,8 @@ public class Media {
 
 	private JButton loopbutton;
 
-	public Media() {
+	public Media(Dimension d) {
+		dim = d;
 		pLoop = false;
 		sLoop = false;
 		stopped = false;
@@ -161,7 +164,7 @@ public class Media {
 		return isAudio;
 	}
 
-	public void getVideo(Dimension dim, boolean demo) throws IOException {
+	public void getVideo(boolean demo) throws IOException {
 		try {
 			String title = "" + list.get(listP).getName() + " - Media Player";
 			if (demo) {
@@ -402,6 +405,33 @@ public class Media {
 				}
 
 			});
+			
+			JMenu vidTrack = new JMenu("Video Track");
+			
+			Timer vidTracks = new Timer(2000, new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					for (TrackDescription tra : mediaPlayer.getVideoDescriptions()) {
+						JMenuItem temp = new JMenuItem(tra.description());
+						temp.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								mediaPlayer.setVideoTrack(tra.id());
+							}
+						});
+						vidTrack.add(temp);
+					}
+				}
+			});
+			
+			vidTracks.setRepeats(false);
+			vidTracks.start();
+			
+			JMenuItem fullscreenMenu = new JMenuItem("Fullscreen");
+			
+			
+			videoSettings.add(vidTrack);
+			videoSettings.addSeparator();
+			videoSettings.add(fullscreenMenu);
+			videoSettings.addSeparator();
 			videoSettings.add(videoEffects);
 			main.add(videoSettings);
 
@@ -863,12 +893,19 @@ public class Media {
 					}
 				}
 			});
+			JMenuItem volUp = new JMenuItem("Increase Volume");
+			JMenuItem volDown = new JMenuItem("Decrease Volume");
+
 			delayAudioTrack.setRepeats(false);
 			delayAudioTrack.start();
 
 			audioSettings.add(audioTrack);
-			audioSettings.add(mute);
+			audioSettings.addSeparator();
 			audioSettings.add(equalizer);
+			audioSettings.addSeparator();
+			audioSettings.add(volUp);
+			audioSettings.add(volDown);
+			audioSettings.add(mute);
 
 			JMenu lMenu = new JMenu("Playlist");
 			JMenuItem plLoop = new JMenuItem("Enable playlist looping");
@@ -2150,7 +2187,7 @@ public class Media {
 					cF.setSize(500, 270);
 					cF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 					cF.setLocation(dim.width / 2 - cF.getSize().width / 2, dim.height / 2 - cF.getSize().height / 2);
-					// cF.setResizable(false);
+					cF.setResizable(false);
 					cF.setVisible(true);
 				}
 			});
@@ -2159,6 +2196,119 @@ public class Media {
 			main.add(tools);
 
 			main.add(helpMenu);
+
+			volUp.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int newVol = mediaPlayer.getVolume() + 10;
+					if (newVol <= 200) {
+
+						String marqueeText = "Volume Up";
+						mediaPlayer.setMarqueeLocation((csizex - 15), (15));
+						mediaPlayer.setMarqueeText("" + marqueeText);
+						mediaPlayer.setMarqueeSize(22);
+						mediaPlayer.enableMarquee(true);
+						Timer text = new Timer(1000, new ActionListener() {
+							public void actionPerformed(ActionEvent arg0) {
+								mediaPlayer.enableMarquee(false);
+
+							}
+						});
+						text.setRepeats(false);
+						text.start();
+
+						mediaPlayer.setVolume(newVol);
+						String vLabel = "N/A";
+						if (mediaPlayer.getVolume() < 100) {
+							if (mediaPlayer.getVolume() < 10) {
+								vLabel = "" + newVol + "%   ";
+							} else {
+								vLabel = "" + newVol + "%  ";
+							}
+						} else {
+							vLabel = "" + newVol + "%";
+						}
+						volumePercent.setText(vLabel);
+						volume.setValue(newVol);
+					}
+				}
+			});
+			volDown.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int newVol = (mediaPlayer.getVolume() - 10);
+					if (newVol >= 0) {
+						String marqueeText = "Volume Down";
+						mediaPlayer.setMarqueeLocation((csizex - 15), (15));
+						mediaPlayer.setMarqueeText("" + marqueeText);
+						mediaPlayer.setMarqueeSize(22);
+						mediaPlayer.enableMarquee(true);
+						Timer text = new Timer(1000, new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								mediaPlayer.enableMarquee(false);
+
+							}
+						});
+						text.setRepeats(false);
+						text.start();
+						mediaPlayer.setVolume(newVol);
+						String vLabel = "N/A";
+						if (mediaPlayer.getVolume() < 100) {
+							if (mediaPlayer.getVolume() < 10) {
+								vLabel = "" + newVol + "%   ";
+							} else {
+								vLabel = "" + newVol + "%  ";
+							}
+						} else {
+							vLabel = "" + newVol + "%";
+						}
+						volumePercent.setText(vLabel);
+						volume.setValue(newVol);
+					}
+				}
+			});
+			fullscreenMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (!isAudio()) { // audio files should not be able to toggle fullscreen mode
+						String marqueeText = "Toggled fullscreen";
+						mediaPlayer.setMarqueeLocation((csizex - 15), (15));
+						mediaPlayer.setMarqueeText("" + marqueeText);
+						mediaPlayer.setMarqueeSize(22);
+						mediaPlayer.enableMarquee(true);
+						Timer text = new Timer(1000, new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								mediaPlayer.enableMarquee(false);
+
+							}
+						});
+						text.setRepeats(false);
+						text.start();
+
+						if (!fullScreenOperation.isFullScreen()) {
+							frame.remove(p0);
+							frame.remove(p1);
+							frame.setJMenuBar(null);
+							p.setSize(dim);
+							Dimension newCSizeY = new Dimension(dim.width, dim.height - 50);
+							c.setSize(newCSizeY);
+							p.add(fullscreenOverlay, BorderLayout.SOUTH);
+							fullScreenOperation.toggleFullScreen();
+						} else {
+							fullScreenOperation.toggleFullScreen();
+							frame.remove(fullscreenOverlay);
+							frame.add(p0, BorderLayout.CENTER);
+							frame.add(p1, BorderLayout.SOUTH);
+							frame.setJMenuBar(main);
+							p.setSize(pSize);
+							c.setSize(cSize);
+							p.setBounds(100, 50, 1050, 600);
+							c.setBounds(100, 50, 1050, 500);
+							frame.repaint();
+						}
+					}
+				}
+			});
+
 			frame.setJMenuBar(main);
 		} catch (Exception e) {
 			errorBox(e, "General Error");
@@ -2450,6 +2600,7 @@ public class Media {
 			error.add(main);
 			error.setSize(new Dimension(600, 400));
 			error.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			error.setLocation(dim.width / 2 - error.getSize().width / 2, dim.height / 2 - error.getSize().height / 2);
 			error.setVisible(true);
 
 		} catch (IOException f) {

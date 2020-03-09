@@ -24,7 +24,7 @@ public class Operations {
 		JTextField in = new JTextField();
 		in.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-		JPanel footer = new JPanel(new GridLayout(1,2));
+		JPanel footer = new JPanel(new GridLayout(1, 2));
 		footer.add(new JLabel("The solution is: "));
 		JTextField result = new JTextField("");
 		result.setEditable(false);
@@ -82,7 +82,7 @@ public class Operations {
 		subMain.add(in, BorderLayout.NORTH);
 		subMain.add(buttons, BorderLayout.CENTER);
 		subMain.add(footer, BorderLayout.SOUTH);
-		
+
 		JPanel close = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JButton closeButton = new JButton("Close");
 		closeButton.addActionListener(new ActionListener() {
@@ -92,10 +92,10 @@ public class Operations {
 		});
 		close.add(closeButton);
 		subMain.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-		
+
 		main.add(subMain, BorderLayout.CENTER);
 		main.add(close, BorderLayout.SOUTH);
-		
+
 		frame.add(main);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(new Dimension(850, 200));

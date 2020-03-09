@@ -52,10 +52,10 @@ public class start {
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		SwingUtilities.invokeLater(() -> {
 			try {
-				Media vlcPlayer = new Media();
-				vlcPlayer.getVideo(dim, false);
+				Media vlcPlayer = new Media(dim);
+				vlcPlayer.getVideo(false);
 			} catch (IOException e) {
-				
+
 			}
 		});
 
