@@ -23,8 +23,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -38,6 +36,7 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -405,9 +404,9 @@ public class Media {
 				}
 
 			});
-			
+
 			JMenu vidTrack = new JMenu("Video Track");
-			
+
 			Timer vidTracks = new Timer(2000, new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					for (TrackDescription tra : mediaPlayer.getVideoDescriptions()) {
@@ -421,18 +420,20 @@ public class Media {
 					}
 				}
 			});
-			
+
 			vidTracks.setRepeats(false);
 			vidTracks.start();
-			
+
 			JMenuItem fullscreenMenu = new JMenuItem("Fullscreen");
-			
-			
+			JMenuItem screenshot = new JMenuItem("Take Screenshot");
+
 			videoSettings.add(vidTrack);
 			videoSettings.addSeparator();
 			videoSettings.add(fullscreenMenu);
 			videoSettings.addSeparator();
 			videoSettings.add(videoEffects);
+			videoSettings.addSeparator();
+			videoSettings.add(screenshot);
 			main.add(videoSettings);
 
 			JMenu audioSettings = new JMenu("Audio");
@@ -1401,10 +1402,11 @@ public class Media {
 			slider.setFocusable(false);
 			fullscreenOverlay.setFocusable(false);
 
-			int csizex = c.getSize().width / 2;
-			int csizey = c.getSize().height;
-			mediaPlayer.setMarqueeLocation((csizex / 2), (csizey - 60));
-			// mediaPlayer.setMarqueeText("" + file.getPath());
+			int csizex = (int) cSize.getWidth() - 100;
+			int csizey = (int) cSize.getHeight() + 150;
+
+			mediaPlayer.setMarqueeLocation((csizex / 2), csizey);
+			mediaPlayer.setMarqueeText("" + list.get(listP).getName());
 			mediaPlayer.enableMarquee(true);
 			Timer text = new Timer(5000, new ActionListener() {
 				@Override
@@ -1788,85 +1790,6 @@ public class Media {
 				public void keyTyped(KeyEvent k) {
 				}
 
-			});
-
-			frame.addMouseWheelListener(new MouseWheelListener() {
-
-				@Override
-				public void mouseWheelMoved(MouseWheelEvent e) {
-					System.out.println(e.getWheelRotation());
-
-					if (e.getWheelRotation() < 0) {
-						int newVol = mediaPlayer.getVolume() + 5;
-						if (!(newVol > 200)) {
-							mediaPlayer.setVolume(newVol);
-
-							String marqueeText = "" + newVol + "%";
-							mediaPlayer.setMarqueeLocation((csizex - 15), (15));
-							mediaPlayer.setMarqueeText("" + marqueeText);
-							mediaPlayer.setMarqueeSize(22);
-							mediaPlayer.enableMarquee(true);
-							Timer text = new Timer(1000, new ActionListener() {
-								@Override
-								public void actionPerformed(ActionEvent arg0) {
-									mediaPlayer.enableMarquee(false);
-
-								}
-							});
-							text.setRepeats(false);
-							text.start();
-
-							String vLabel = "N/A";
-							if (mediaPlayer.getVolume() < 100) {
-								if (mediaPlayer.getVolume() < 10) {
-									vLabel = "" + mediaPlayer.getVolume() + "%   ";
-								} else {
-									vLabel = "" + mediaPlayer.getVolume() + "%  ";
-								}
-								;
-							} else {
-								vLabel = "" + mediaPlayer.getVolume() + "%";
-							}
-							volumePercent.setText(vLabel);
-							volume.setValue(newVol);
-						}
-					} else {
-						int newVol = mediaPlayer.getVolume() - 5;
-
-						if (!(newVol < 0)) {
-							mediaPlayer.setVolume(newVol);
-
-							String marqueeText = "" + newVol + "%";
-							mediaPlayer.setMarqueeLocation((csizex - 15), (15));
-							mediaPlayer.setMarqueeText("" + marqueeText);
-							mediaPlayer.setMarqueeSize(22);
-							mediaPlayer.enableMarquee(true);
-							Timer text = new Timer(1000, new ActionListener() {
-								@Override
-								public void actionPerformed(ActionEvent arg0) {
-									mediaPlayer.enableMarquee(false);
-
-								}
-							});
-							text.setRepeats(false);
-							text.start();
-
-							String vLabel = "N/A";
-							if (mediaPlayer.getVolume() < 100) {
-								if (mediaPlayer.getVolume() < 10) {
-									vLabel = "" + mediaPlayer.getVolume() + "%   ";
-								} else {
-									vLabel = "" + mediaPlayer.getVolume() + "%  ";
-								}
-								;
-							} else {
-								vLabel = "" + mediaPlayer.getVolume() + "%";
-							}
-							volumePercent.setText(vLabel);
-							volume.setValue(newVol);
-						}
-					}
-				}
 			});
 
 			frame.setSize(904, 645);
@@ -2306,6 +2229,134 @@ public class Media {
 							frame.repaint();
 						}
 					}
+				}
+			});
+			
+			screenshot.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//mediaPlayer.pause();
+					int snapNumber = 1 + new File("snapshots\\").list().length;
+					
+					JTextField fileName = new JTextField("Snapshot" + snapNumber + ".png");
+					JTextField width = new JTextField(String.valueOf(mediaPlayer.getVideoDimension().width));
+					JTextField height = new JTextField(String.valueOf(mediaPlayer.getVideoDimension().height));
+
+					JFrame snapshot = new JFrame("Save a snapshot");
+					JPanel main = new JPanel(new BorderLayout());
+					JPanel subMain = new JPanel(new BorderLayout());
+
+					JPanel header = new JPanel();
+					header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+					header.add(new JLabel("Save a snapshot from the video: "));
+					JPanel subHeader = new JPanel(new FlowLayout(FlowLayout.LEFT));
+					subHeader.add(new JLabel("Filename: "));
+					subHeader.add(fileName);
+					header.add(subHeader);
+					header.setBorder(new EmptyBorder(10, 10, 10, 10));
+					subMain.add(header, BorderLayout.NORTH);
+
+					JPanel options = new JPanel();
+					options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
+
+					JPanel pWidth = new JPanel(new FlowLayout(FlowLayout.LEFT));
+					pWidth.add(new JLabel("Width: "));
+					pWidth.add(width);
+					options.add(pWidth);
+					JPanel pHeight = new JPanel(new FlowLayout(FlowLayout.LEFT));
+					pHeight.add(new JLabel("Height: "));
+					pHeight.add(height);
+					options.add(pHeight);
+					
+					try {
+						JPanel playback = new JPanel();
+						playback.setLayout(new BoxLayout(playback, BoxLayout.X_AXIS));
+						
+						JButton splaypause = new JButton();
+						BufferedImage splaypauseimg = ImageIO.read(new File("img\\Pause.png"));
+						splaypause.setIcon(new ImageIcon(splaypauseimg));
+						splaypause.setBounds(80, 50, 150, 100);
+						splaypause.setBackground(Color.LIGHT_GRAY);
+						splaypause.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								try {
+									Image splaypauseimg = null;
+									if (mediaPlayer.isPlaying() && !stopped) {
+										mediaPlayer.pause();
+										splaypauseimg = ImageIO.read(new File("img\\Play.gif"));
+										splaypause.setIcon(new ImageIcon(splaypauseimg));
+									} else if (!mediaPlayer.isPlaying() && !stopped) {
+										mediaPlayer.pause();
+										splaypauseimg = ImageIO.read(new File("img\\Pause.png"));
+										splaypause.setIcon(new ImageIcon(splaypauseimg));
+									} else if (stopped) {
+										mediaPlayer.pause();
+										splaypauseimg = ImageIO.read(new File("img\\Pause.png"));
+										splaypause.setIcon(new ImageIcon(splaypauseimg));
+										stop.stop();
+										stopped = false;
+										mediaPlayer.play();
+									}
+								} catch (IOException e) {
+									errorBox(e, "Error loading play/pause icons.");
+								}
+							}
+
+						});
+						playback.add(splaypause);
+						
+						JButton nextFrame = new JButton();
+						Image nextFrameIcon = ImageIO.read(new File("img\\nextFrame.png"));
+						nextFrameIcon = nextFrameIcon.getScaledInstance(18, 18, 0);
+						nextFrame.setIcon(new ImageIcon(nextFrameIcon));
+						nextFrame.setBounds(80, 50, 150, 100);
+						nextFrame.setBackground(Color.LIGHT_GRAY);
+						nextFrame.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								mediaPlayer.nextFrame();
+							}
+						});
+						playback.add(nextFrame);
+						
+						
+						options.add(playback);
+					} catch (IOException f) {
+						errorBox(f, "Error loading nextFrame icon.");
+					}
+					
+					subMain.add(options, BorderLayout.CENTER);
+					
+					main.add(subMain, BorderLayout.CENTER);
+
+					JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+					JButton close = new JButton("Close");
+					close.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							snapshot.dispose();
+						}
+					});
+					footer.add(close);
+					JButton save = new JButton("Save");
+					save.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							try {
+								File snapFile = new File("snapshots\\" + fileName.getText());
+								if (!snapFile.exists()) {
+									snapFile.createNewFile();
+								}
+								mediaPlayer.saveSnapshot(snapFile, Integer.parseInt(width.getText()), Integer.parseInt(height.getText()));
+							} catch (IOException f) {
+								errorBox(f, "Error creating snapshot file");
+							}
+						}
+					});
+					footer.add(save);
+					main.add(footer, BorderLayout.SOUTH);
+					
+					snapshot.add(main);
+					snapshot.setSize(new Dimension(600, 250));
+					snapshot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					snapshot.setVisible(true);
 				}
 			});
 
