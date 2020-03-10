@@ -102,7 +102,7 @@ public class Media {
 
 	private JButton loopbutton;
 
-	public Media(Dimension d) {
+	public Media(boolean demo, Dimension d) {
 		dim = d;
 		pLoop = false;
 		sLoop = false;
@@ -163,12 +163,9 @@ public class Media {
 		return isAudio;
 	}
 
-	public void getVideo(boolean demo) throws IOException {
+	public void getVideo() throws IOException {
 		try {
 			String title = "" + list.get(listP).getName() + " - Media Player";
-			if (demo) {
-				title = "Demonstration Version - Media Player";
-			}
 			frame = new JFrame(title);
 
 			JMenuBar main = new JMenuBar();
@@ -186,8 +183,6 @@ public class Media {
 				}
 
 			});
-			fileMenu.add(openFile);
-
 			JMenuItem openMultiFiles = new JMenuItem("Open multiple files (CTRL+SHIFT+O)");
 			openMultiFiles.addActionListener(new ActionListener() {
 				@Override
@@ -197,7 +192,7 @@ public class Media {
 					mediaPlayer.playMedia(list.get(listP).getPath());
 				}
 			});
-			fileMenu.add(openMultiFiles);
+			
 
 			JMenuItem close = new JMenuItem("Quit (CTRL+Q)");
 			close.addActionListener(new ActionListener() {
@@ -209,6 +204,120 @@ public class Media {
 				}
 
 			});
+			
+			JMenuItem plLoop = new JMenuItem("Enable playlist looping");
+			plLoop.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						if (!pLoop) {
+							sLoop = false;
+							pLoop = true;
+							Image loopimg = ImageIO.read(new File("img\\loopAll.png"));
+							loopimg = loopimg.getScaledInstance(18, 18, 0);
+							loopbutton.setIcon(new ImageIcon(loopimg));
+							plLoop.setText("Disable playlist looping");
+							pLoop = true;
+						} else {
+							Image loopimg = ImageIO.read(new File("img\\Loop.png"));
+							loopimg = loopimg.getScaledInstance(18, 18, 0);
+							loopbutton.setIcon(new ImageIcon(loopimg));
+							plLoop.setText("Enable playlist looping");
+							pLoop = false;
+						}
+					} catch (IOException e1) {
+						errorBox(e1, "Error loading icons.");
+					}
+				}
+			});
+			JMenuItem siLoop = new JMenuItem("Enable Single Track looping");
+			siLoop.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						if (!mediaPlayer.getRepeat()) {
+							siLoop.setText("Disable Single Track looping");
+							pLoop = false;
+							sLoop = true;
+							Image loopimg = ImageIO.read(new File("img\\loopS.png"));
+							loopimg = loopimg.getScaledInstance(18, 18, 0);
+							loopbutton.setIcon(new ImageIcon(loopimg));
+							mediaPlayer.setRepeat(true);
+						} else {
+							siLoop.setText("Enable Single Track looping");
+							mediaPlayer.setRepeat(false);
+							sLoop = false;
+							Image loopimg = ImageIO.read(new File("img\\Loop.png"));
+							loopimg = loopimg.getScaledInstance(18, 18, 0);
+							loopbutton.setIcon(new ImageIcon(loopimg));
+							siLoop.setText("Enable playlist looping");
+						}
+					} catch (IOException e1) {
+						errorBox(e1, "Error loading icons.");
+					}
+				}
+			});
+			JMenuItem topAdd = new JMenuItem("Add tracks to top");
+			topAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					openMultiple(true);
+				}
+			});
+			JMenuItem endAdd = new JMenuItem("Add tracks to end");
+			endAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					openMultiple(false);
+				}
+			});
+			JMenuItem topRemove = new JMenuItem("Remove first track");
+			topRemove.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					list.removeFirst();
+				}
+			});
+			JMenuItem endRemove = new JMenuItem("Remove last track");
+			endRemove.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					list.removeLast();
+				}
+			});
+			JMenuItem removeSel = new JMenuItem("Remove a track");
+			removeSel.addActionListener(new ActionListener() {
+				@SuppressWarnings({ "rawtypes", "unchecked" })
+				public void actionPerformed(ActionEvent e) {
+					String[] tracks = new String[list.size()];
+					for (int i = 0; i < list.size(); i++) {
+						tracks[i] = list.get(i).getName();
+					}
+					JComboBox comboBox = new JComboBox(tracks);
+					comboBox.setSelectedIndex(0);
+					JOptionPane.showMessageDialog(null, comboBox, "Select a track to remove",
+							JOptionPane.QUESTION_MESSAGE);
+					String selected = (String) comboBox.getSelectedItem();
+
+					File selectedFile = null;
+					for (int i = 0; i < list.size(); i++) {
+						if (list.get(i).getName().equals(selected)) {
+							selectedFile = list.get(i);
+						}
+					}
+					list.removeFirstOccurrence(selectedFile);
+				}
+			});
+			JMenuItem playlistPanel = new JMenuItem("Manage Playlist");
+			playlistPanel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					playlistPanel();
+				}
+			});
+			
+			fileMenu.add(openFile);
+			fileMenu.add(openMultiFiles);
+			fileMenu.addSeparator();
+			fileMenu.add(playlistPanel);
+			fileMenu.add(topAdd);
+			fileMenu.add(endAdd);
+			fileMenu.add(topRemove);
+			fileMenu.add(endRemove);
+			fileMenu.addSeparator();
 			fileMenu.add(close);
 
 			main.add(fileMenu);
@@ -908,122 +1017,7 @@ public class Media {
 			audioSettings.add(volDown);
 			audioSettings.add(mute);
 
-			JMenu lMenu = new JMenu("Playlist");
-			JMenuItem plLoop = new JMenuItem("Enable playlist looping");
-			plLoop.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					try {
-						if (!pLoop) {
-							sLoop = false;
-							pLoop = true;
-							Image loopimg = ImageIO.read(new File("img\\loopAll.png"));
-							loopimg = loopimg.getScaledInstance(18, 18, 0);
-							loopbutton.setIcon(new ImageIcon(loopimg));
-							plLoop.setText("Disable playlist looping");
-							pLoop = true;
-						} else {
-							Image loopimg = ImageIO.read(new File("img\\Loop.png"));
-							loopimg = loopimg.getScaledInstance(18, 18, 0);
-							loopbutton.setIcon(new ImageIcon(loopimg));
-							plLoop.setText("Enable playlist looping");
-							pLoop = false;
-						}
-					} catch (IOException e1) {
-						errorBox(e1, "Error loading icons.");
-					}
-				}
-			});
-			JMenuItem siLoop = new JMenuItem("Enable Single Track looping");
-			siLoop.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					try {
-						if (!mediaPlayer.getRepeat()) {
-							siLoop.setText("Disable Single Track looping");
-							pLoop = false;
-							sLoop = true;
-							Image loopimg = ImageIO.read(new File("img\\loopS.png"));
-							loopimg = loopimg.getScaledInstance(18, 18, 0);
-							loopbutton.setIcon(new ImageIcon(loopimg));
-							mediaPlayer.setRepeat(true);
-						} else {
-							siLoop.setText("Enable Single Track looping");
-							mediaPlayer.setRepeat(false);
-							sLoop = false;
-							Image loopimg = ImageIO.read(new File("img\\Loop.png"));
-							loopimg = loopimg.getScaledInstance(18, 18, 0);
-							loopbutton.setIcon(new ImageIcon(loopimg));
-							siLoop.setText("Enable playlist looping");
-						}
-					} catch (IOException e1) {
-						errorBox(e1, "Error loading icons.");
-					}
-				}
-			});
-			JMenuItem topAdd = new JMenuItem("Add tracks to top");
-			topAdd.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					openMultiple(true);
-				}
-			});
-			JMenuItem endAdd = new JMenuItem("Add tracks to end");
-			endAdd.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					openMultiple(false);
-				}
-			});
-			JMenuItem topRemove = new JMenuItem("Remove first track");
-			topRemove.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					list.removeFirst();
-				}
-			});
-			JMenuItem endRemove = new JMenuItem("Remove last track");
-			endRemove.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					list.removeLast();
-				}
-			});
-			JMenuItem removeSel = new JMenuItem("Remove a track");
-			removeSel.addActionListener(new ActionListener() {
-				@SuppressWarnings({ "rawtypes", "unchecked" })
-				public void actionPerformed(ActionEvent e) {
-					String[] tracks = new String[list.size()];
-					for (int i = 0; i < list.size(); i++) {
-						tracks[i] = list.get(i).getName();
-					}
-					JComboBox comboBox = new JComboBox(tracks);
-					comboBox.setSelectedIndex(0);
-					JOptionPane.showMessageDialog(null, comboBox, "Select a track to remove",
-							JOptionPane.QUESTION_MESSAGE);
-					String selected = (String) comboBox.getSelectedItem();
-
-					File selectedFile = null;
-					for (int i = 0; i < list.size(); i++) {
-						if (list.get(i).getName().equals(selected)) {
-							selectedFile = list.get(i);
-						}
-					}
-					list.removeFirstOccurrence(selectedFile);
-				}
-			});
-			JMenuItem playlistPanel = new JMenuItem("Panel");
-			playlistPanel.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					playlistPanel();
-				}
-			});
-			lMenu.add(playlistPanel);
-
-			lMenu.add(plLoop);
-			lMenu.add(siLoop);
-			lMenu.add(topAdd);
-			lMenu.add(endAdd);
-			lMenu.add(topRemove);
-			lMenu.add(endRemove);
-			lMenu.add(removeSel);
-
 			main.add(audioSettings);
-			main.add(lMenu);
 
 			JMenu subtitle = new JMenu("Subtitle");
 			JMenu subtrack = new JMenu("Subtrack");
@@ -2231,12 +2225,12 @@ public class Media {
 					}
 				}
 			});
-			
+
 			screenshot.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					//mediaPlayer.pause();
+					// mediaPlayer.pause();
 					int snapNumber = 1 + new File("snapshots\\").list().length;
-					
+
 					JTextField fileName = new JTextField("Snapshot" + snapNumber + ".png");
 					JTextField width = new JTextField(String.valueOf(mediaPlayer.getVideoDimension().width));
 					JTextField height = new JTextField(String.valueOf(mediaPlayer.getVideoDimension().height));
@@ -2266,11 +2260,11 @@ public class Media {
 					pHeight.add(new JLabel("Height: "));
 					pHeight.add(height);
 					options.add(pHeight);
-					
+
 					try {
 						JPanel playback = new JPanel();
 						playback.setLayout(new BoxLayout(playback, BoxLayout.X_AXIS));
-						
+
 						JButton splaypause = new JButton();
 						BufferedImage splaypauseimg = ImageIO.read(new File("img\\Pause.png"));
 						splaypause.setIcon(new ImageIcon(splaypauseimg));
@@ -2304,7 +2298,7 @@ public class Media {
 
 						});
 						playback.add(splaypause);
-						
+
 						JButton nextFrame = new JButton();
 						Image nextFrameIcon = ImageIO.read(new File("img\\nextFrame.png"));
 						nextFrameIcon = nextFrameIcon.getScaledInstance(18, 18, 0);
@@ -2317,15 +2311,14 @@ public class Media {
 							}
 						});
 						playback.add(nextFrame);
-						
-						
+
 						options.add(playback);
 					} catch (IOException f) {
 						errorBox(f, "Error loading nextFrame icon.");
 					}
-					
+
 					subMain.add(options, BorderLayout.CENTER);
-					
+
 					main.add(subMain, BorderLayout.CENTER);
 
 					JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -2344,7 +2337,8 @@ public class Media {
 								if (!snapFile.exists()) {
 									snapFile.createNewFile();
 								}
-								mediaPlayer.saveSnapshot(snapFile, Integer.parseInt(width.getText()), Integer.parseInt(height.getText()));
+								mediaPlayer.saveSnapshot(snapFile, Integer.parseInt(width.getText()),
+										Integer.parseInt(height.getText()));
 							} catch (IOException f) {
 								errorBox(f, "Error creating snapshot file");
 							}
@@ -2352,7 +2346,7 @@ public class Media {
 					});
 					footer.add(save);
 					main.add(footer, BorderLayout.SOUTH);
-					
+
 					snapshot.add(main);
 					snapshot.setSize(new Dimension(600, 250));
 					snapshot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -2606,7 +2600,7 @@ public class Media {
 			if (spec.equals("General Error")) {
 				spec = e.getMessage();
 			} else {
-				spec = spec + "(\"" + e.getMessage() + "\")";
+				spec = spec + " (\"" + e.getMessage() + "\")";
 			}
 
 			JFrame error = new JFrame("An error occured");
@@ -2620,7 +2614,7 @@ public class Media {
 			errorImage = errorImage.getScaledInstance(64, 64, 0);
 			errorPic.setIcon(new ImageIcon(errorImage));
 			header.add(errorPic, BorderLayout.WEST);
-			header.add(new JLabel("<html>An error occured:<br>\"" + spec + "\"</html>"), BorderLayout.CENTER);
+			header.add(new JLabel("<html>An error occured:<br>" + spec + "</html>"), BorderLayout.CENTER);
 			header.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 			subMain.add(header, BorderLayout.NORTH);
 
