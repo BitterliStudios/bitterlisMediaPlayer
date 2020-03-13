@@ -15,8 +15,6 @@ import javax.swing.JTextField;
 
 public class Operations {
 
-	private static Stack<String> stack;
-
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("'fixes madness");
 		JPanel main = new JPanel(new BorderLayout());
@@ -102,49 +100,15 @@ public class Operations {
 		frame.setVisible(true);
 	}
 
-	public static void test() {
-		String exp;
-
-		exp = "*-A/BC-/AKL";
-		System.out.println("Prefix Expression: " + exp);
-		System.out.println("Infix Expression: " + prefix_infix(exp));
-		System.out.println("");
-
-		exp = "ABC/-AK/L-*";
-		System.out.println("Postfix Expression: " + exp);
-		System.out.println("Infix Expression: " + postfix_infix(exp));
-		System.out.println("");
-
-		exp = "*-A/BC-/AKL";
-		System.out.println("Prefix Expression: " + exp);
-		System.out.println("Postfix Expression: " + prefix_postfix(exp));
-		System.out.println("");
-
-		exp = "ABC/-AK/L-*";
-		System.out.println("Postfix Expression: " + exp);
-		System.out.println("Prefix Expression: " + postfix_prefix(exp));
-		System.out.println("");
-
-		exp = "A+B*(C^D-E)";
-		System.out.println("Infix Expression: " + exp);
-		System.out.println("Prefix Expression: " + infix_prefix(exp));
-		System.out.println("");
-
-		exp = "A+B*(C^D-E)";
-		System.out.println("Infix Expression: " + exp);
-		System.out.println("Postfix Expression: " + infix_postfix(exp));
-		System.out.println("");
-	}
-
-	private static String prefix_infix(String expression) {
-		stack = new Stack<>();
-		for (int i = expression.length() - 1; i >= 0; i--) {
-			char c = expression.charAt(i);
+	private static String prefix_infix(String exp) {
+		Stack<String> stack = new Stack<>();
+		for (int i = exp.length() - 1; i >= 0; i--) {
+			char c = exp.charAt(i);
 
 			if (isOperator(c)) {
-				String s1 = stack.pop();
-				String s2 = stack.pop();
-				String temp = "(" + s1 + c + s2 + ")";
+				String a = stack.pop();
+				String b = stack.pop();
+				String temp = "(" + a + c + b + ")";
 				stack.push(temp);
 			} else {
 				stack.push(c + "");
@@ -156,15 +120,15 @@ public class Operations {
 		return result;
 	}
 
-	private static String postfix_infix(String expression) {
-		stack = new Stack<>();
-		for (int i = 0; i < expression.length(); i++) {
-			char c = expression.charAt(i);
+	private static String postfix_infix(String exp) {
+		Stack<String> stack = new Stack<>();
+		for (int i = 0; i < exp.length(); i++) {
+			char c = exp.charAt(i);
 
 			if (c == '*' || c == '/' || c == '^' || c == '+' || c == '-') {
-				String s1 = stack.pop();
-				String s2 = stack.pop();
-				String temp = "(" + s2 + c + s1 + ")";
+				String a = stack.pop();
+				String b = stack.pop();
+				String temp = "(" + b + c + a + ")";
 				stack.push(temp);
 			} else {
 				stack.push(c + "");
@@ -175,50 +139,42 @@ public class Operations {
 		return result;
 	}
 
-	private static String prefix_postfix(String expression) {
-		stack = new Stack<String>();
-		for (int i = expression.length() - 1; i >= 0; i--) {
-
-			char c = expression.charAt(i);
-
-			if (isOperator(c)) {
-				String s1 = stack.pop();
-				String s2 = stack.pop();
-				String temp = s1 + s2 + c;
-				stack.push(temp);
-			} else {
-				stack.push(c + "");
-			}
-		}
-
-		String result = stack.pop();
-		return result;
-	}
-
-	private static String postfix_prefix(String expression) {
-
+	private static String prefix_postfix(String exp) {
 		Stack<String> stack = new Stack<>();
-		for (int i = 0; i < expression.length(); i++) {
-
-			char c = expression.charAt(i);
-
-			if (isOperator(c)) {
-				String s1 = stack.pop();
-				String s2 = stack.pop();
-				String temp = c + s2 + s1;
+		for (int i = exp.length() - 1; i >= 0; i--) {
+			if (isOperator(exp.charAt(i))) {
+				String a = stack.pop();
+				String b = stack.pop();
+				String temp = a + b + exp.charAt(i);
 				stack.push(temp);
 			} else {
-				stack.push(c + "");
+				stack.push(exp.charAt(i) + "");
+			}
+		}
+
+		String result = stack.pop();
+		return result;
+	}
+
+	private static String postfix_prefix(String exp) {
+		Stack<String> stack = new Stack<>();
+		for (int i = 0; i < exp.length(); i++) {
+			if (isOperator(exp.charAt(i))) {
+				String a = stack.pop();
+				String b = stack.pop();
+				String temp = exp.charAt(i) + b + a;
+				stack.push(temp);
+			} else {
+				stack.push(exp.charAt(i) + "");
 			}
 		}
 		String result = stack.pop();
 		return result;
 	}
 
-	private static String infix_prefix(String expression) {
-
+	private static String infix_prefix(String exp) {
 		StringBuilder result = new StringBuilder();
-		StringBuilder input = new StringBuilder(expression);
+		StringBuilder input = new StringBuilder(exp);
 		input.reverse();
 		Stack<Character> stack = new Stack<Character>();
 
@@ -235,7 +191,7 @@ public class Operations {
 		}
 		for (char c : charsExp) {
 			if (precedence(c) > 0) {
-				while (stack.isEmpty() == false && precedence(stack.peek()) >= precedence(c)) {
+				while (!stack.isEmpty() && precedence(stack.peek()) >= precedence(c)) {
 					result.append(stack.pop());
 				}
 				stack.push(c);
@@ -259,28 +215,25 @@ public class Operations {
 		return reverse.toString();
 	}
 
-	private static String infix_postfix(String expression) {
-
+	private static String infix_postfix(String exp) {
 		String result = "";
 		Stack<Character> stack = new Stack<>();
-		for (int i = 0; i < expression.length(); i++) {
-			char c = expression.charAt(i);
-
-			if (precedence(c) > 0) {
-				while (stack.isEmpty() == false && precedence(stack.peek()) >= precedence(c)) {
+		for (int i = 0; i < exp.length(); i++) {
+			if (precedence(exp.charAt(i)) > 0) {
+				while (stack.isEmpty() == false && precedence(stack.peek()) >= precedence(exp.charAt(i))) {
 					result += stack.pop();
 				}
-				stack.push(c);
-			} else if (c == ')') {
+				stack.push(exp.charAt(i));
+			} else if (exp.charAt(i) == ')') {
 				char x = stack.pop();
 				while (x != '(') {
 					result += x;
 					x = stack.pop();
 				}
-			} else if (c == '(') {
-				stack.push(c);
+			} else if (exp.charAt(i) == '(') {
+				stack.push(exp.charAt(i));
 			} else {
-				result += c;
+				result += exp.charAt(i);
 			}
 		}
 		for (int i = 0; i <= stack.size(); i++) {

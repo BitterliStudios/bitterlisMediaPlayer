@@ -82,6 +82,14 @@ public class Media {
 
 	private Image playpauseimg;
 
+	private String currentSkin;
+	private int playPauseState, loopCond, muteState;
+	private JPanel p, p0, p1;
+	private JSlider posSlider, volume;
+	private JButton loopbutton;
+	private JLabel posTime, lenTime, volumePercent;
+	private JButton playpause, prevButton, stopbutton, nextButton, playlistButton, shuffleButton, mutebutton;
+
 	private LinkedList<File> list = new LinkedList<File>();
 	private int listP = 0;
 	private boolean pLoop;
@@ -100,9 +108,8 @@ public class Media {
 
 	private JFrame frame;
 
-	private JButton loopbutton;
-
 	public Media(boolean demo, Dimension d) {
+		currentSkin = "default";
 		dim = d;
 		pLoop = false;
 		sLoop = false;
@@ -192,7 +199,6 @@ public class Media {
 					mediaPlayer.playMedia(list.get(listP).getPath());
 				}
 			});
-			
 
 			JMenuItem close = new JMenuItem("Quit (CTRL+Q)");
 			close.addActionListener(new ActionListener() {
@@ -204,7 +210,7 @@ public class Media {
 				}
 
 			});
-			
+
 			JMenuItem plLoop = new JMenuItem("Enable playlist looping");
 			plLoop.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -308,7 +314,7 @@ public class Media {
 					playlistPanel();
 				}
 			});
-			
+
 			fileMenu.add(openFile);
 			fileMenu.add(openMultiFiles);
 			fileMenu.addSeparator();
@@ -1047,7 +1053,7 @@ public class Media {
 			frame.setJMenuBar(main);
 
 			c = new Canvas();
-			JPanel p = new JPanel();
+			p = new JPanel();
 			c.setBounds(100, 500, 1050, 500);
 			p.setLayout(new BorderLayout());
 			p.add(c, BorderLayout.CENTER);
@@ -1063,16 +1069,16 @@ public class Media {
 			pSize = p.getSize();
 			cSize = c.getSize();
 
-			JPanel p0 = new JPanel();
+			p0 = new JPanel();
 
-			JLabel posTime = new JLabel("0:00");
-			JLabel lenTime = new JLabel("0:00");
+			posTime = new JLabel("0:00");
+			lenTime = new JLabel("0:00");
 
-			JSlider slider = new JSlider(0, 100, 0);
-			slider.setPaintLabels(true);
+			posSlider = new JSlider(0, 100, 0);
+			posSlider.setPaintLabels(true);
 
-			slider.setPreferredSize(new Dimension(600, 30));
-			slider.addMouseListener(new MouseListener() {
+			posSlider.setPreferredSize(new Dimension(600, 30));
+			posSlider.addMouseListener(new MouseListener() {
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -1102,7 +1108,7 @@ public class Media {
 			Timer timeUpdate = new Timer(100, new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					int getSliderValue = (int) (mediaPlayer.getPosition() * 100);
-					slider.setValue(getSliderValue);
+					posSlider.setValue(getSliderValue);
 					String position = "";
 					int seconds = (int) (mediaPlayer.getTime() / 1000);
 					int minutes = 0;
@@ -1136,13 +1142,13 @@ public class Media {
 			timeUpdate.start();
 
 			p0.add(posTime);
-			p0.add(slider);
+			p0.add(posSlider);
 			p0.add(lenTime);
 
 			p0.setBounds(100, 900, 105, 200);
 			frame.add(p0, BorderLayout.CENTER);
 
-			JPanel p1 = new JPanel();
+			p1 = new JPanel();
 
 			Timer stop = new Timer(100, new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -1153,28 +1159,50 @@ public class Media {
 			p1.setBounds(100, 900, 105, 200);
 			frame.add(p1, BorderLayout.SOUTH);
 
-			JButton playpause = new JButton();
-			playpauseimg = ImageIO.read(new File("img\\Pause.png"));
-			playpause.setIcon(new ImageIcon(playpauseimg));
+			playpause = new JButton();
 			playpause.setBounds(80, 50, 150, 100);
-			playpause.setBackground(Color.LIGHT_GRAY);
+			playPauseState = 0;
 			playpause.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					try {
 						Image playpauseimg = null;
 						if (mediaPlayer.isPlaying() && !stopped) {
+							playPauseState = 1;
 							mediaPlayer.pause();
-							playpauseimg = ImageIO.read(new File("img\\Play.gif"));
-							playpause.setIcon(new ImageIcon(playpauseimg));
+							if (currentSkin.equals("Dark")) {
+								playpauseimg = ImageIO.read(new File("img\\dark-play.png"));
+								playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+								playpause.setIcon(new ImageIcon(playpauseimg));
+							} else if (currentSkin.equals("Default")) {
+								playpauseimg = ImageIO.read(new File("img\\play.png"));
+								playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+								playpause.setIcon(new ImageIcon(playpauseimg));
+							}
 						} else if (!mediaPlayer.isPlaying() && !stopped) {
+							playPauseState = 2;
 							mediaPlayer.pause();
-							playpauseimg = ImageIO.read(new File("img\\Pause.png"));
-							playpause.setIcon(new ImageIcon(playpauseimg));
+							if (currentSkin.equals("Dark")) {
+								playpauseimg = ImageIO.read(new File("img\\dark-pause.png"));
+								playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+								playpause.setIcon(new ImageIcon(playpauseimg));
+							} else if (currentSkin.equals("Default")) {
+								playpauseimg = ImageIO.read(new File("img\\pause.png"));
+								playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+								playpause.setIcon(new ImageIcon(playpauseimg));
+							}
 						} else if (stopped) {
+							playPauseState = 0;
 							mediaPlayer.pause();
-							playpauseimg = ImageIO.read(new File("img\\Pause.png"));
-							playpause.setIcon(new ImageIcon(playpauseimg));
+							if (currentSkin.equals("Dark")) {
+								playpauseimg = ImageIO.read(new File("img\\dark-pause.png"));
+								playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+								playpause.setIcon(new ImageIcon(playpauseimg));
+							} else if (currentSkin.equals("Default")) {
+								playpauseimg = ImageIO.read(new File("img\\pause.png"));
+								playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+								playpause.setIcon(new ImageIcon(playpauseimg));
+							}
 							stop.stop();
 							stopped = false;
 							mediaPlayer.play();
@@ -1192,12 +1220,8 @@ public class Media {
 			spacer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 			p1.add(spacer, BorderLayout.LINE_START);
 
-			JButton prevButton = new JButton();
-			Image prevIcon = ImageIO.read(new File("img\\prevTrack.png"));
-			prevIcon = prevIcon.getScaledInstance(18, 18, 0);
-			prevButton.setIcon(new ImageIcon(prevIcon));
+			prevButton = new JButton();
 			prevButton.setBounds(80, 50, 150, 100);
-			prevButton.setBackground(Color.LIGHT_GRAY);
 			prevButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					previous();
@@ -1206,15 +1230,12 @@ public class Media {
 			prevButton.setFocusable(false);
 			p1.add(prevButton, BorderLayout.LINE_START);
 
-			JButton stopbutton = new JButton();
-			Image stopimg = ImageIO.read(new File("img\\Stop.gif"));
-			stopbutton.setIcon(new ImageIcon(stopimg));
+			stopbutton = new JButton();
 			stopbutton.setBounds(80, 50, 150, 100);
-			stopbutton.setBackground(Color.LIGHT_GRAY);
 			stopbutton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					try {
-						playpauseimg = ImageIO.read(new File("img\\Play.gif"));
+						playpauseimg = ImageIO.read(new File("img\\play.png"));
 						playpause.setIcon(new ImageIcon(playpauseimg));
 						mediaPlayer.stop();
 						stop.start();
@@ -1228,10 +1249,7 @@ public class Media {
 			stopbutton.setFocusable(false);
 			p1.add(stopbutton, BorderLayout.LINE_START);
 
-			JButton nextButton = new JButton();
-			Image nextIcon = ImageIO.read(new File("img\\nextTrack.png"));
-			nextIcon = nextIcon.getScaledInstance(18, 18, 0);
-			nextButton.setIcon(new ImageIcon(nextIcon));
+			nextButton = new JButton();
 			nextButton.setBounds(80, 50, 150, 100);
 			nextButton.setBackground(Color.LIGHT_GRAY);
 			nextButton.addActionListener(new ActionListener() {
@@ -1244,12 +1262,8 @@ public class Media {
 
 			p1.add(spacer, BorderLayout.LINE_START);
 
-			JButton playlistButton = new JButton();
-			Image playlistImg = ImageIO.read(new File("img\\playlist.png"));
-			playlistImg = playlistImg.getScaledInstance(18, 18, 0);
-			playlistButton.setIcon(new ImageIcon(playlistImg));
+			playlistButton = new JButton();
 			playlistButton.setBounds(80, 50, 150, 100);
-			playlistButton.setBackground(Color.LIGHT_GRAY);
 			playlistButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					playlistPanel();
@@ -1259,30 +1273,31 @@ public class Media {
 			p1.add(playlistButton, BorderLayout.LINE_START);
 
 			loopbutton = new JButton();
-			Image loopimg = ImageIO.read(new File("img\\Loop.png"));
-			loopimg = loopimg.getScaledInstance(18, 18, 0);
-			loopbutton.setIcon(new ImageIcon(loopimg));
 			loopbutton.setBounds(80, 50, 150, 100);
 			loopbutton.setBackground(Color.LIGHT_GRAY);
+			loopCond = 0;
 			loopbutton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					try {
 						if (!pLoop && !sLoop) { // playlist loop
+							loopCond = 1;
 							pLoop = true;
-							Image loopimg = ImageIO.read(new File("img\\loopAll.png"));
+							Image loopimg = ImageIO.read(new File("img\\loopall.png"));
 							loopimg = loopimg.getScaledInstance(18, 18, 0);
 							loopbutton.setIcon(new ImageIcon(loopimg));
 						} else if (pLoop && !sLoop) { // single loop
+							loopCond = 2;
 							pLoop = false;
 							sLoop = true;
-							Image loopimg = ImageIO.read(new File("img\\loopS.png"));
+							Image loopimg = ImageIO.read(new File("img\\loopaingle.png"));
 							loopimg = loopimg.getScaledInstance(18, 18, 0);
 							loopbutton.setIcon(new ImageIcon(loopimg));
 							mediaPlayer.setRepeat(true);
 						} else if (!pLoop && sLoop) { // no loop
+							loopCond = 0;
 							sLoop = false;
 							mediaPlayer.setRepeat(false);
-							Image loopimg = ImageIO.read(new File("img\\Loop.png"));
+							Image loopimg = ImageIO.read(new File("img\\loop.png"));
 							loopimg = loopimg.getScaledInstance(18, 18, 0);
 							loopbutton.setIcon(new ImageIcon(loopimg));
 						}
@@ -1294,18 +1309,14 @@ public class Media {
 			loopbutton.setFocusable(false);
 			p1.add(loopbutton, BorderLayout.LINE_START);
 
-			JButton shuffleButton = new JButton();
-			Image shuffleImg = ImageIO.read(new File("img\\shuffle.png"));
-			shuffleImg = shuffleImg.getScaledInstance(18, 18, 0);
-			shuffleButton.setIcon(new ImageIcon(shuffleImg));
+			shuffleButton = new JButton();
 			shuffleButton.setBounds(80, 50, 150, 100);
-			shuffleButton.setBackground(Color.LIGHT_GRAY);
 			shuffleButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						if (!onShuffle) {
 							onShuffle = true;
-							Image shuffleOn = ImageIO.read(new File("img\\shuffleOn.png"));
+							Image shuffleOn = ImageIO.read(new File("img\\shuffleon.png"));
 							shuffleOn = shuffleOn.getScaledInstance(18, 18, 0);
 							shuffleButton.setIcon(new ImageIcon(shuffleOn));
 						} else {
@@ -1322,25 +1333,30 @@ public class Media {
 			shuffleButton.setFocusable(false);
 			p1.add(shuffleButton, BorderLayout.LINE_START);
 
-			JButton mutebutton = new JButton();
-			Image muteimg = ImageIO.read(new File("img\\Mute.png"));
-			muteimg = muteimg.getScaledInstance(18, 18, 0);
-			mutebutton.setIcon(new ImageIcon(muteimg));
+			mutebutton = new JButton();
 			mutebutton.setBounds(80, 50, 150, 100);
-			mutebutton.setBackground(Color.LIGHT_GRAY);
+			muteState = 0;
 			mutebutton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						if (!mediaPlayer.isMute()) {
+							muteState = 1;
 							mediaPlayer.mute(true);
-							Image muteimg = ImageIO.read(new File("img\\muteOn.png"));
+							Image muteimg = ImageIO.read(new File("img\\muteon.png"));
 							muteimg = muteimg.getScaledInstance(18, 18, 0);
 							mutebutton.setIcon(new ImageIcon(muteimg));
 						} else {
+							muteState = 0;
 							mediaPlayer.mute(false);
-							Image muteimg = ImageIO.read(new File("img\\Mute.png"));
-							muteimg = muteimg.getScaledInstance(18, 18, 0);
-							mutebutton.setIcon(new ImageIcon(muteimg));
+							if (currentSkin.equals("dark")) {
+								Image muteimg = ImageIO.read(new File("img\\dark-mute.png"));
+								muteimg = muteimg.getScaledInstance(18, 18, 0);
+								mutebutton.setIcon(new ImageIcon(muteimg));
+							} else if (currentSkin.equals("default")) {
+								Image muteimg = ImageIO.read(new File("img\\mute.png"));
+								muteimg = muteimg.getScaledInstance(18, 18, 0);
+								mutebutton.setIcon(new ImageIcon(muteimg));
+							}
 						}
 					} catch (IOException f) {
 						errorBox(f, "Error loading icons.");
@@ -1361,8 +1377,8 @@ public class Media {
 				vLabel = "" + mediaPlayer.getVolume() + "%";
 			}
 
-			JLabel volumePercent = new JLabel(vLabel);
-			JSlider volume = new JSlider(0, 200, mediaPlayer.getVolume());
+			volumePercent = new JLabel(vLabel);
+			volume = new JSlider(0, 200, mediaPlayer.getVolume());
 			volume.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent changeEvent) {
 					JSlider theSlider = (JSlider) changeEvent.getSource();
@@ -1393,7 +1409,7 @@ public class Media {
 			p1.setFocusable(false);
 			p.setFocusable(false);
 			volume.setFocusable(false);
-			slider.setFocusable(false);
+			posSlider.setFocusable(false);
 			fullscreenOverlay.setFocusable(false);
 
 			int csizex = (int) cSize.getWidth() - 100;
@@ -1971,7 +1987,7 @@ public class Media {
 						i.setResizable(false);
 						i.setVisible(true);
 					} else {
-						// custom error message thing
+						errorBox(new Exception(), "Not an audio format.");
 					}
 				}
 
@@ -2109,6 +2125,45 @@ public class Media {
 				}
 			});
 			tools.add(codec);
+
+			JMenuItem appear = new JMenuItem("Appearance");
+			appear.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					JFrame look = new JFrame("Appearance");
+					JPanel main = new JPanel(new BorderLayout());
+					JPanel subMain = new JPanel(new BorderLayout());
+
+					JPanel presets = new JPanel(new FlowLayout(FlowLayout.CENTER));
+					String[] skinList = { "Default", "Dark" };
+					JComboBox<String> skins = new JComboBox<String>(skinList);
+					JButton applySkin = new JButton("Apply");
+					applySkin.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							applySkinChange((String) skins.getSelectedItem());
+						}
+					});
+					presets.add(skins);
+					presets.add(applySkin);
+					subMain.add(presets, BorderLayout.NORTH);
+
+					JPanel close = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+					JButton closeButton = new JButton("Close");
+					closeButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							look.dispose();
+						}
+					});
+					close.add(closeButton);
+					main.add(subMain, BorderLayout.CENTER);
+					main.add(close, BorderLayout.SOUTH);
+
+					look.add(main);
+					look.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					look.setSize(new Dimension(400, 400));
+					look.setVisible(true);
+				}
+			});
+			tools.add(appear);
 
 			main.add(tools);
 
@@ -2355,6 +2410,7 @@ public class Media {
 			});
 
 			frame.setJMenuBar(main);
+			applySkinChange("Default");
 		} catch (Exception e) {
 			errorBox(e, "General Error");
 		}
@@ -2650,6 +2706,152 @@ public class Media {
 
 		} catch (IOException f) {
 			// error in error lmao
+		}
+	}
+
+	public void applySkinChange(String skin) {
+		currentSkin = skin;
+		try {
+			if (skin.equals("Dark")) {
+				p.setBackground(Color.DARK_GRAY);
+				p0.setBackground(Color.DARK_GRAY);
+				p1.setBackground(Color.DARK_GRAY);
+				posSlider.setBackground(Color.DARK_GRAY);
+				lenTime.setForeground(Color.WHITE);
+				posTime.setForeground(Color.WHITE);
+				volume.setBackground(Color.DARK_GRAY);
+				volumePercent.setForeground(Color.WHITE);
+
+				playpause.setBackground(Color.BLACK);
+				if (playPauseState == 0) {
+					playpauseimg = ImageIO.read(new File("img\\dark-pause.png"));
+					playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+					playpause.setIcon(new ImageIcon(playpauseimg));
+				} else if (playPauseState == 1) {
+					playpauseimg = ImageIO.read(new File("img\\dark-play.png"));
+					playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+					playpause.setIcon(new ImageIcon(playpauseimg));
+				} else if (playPauseState == 2) {
+					playpauseimg = ImageIO.read(new File("img\\dark-pause.png"));
+					playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+					playpause.setIcon(new ImageIcon(playpauseimg));
+				}
+
+				prevButton.setBackground(Color.BLACK);
+				Image prevIcon = ImageIO.read(new File("img\\dark-previoustrack.png"));
+				prevIcon = prevIcon.getScaledInstance(18, 18, 0);
+				prevButton.setIcon(new ImageIcon(prevIcon));
+				stopbutton.setBackground(Color.BLACK);
+				Image stopimg = ImageIO.read(new File("img\\dark-stop.png"));
+				stopimg = stopimg.getScaledInstance(18, 18, 0);
+				stopbutton.setIcon(new ImageIcon(stopimg));
+				nextButton.setBackground(Color.BLACK);
+				Image nextIcon = ImageIO.read(new File("img\\dark-nexttrack.png"));
+				nextIcon = nextIcon.getScaledInstance(18, 18, 0);
+				nextButton.setIcon(new ImageIcon(nextIcon));
+				playlistButton.setBackground(Color.BLACK);
+				Image playlistImg = ImageIO.read(new File("img\\dark-playlist.png"));
+				playlistImg = playlistImg.getScaledInstance(18, 18, 0);
+				playlistButton.setIcon(new ImageIcon(playlistImg));
+				shuffleButton.setBackground(Color.BLACK);
+				Image shuffleImg = ImageIO.read(new File("img\\dark-shuffle.png"));
+				shuffleImg = shuffleImg.getScaledInstance(18, 18, 0);
+				shuffleButton.setIcon(new ImageIcon(shuffleImg));
+				loopbutton.setBackground(Color.BLACK);
+				if (loopCond == 0) {
+					Image loopimg = ImageIO.read(new File("img\\dark-loop.png"));
+					loopimg = loopimg.getScaledInstance(18, 18, 0);
+					loopbutton.setIcon(new ImageIcon(loopimg));
+				} else if (loopCond == 1) {
+					Image loopimg = ImageIO.read(new File("img\\dark-loopall.png"));
+					loopimg = loopimg.getScaledInstance(18, 18, 0);
+					loopbutton.setIcon(new ImageIcon(loopimg));
+				} else if (loopCond == 2) {
+					Image loopimg = ImageIO.read(new File("img\\dark-loopsingle.png"));
+					loopimg = loopimg.getScaledInstance(18, 18, 0);
+					loopbutton.setIcon(new ImageIcon(loopimg));
+				}
+
+				mutebutton.setBackground(Color.GRAY);
+				if (muteState == 0) {
+					Image muteimg = ImageIO.read(new File("img\\dark-mute.png"));
+					muteimg = muteimg.getScaledInstance(18, 18, 0);
+					mutebutton.setIcon(new ImageIcon(muteimg));
+				} else if (muteState == 1) {
+					Image muteimg = ImageIO.read(new File("img\\muteon.png"));
+					muteimg = muteimg.getScaledInstance(18, 18, 0);
+					mutebutton.setIcon(new ImageIcon(muteimg));
+				}
+			} else if (skin.equals("Default")) {
+				p.setBackground(Color.LIGHT_GRAY);
+				p0.setBackground(Color.LIGHT_GRAY);
+				p1.setBackground(Color.LIGHT_GRAY);
+				posSlider.setBackground(Color.LIGHT_GRAY);
+				lenTime.setForeground(Color.BLACK);
+				posTime.setForeground(Color.BLACK);
+				volume.setBackground(Color.LIGHT_GRAY);
+				volumePercent.setForeground(Color.BLACK);
+				playpause.setBackground(Color.GRAY);
+				if (playPauseState == 0) {
+					playpauseimg = ImageIO.read(new File("img\\pause.png"));
+					playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+					playpause.setIcon(new ImageIcon(playpauseimg));
+				} else if (playPauseState == 1) {
+					playpauseimg = ImageIO.read(new File("img\\play.png"));
+					playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+					playpause.setIcon(new ImageIcon(playpauseimg));
+				} else if (playPauseState == 2) {
+					playpauseimg = ImageIO.read(new File("img\\pause.png"));
+					playpauseimg = playpauseimg.getScaledInstance(18, 18, 0);
+					playpause.setIcon(new ImageIcon(playpauseimg));
+				}
+				prevButton.setBackground(Color.GRAY);
+				Image prevIcon = ImageIO.read(new File("img\\previoustrack.png"));
+				prevIcon = prevIcon.getScaledInstance(18, 18, 0);
+				prevButton.setIcon(new ImageIcon(prevIcon));
+				stopbutton.setBackground(Color.GRAY);
+				Image stopimg = ImageIO.read(new File("img\\stop.png"));
+				stopimg = stopimg.getScaledInstance(18, 18, 0);
+				stopbutton.setIcon(new ImageIcon(stopimg));
+				nextButton.setBackground(Color.GRAY);
+				Image nextIcon = ImageIO.read(new File("img\\nexttrack.png"));
+				nextIcon = nextIcon.getScaledInstance(18, 18, 0);
+				nextButton.setIcon(new ImageIcon(nextIcon));
+				playlistButton.setBackground(Color.GRAY);
+				Image playlistImg = ImageIO.read(new File("img\\playlist.png"));
+				playlistImg = playlistImg.getScaledInstance(18, 18, 0);
+				playlistButton.setIcon(new ImageIcon(playlistImg));
+				shuffleButton.setBackground(Color.GRAY);
+				Image shuffleImg = ImageIO.read(new File("img\\shuffle.png"));
+				shuffleImg = shuffleImg.getScaledInstance(18, 18, 0);
+				shuffleButton.setIcon(new ImageIcon(shuffleImg));
+				loopbutton.setBackground(Color.GRAY);
+				if (loopCond == 0) {
+					Image loopimg = ImageIO.read(new File("img\\loop.png"));
+					loopimg = loopimg.getScaledInstance(18, 18, 0);
+					loopbutton.setIcon(new ImageIcon(loopimg));
+				} else if (loopCond == 1) {
+					Image loopimg = ImageIO.read(new File("img\\loopall.png"));
+					loopimg = loopimg.getScaledInstance(18, 18, 0);
+					loopbutton.setIcon(new ImageIcon(loopimg));
+				} else if (loopCond == 2) {
+					Image loopimg = ImageIO.read(new File("img\\loopsingle.png"));
+					loopimg = loopimg.getScaledInstance(18, 18, 0);
+					loopbutton.setIcon(new ImageIcon(loopimg));
+				}
+				mutebutton.setBackground(Color.GRAY);
+				if (muteState == 0) {
+					Image muteimg = ImageIO.read(new File("img\\mute.png"));
+					muteimg = muteimg.getScaledInstance(18, 18, 0);
+					mutebutton.setIcon(new ImageIcon(muteimg));
+				} else if (muteState == 1) {
+					Image muteimg = ImageIO.read(new File("img\\muteon.png"));
+					muteimg = muteimg.getScaledInstance(18, 18, 0);
+					mutebutton.setIcon(new ImageIcon(muteimg));
+				}
+			}
+		} catch (IOException e) {
+			errorBox(e, "Error loading icons");
 		}
 	}
 }
