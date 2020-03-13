@@ -927,6 +927,8 @@ public class Media {
 					String[] names = presets.getAllNames();
 					JComboBox<String> presetSel = new JComboBox<>(names);
 					presetSel.setSelectedItem("Flat");
+					presetSel.setBackground(skinColorBG());
+					presetSel.setForeground(skinColorFG());
 
 					presetSel.addActionListener(new ActionListener() {
 
@@ -958,12 +960,27 @@ public class Media {
 							eq9.setValue((int) Math.round(values[9]));
 							eq10.setValue((int) Math.round(values[10]));
 							presetSel.setSelectedItem(eqName);
+							
 						}
 
 					});
 					top.add(presetSel);
+					
+					preamp.setBackground(skinColorBG());
+					eq1.setBackground(skinColorBG());
+					eq2.setBackground(skinColorBG());
+					eq3.setBackground(skinColorBG());
+					eq4.setBackground(skinColorBG());
+					eq5.setBackground(skinColorBG());
+					eq6.setBackground(skinColorBG());
+					eq7.setBackground(skinColorBG());
+					eq8.setBackground(skinColorBG());
+					eq9.setBackground(skinColorBG());
+					eq10.setBackground(skinColorBG());
 
 					JButton savePreset = new JButton("Save Preset");
+					savePreset.setBackground(skinButtonBG());
+					savePreset.setForeground(skinColorFG());
 					savePreset.addActionListener(new ActionListener() {
 
 						@Override
@@ -991,6 +1008,9 @@ public class Media {
 					frameEQ.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 					frameEQ.setSize(new Dimension(800, 400));
 					frameEQ.setResizable(false);
+					
+					eqpanel.setBackground(skinColorBG());
+					
 					frameEQ.setVisible(true);
 				}
 
@@ -1289,7 +1309,7 @@ public class Media {
 							loopCond = 2;
 							pLoop = false;
 							sLoop = true;
-							Image loopimg = ImageIO.read(new File("img\\loopaingle.png"));
+							Image loopimg = ImageIO.read(new File("img\\loopsingle.png"));
 							loopimg = loopimg.getScaledInstance(18, 18, 0);
 							loopbutton.setIcon(new ImageIcon(loopimg));
 							mediaPlayer.setRepeat(true);
@@ -2283,129 +2303,131 @@ public class Media {
 
 			screenshot.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// mediaPlayer.pause();
-					int snapNumber = 1 + new File("snapshots\\").list().length;
+					if (!isAudio()) {
+						// mediaPlayer.pause();
+						int snapNumber = 1 + new File("snapshots\\").list().length;
 
-					JTextField fileName = new JTextField("Snapshot" + snapNumber + ".png");
-					JTextField width = new JTextField(String.valueOf(mediaPlayer.getVideoDimension().width));
-					JTextField height = new JTextField(String.valueOf(mediaPlayer.getVideoDimension().height));
+						JTextField fileName = new JTextField("Snapshot" + snapNumber + ".png");
+						JTextField width = new JTextField(String.valueOf(mediaPlayer.getVideoDimension().width));
+						JTextField height = new JTextField(String.valueOf(mediaPlayer.getVideoDimension().height));
 
-					JFrame snapshot = new JFrame("Save a snapshot");
-					JPanel main = new JPanel(new BorderLayout());
-					JPanel subMain = new JPanel(new BorderLayout());
+						JFrame snapshot = new JFrame("Save a snapshot");
+						JPanel main = new JPanel(new BorderLayout());
+						JPanel subMain = new JPanel(new BorderLayout());
 
-					JPanel header = new JPanel();
-					header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
-					header.add(new JLabel("Save a snapshot from the video: "));
-					JPanel subHeader = new JPanel(new FlowLayout(FlowLayout.LEFT));
-					subHeader.add(new JLabel("Filename: "));
-					subHeader.add(fileName);
-					header.add(subHeader);
-					header.setBorder(new EmptyBorder(10, 10, 10, 10));
-					subMain.add(header, BorderLayout.NORTH);
+						JPanel header = new JPanel();
+						header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+						header.add(new JLabel("Save a snapshot from the video: "));
+						JPanel subHeader = new JPanel(new FlowLayout(FlowLayout.LEFT));
+						subHeader.add(new JLabel("Filename: "));
+						subHeader.add(fileName);
+						header.add(subHeader);
+						header.setBorder(new EmptyBorder(10, 10, 10, 10));
+						subMain.add(header, BorderLayout.NORTH);
 
-					JPanel options = new JPanel();
-					options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
+						JPanel options = new JPanel();
+						options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
 
-					JPanel pWidth = new JPanel(new FlowLayout(FlowLayout.LEFT));
-					pWidth.add(new JLabel("Width: "));
-					pWidth.add(width);
-					options.add(pWidth);
-					JPanel pHeight = new JPanel(new FlowLayout(FlowLayout.LEFT));
-					pHeight.add(new JLabel("Height: "));
-					pHeight.add(height);
-					options.add(pHeight);
+						JPanel pWidth = new JPanel(new FlowLayout(FlowLayout.LEFT));
+						pWidth.add(new JLabel("Width: "));
+						pWidth.add(width);
+						options.add(pWidth);
+						JPanel pHeight = new JPanel(new FlowLayout(FlowLayout.LEFT));
+						pHeight.add(new JLabel("Height: "));
+						pHeight.add(height);
+						options.add(pHeight);
 
-					try {
-						JPanel playback = new JPanel();
-						playback.setLayout(new BoxLayout(playback, BoxLayout.X_AXIS));
+						try {
+							JPanel playback = new JPanel();
+							playback.setLayout(new BoxLayout(playback, BoxLayout.X_AXIS));
 
-						JButton splaypause = new JButton();
-						BufferedImage splaypauseimg = ImageIO.read(new File("img\\Pause.png"));
-						splaypause.setIcon(new ImageIcon(splaypauseimg));
-						splaypause.setBounds(80, 50, 150, 100);
-						splaypause.setBackground(Color.LIGHT_GRAY);
-						splaypause.addActionListener(new ActionListener() {
-							@Override
-							public void actionPerformed(ActionEvent arg0) {
-								try {
-									Image splaypauseimg = null;
-									if (mediaPlayer.isPlaying() && !stopped) {
-										mediaPlayer.pause();
-										splaypauseimg = ImageIO.read(new File("img\\Play.gif"));
-										splaypause.setIcon(new ImageIcon(splaypauseimg));
-									} else if (!mediaPlayer.isPlaying() && !stopped) {
-										mediaPlayer.pause();
-										splaypauseimg = ImageIO.read(new File("img\\Pause.png"));
-										splaypause.setIcon(new ImageIcon(splaypauseimg));
-									} else if (stopped) {
-										mediaPlayer.pause();
-										splaypauseimg = ImageIO.read(new File("img\\Pause.png"));
-										splaypause.setIcon(new ImageIcon(splaypauseimg));
-										stop.stop();
-										stopped = false;
-										mediaPlayer.play();
+							JButton splaypause = new JButton();
+							BufferedImage splaypauseimg = ImageIO.read(new File("img\\Pause.png"));
+							splaypause.setIcon(new ImageIcon(splaypauseimg));
+							splaypause.setBounds(80, 50, 150, 100);
+							splaypause.setBackground(Color.LIGHT_GRAY);
+							splaypause.addActionListener(new ActionListener() {
+								@Override
+								public void actionPerformed(ActionEvent arg0) {
+									try {
+										Image splaypauseimg = null;
+										if (mediaPlayer.isPlaying() && !stopped) {
+											mediaPlayer.pause();
+											splaypauseimg = ImageIO.read(new File("img\\Play.gif"));
+											splaypause.setIcon(new ImageIcon(splaypauseimg));
+										} else if (!mediaPlayer.isPlaying() && !stopped) {
+											mediaPlayer.pause();
+											splaypauseimg = ImageIO.read(new File("img\\Pause.png"));
+											splaypause.setIcon(new ImageIcon(splaypauseimg));
+										} else if (stopped) {
+											mediaPlayer.pause();
+											splaypauseimg = ImageIO.read(new File("img\\Pause.png"));
+											splaypause.setIcon(new ImageIcon(splaypauseimg));
+											stop.stop();
+											stopped = false;
+											mediaPlayer.play();
+										}
+									} catch (IOException e) {
+										errorBox(e, "Error loading play/pause icons.");
 									}
-								} catch (IOException e) {
-									errorBox(e, "Error loading play/pause icons.");
 								}
-							}
 
-						});
-						playback.add(splaypause);
+							});
+							playback.add(splaypause);
 
-						JButton nextFrame = new JButton();
-						Image nextFrameIcon = ImageIO.read(new File("img\\nextFrame.png"));
-						nextFrameIcon = nextFrameIcon.getScaledInstance(18, 18, 0);
-						nextFrame.setIcon(new ImageIcon(nextFrameIcon));
-						nextFrame.setBounds(80, 50, 150, 100);
-						nextFrame.setBackground(Color.LIGHT_GRAY);
-						nextFrame.addActionListener(new ActionListener() {
+							JButton nextFrame = new JButton();
+							Image nextFrameIcon = ImageIO.read(new File("img\\nextFrame.png"));
+							nextFrameIcon = nextFrameIcon.getScaledInstance(18, 18, 0);
+							nextFrame.setIcon(new ImageIcon(nextFrameIcon));
+							nextFrame.setBounds(80, 50, 150, 100);
+							nextFrame.setBackground(Color.LIGHT_GRAY);
+							nextFrame.addActionListener(new ActionListener() {
+								public void actionPerformed(ActionEvent e) {
+									mediaPlayer.nextFrame();
+								}
+							});
+							playback.add(nextFrame);
+
+							options.add(playback);
+						} catch (IOException f) {
+							errorBox(f, "Error loading nextFrame icon.");
+						}
+
+						subMain.add(options, BorderLayout.CENTER);
+
+						main.add(subMain, BorderLayout.CENTER);
+
+						JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+						JButton close = new JButton("Close");
+						close.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
-								mediaPlayer.nextFrame();
+								snapshot.dispose();
 							}
 						});
-						playback.add(nextFrame);
-
-						options.add(playback);
-					} catch (IOException f) {
-						errorBox(f, "Error loading nextFrame icon.");
-					}
-
-					subMain.add(options, BorderLayout.CENTER);
-
-					main.add(subMain, BorderLayout.CENTER);
-
-					JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-					JButton close = new JButton("Close");
-					close.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							snapshot.dispose();
-						}
-					});
-					footer.add(close);
-					JButton save = new JButton("Save");
-					save.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							try {
-								File snapFile = new File("snapshots\\" + fileName.getText());
-								if (!snapFile.exists()) {
-									snapFile.createNewFile();
+						footer.add(close);
+						JButton save = new JButton("Save");
+						save.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								try {
+									File snapFile = new File("snapshots\\" + fileName.getText());
+									if (!snapFile.exists()) {
+										snapFile.createNewFile();
+									}
+									mediaPlayer.saveSnapshot(snapFile, Integer.parseInt(width.getText()),
+											Integer.parseInt(height.getText()));
+								} catch (IOException f) {
+									errorBox(f, "Error creating snapshot file");
 								}
-								mediaPlayer.saveSnapshot(snapFile, Integer.parseInt(width.getText()),
-										Integer.parseInt(height.getText()));
-							} catch (IOException f) {
-								errorBox(f, "Error creating snapshot file");
 							}
-						}
-					});
-					footer.add(save);
-					main.add(footer, BorderLayout.SOUTH);
+						});
+						footer.add(save);
+						main.add(footer, BorderLayout.SOUTH);
 
-					snapshot.add(main);
-					snapshot.setSize(new Dimension(600, 250));
-					snapshot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-					snapshot.setVisible(true);
+						snapshot.add(main);
+						snapshot.setSize(new Dimension(600, 250));
+						snapshot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+						snapshot.setVisible(true);
+					}
 				}
 			});
 
@@ -2717,9 +2739,11 @@ public class Media {
 				p0.setBackground(Color.DARK_GRAY);
 				p1.setBackground(Color.DARK_GRAY);
 				posSlider.setBackground(Color.DARK_GRAY);
+				posSlider.setForeground(Color.BLACK);
 				lenTime.setForeground(Color.WHITE);
 				posTime.setForeground(Color.WHITE);
 				volume.setBackground(Color.DARK_GRAY);
+				volume.setForeground(Color.WHITE);
 				volumePercent.setForeground(Color.WHITE);
 
 				playpause.setBackground(Color.BLACK);
@@ -2772,7 +2796,7 @@ public class Media {
 					loopbutton.setIcon(new ImageIcon(loopimg));
 				}
 
-				mutebutton.setBackground(Color.GRAY);
+				mutebutton.setBackground(Color.BLACK);
 				if (muteState == 0) {
 					Image muteimg = ImageIO.read(new File("img\\dark-mute.png"));
 					muteimg = muteimg.getScaledInstance(18, 18, 0);
@@ -2787,9 +2811,11 @@ public class Media {
 				p0.setBackground(Color.LIGHT_GRAY);
 				p1.setBackground(Color.LIGHT_GRAY);
 				posSlider.setBackground(Color.LIGHT_GRAY);
+				posSlider.setForeground(Color.BLACK);
 				lenTime.setForeground(Color.BLACK);
 				posTime.setForeground(Color.BLACK);
 				volume.setBackground(Color.LIGHT_GRAY);
+				volume.setForeground(Color.BLACK);
 				volumePercent.setForeground(Color.BLACK);
 				playpause.setBackground(Color.GRAY);
 				if (playPauseState == 0) {
@@ -2852,6 +2878,36 @@ public class Media {
 			}
 		} catch (IOException e) {
 			errorBox(e, "Error loading icons");
+		}
+	}
+	
+	private Color skinColorBG() {
+		if (currentSkin.equals("Dark")) {
+			return (Color.DARK_GRAY);
+		} else if (currentSkin.equals("Default")) {
+			return (Color.LIGHT_GRAY);
+		} else {
+			return Color.WHITE;
+		}
+	}
+	
+	private Color skinColorFG() {
+		if (currentSkin.equals("Dark")) {
+			return (Color.WHITE);
+		} else if (currentSkin.equals("Default")) {
+			return (Color.BLACK);
+		} else {
+			return Color.BLACK;
+		}
+	}
+	
+	private Color skinButtonBG() {
+		if (currentSkin.equals("Dark")) {
+			return (Color.BLACK);
+		} else if (currentSkin.equals("Default")) {
+			return (Color.GRAY);
+		} else {
+			return Color.WHITE;
 		}
 	}
 }
