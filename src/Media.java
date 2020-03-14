@@ -77,7 +77,10 @@ public class Media {
 
 	private EmbeddedMediaPlayer mediaPlayer;
 	private boolean stopped;
+
 	private Equalizer eq;
+	private String currentEQ;
+
 	private MediaPlayerFactory mediaPlayerFactory;
 
 	private Image playpauseimg;
@@ -110,6 +113,7 @@ public class Media {
 
 	public Media(boolean demo, Dimension d) {
 		currentSkin = "default";
+		currentEQ = "Flat";
 		dim = d;
 		pLoop = false;
 		sLoop = false;
@@ -483,7 +487,7 @@ public class Media {
 					gP.add(gT, BorderLayout.PAGE_END);
 					// veP.add(gP);
 
-					JPanel veT = new JPanel();
+					JPanel veT = new JPanel(new BorderLayout());
 					JCheckBox toggle = new JCheckBox("Enable");
 					toggle.setSelected(videoEffectToggle);
 					toggle.addItemListener(new ItemListener() {
@@ -497,21 +501,40 @@ public class Media {
 							}
 						}
 					});
-					veT.add(toggle);
+					veT.add(toggle, BorderLayout.CENTER);
 					veT.setSize(600, 20);
+
 
 					GridBagConstraints gbc = new GridBagConstraints();
 					gbc.gridwidth = GridBagConstraints.REMAINDER;
 					gbc.weightx = 1;
 					gbc.fill = GridBagConstraints.HORIZONTAL;
+					
+					JPanel subMain = new JPanel(new GridBagLayout());
+					veP.setBorder(new EmptyBorder(10, 10, 10, 10));
+					subMain.add(veT, gbc);
+					gbc.weighty = 2;
+					subMain.add(veP, gbc);
 
 					JFrame veF = new JFrame("Video Effects");
-					veF.setLayout(new GridBagLayout());
-					veP.setBorder(new EmptyBorder(10, 10, 10, 10));
-					veF.add(veT, gbc);
-					gbc.weighty = 2;
-					veF.add(veP, gbc);
+					
+					JPanel biggy = new JPanel(new BorderLayout());
+					biggy.add(subMain, BorderLayout.CENTER);
+					
+					JPanel close = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+					JButton closeButton = new JButton("Close");
+					closeButton.setBackground(skinButtonBG());
+					closeButton.setForeground(skinColorFG());
+					closeButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							veF.dispose();
+						}
+					});
+					close.add(closeButton);
+					close.setBackground(skinColorBG());
+					biggy.add(close, BorderLayout.SOUTH);					
 
+					veF.add(biggy);
 					veF.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 					veF.setSize(new Dimension(600, 350));
 					veF.setResizable(false);
@@ -926,7 +949,7 @@ public class Media {
 					presets = new eqPresetManager(mediaPlayerFactory.getAllPresetEqualizers());
 					String[] names = presets.getAllNames();
 					JComboBox<String> presetSel = new JComboBox<>(names);
-					presetSel.setSelectedItem("Flat");
+					presetSel.setSelectedItem(currentEQ);
 					presetSel.setBackground(skinColorBG());
 					presetSel.setForeground(skinColorFG());
 
@@ -937,6 +960,7 @@ public class Media {
 						public void actionPerformed(ActionEvent arg0) {
 							String eqName = (String) ((JComboBox<String>) arg0.getSource()).getSelectedItem();
 							Equalizer set = presets.getEqualizer(eqName);
+							currentEQ = eqName;
 
 							mediaPlayer.setEqualizer(set);
 							values[0] = set.getPreamp();
@@ -960,12 +984,12 @@ public class Media {
 							eq9.setValue((int) Math.round(values[9]));
 							eq10.setValue((int) Math.round(values[10]));
 							presetSel.setSelectedItem(eqName);
-							
+
 						}
 
 					});
 					top.add(presetSel);
-					
+
 					preamp.setBackground(skinColorBG());
 					eq1.setBackground(skinColorBG());
 					eq2.setBackground(skinColorBG());
@@ -977,6 +1001,41 @@ public class Media {
 					eq8.setBackground(skinColorBG());
 					eq9.setBackground(skinColorBG());
 					eq10.setBackground(skinColorBG());
+
+					preampPanel.setBackground(skinColorBG());
+					eq1Panel.setBackground(skinColorBG());
+					eq2Panel.setBackground(skinColorBG());
+					eq3Panel.setBackground(skinColorBG());
+					eq4Panel.setBackground(skinColorBG());
+					eq5Panel.setBackground(skinColorBG());
+					eq6Panel.setBackground(skinColorBG());
+					eq7Panel.setBackground(skinColorBG());
+					eq8Panel.setBackground(skinColorBG());
+					eq9Panel.setBackground(skinColorBG());
+					eq10Panel.setBackground(skinColorBG());
+
+					preampLabel.setForeground(skinColorFG());
+					eq1Label.setForeground(skinColorFG());
+					eq2Label.setForeground(skinColorFG());
+					eq3Label.setForeground(skinColorFG());
+					eq4Label.setForeground(skinColorFG());
+					eq5Label.setForeground(skinColorFG());
+					eq6Label.setForeground(skinColorFG());
+					eq7Label.setForeground(skinColorFG());
+					eq8Label.setForeground(skinColorFG());
+					eq9Label.setForeground(skinColorFG());
+					eq10Label.setForeground(skinColorFG());
+					preampText.setForeground(skinColorFG());
+					eq1Text.setForeground(skinColorFG());
+					eq2Text.setForeground(skinColorFG());
+					eq3Text.setForeground(skinColorFG());
+					eq4Text.setForeground(skinColorFG());
+					eq5Text.setForeground(skinColorFG());
+					eq6Text.setForeground(skinColorFG());
+					eq7Text.setForeground(skinColorFG());
+					eq8Text.setForeground(skinColorFG());
+					eq9Text.setForeground(skinColorFG());
+					eq10Text.setForeground(skinColorFG());
 
 					JButton savePreset = new JButton("Save Preset");
 					savePreset.setBackground(skinButtonBG());
@@ -995,22 +1054,35 @@ public class Media {
 
 					top.setSize(600, 20);
 
-					GridBagConstraints gbc = new GridBagConstraints();
-					gbc.gridwidth = GridBagConstraints.REMAINDER;
-					gbc.weightx = 1;
-					gbc.fill = GridBagConstraints.HORIZONTAL;
+					eqpanel.setBackground(skinColorBG());
+					top.setBackground(skinColorBG());
 
 					JFrame frameEQ = new JFrame("Equalizer");
-					frameEQ.setLayout(new GridBagLayout());
-					frameEQ.add(top, gbc);
-					gbc.weighty = 2;
-					frameEQ.add(eqpanel);
+
+					JPanel main = new JPanel(new BorderLayout());
+					JPanel header = new JPanel(new BorderLayout());
+					header.add(top, BorderLayout.CENTER);
+					main.add(header, BorderLayout.NORTH);
+					main.add(eqpanel, BorderLayout.CENTER);
+
+					JPanel close = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+					JButton closeButton = new JButton("Close");
+					closeButton.setBackground(skinButtonBG());
+					closeButton.setForeground(skinColorFG());
+					closeButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							frameEQ.dispose();
+						}
+					});
+					close.add(closeButton);
+					close.setBackground(skinColorBG());
+					main.add(close, BorderLayout.SOUTH);
+
+					frameEQ.add(main);
 					frameEQ.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 					frameEQ.setSize(new Dimension(800, 400));
 					frameEQ.setResizable(false);
-					
-					eqpanel.setBackground(skinColorBG());
-					
+
 					frameEQ.setVisible(true);
 				}
 
@@ -2880,7 +2952,7 @@ public class Media {
 			errorBox(e, "Error loading icons");
 		}
 	}
-	
+
 	private Color skinColorBG() {
 		if (currentSkin.equals("Dark")) {
 			return (Color.DARK_GRAY);
@@ -2890,7 +2962,7 @@ public class Media {
 			return Color.WHITE;
 		}
 	}
-	
+
 	private Color skinColorFG() {
 		if (currentSkin.equals("Dark")) {
 			return (Color.WHITE);
@@ -2900,7 +2972,7 @@ public class Media {
 			return Color.BLACK;
 		}
 	}
-	
+
 	private Color skinButtonBG() {
 		if (currentSkin.equals("Dark")) {
 			return (Color.BLACK);
