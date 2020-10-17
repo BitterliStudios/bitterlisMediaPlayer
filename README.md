@@ -1,5 +1,7 @@
 ## NOTE
-This is still a work in progress, please do not consider it a complete, final version by any means.
+This project is probably abandoned. Because of COVID-19, I wasn't able to finish this. It was my senior year school project but yeah... schools closed before this could be finished. I also can't seem to get it working again so I am just going to consider this thing abandoned. If anyone wants to use this code to make their own media player, feel free to. I don't remember where the bugs are but i'm sure someone could find some use for this code. Kind of a shame that this thing is abandoned.
+
+I have started working on a new project, BitterliOS, which you can check out at https://github.com/BitterliStudios/BitterliOS.
 
 # Bitterli's Media Player
 This is a side project I started back around December of 2018 after seeing a tutorial page about playing sampled audio files in java. At the start of this school year, I decided that I would give myself the challenge of turning it into a graphically driven program with sliders and controls. Later, I decided to push myself further to see if audio effects like reverb and equalization can be added. Ultimately, it turned into a multimedia player.
